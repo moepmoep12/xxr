@@ -65,4 +65,8 @@ public:
 		return true;
 	}
 
+	size_t size() const
+	{
+		return std::size(m_symbols);
+	}
 };
