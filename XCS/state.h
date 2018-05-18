@@ -50,13 +50,13 @@ public:
 		return lhs.m_symbols != rhs.m_symbols;
 	}
 
-	bool contains(const State & classifier) const
+	bool contains(const State & state) const
 	{
 		assert(std::size(m_symbols) == std::size(classifier.m_symbols));
 
 		for (size_t i = 0; i < std::size(m_symbols); ++i)
 		{
-			if (!m_symbols[i].contains(classifier.m_symbols[i]))
+			if (!m_symbols[i].contains(state.m_symbols[i]))
 			{
 				return false;
 			}
