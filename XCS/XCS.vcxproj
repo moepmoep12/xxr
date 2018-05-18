@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="classifier.h" />
+    <ClInclude Include="state.h" />
     <ClInclude Include="symbol.h" />
   </ItemGroup>
   <ItemGroup>
