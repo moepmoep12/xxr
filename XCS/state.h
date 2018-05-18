@@ -9,15 +9,15 @@
 #include "symbol.h"
 
 template <class S = BinarySymbol>
-class Classifier
+class State
 {
 private:
 	std::vector<S> m_symbols;
 
 public:
-	Classifier(const std::vector<S> symbols) : m_symbols(symbols) {}
+	State(const std::vector<S> symbols) : m_symbols(symbols) {}
 
-	Classifier(const std::string symbols)
+	State(const std::string symbols)
 	{
 		for (const char symbol : symbols)
 		{
@@ -35,22 +35,22 @@ public:
 		return str;
 	}
 
-	friend std::ostream & operator<< (std::ostream & os, const Classifier & obj)
+	friend std::ostream & operator<< (std::ostream & os, const State & obj)
 	{
 		return os << obj.toString();
 	}
 
-	friend bool operator== (const Classifier & lhs, const Classifier & rhs)
+	friend bool operator== (const State & lhs, const State & rhs)
 	{
 		return lhs.m_symbols == rhs.m_symbols;
 	}
 
-	friend bool operator!= (const Classifier & lhs, const Classifier & rhs)
+	friend bool operator!= (const State & lhs, const State & rhs)
 	{
 		return lhs.m_symbols != rhs.m_symbols;
 	}
 
-	bool contains(const Classifier & classifier) const
+	bool contains(const State & classifier) const
 	{
 		assert(std::size(m_symbols) == std::size(classifier.m_symbols));
 
