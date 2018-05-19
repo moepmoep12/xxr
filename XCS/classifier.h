@@ -55,4 +55,9 @@ public:
 
 		return true;
 	}
+
+	friend std::ostream & operator<< (std::ostream & os, const Classifier & obj)
+	{
+		return os << obj.m_condition << ":" << obj.m_action;
+	}
 };
