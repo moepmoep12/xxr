@@ -5,7 +5,7 @@
 
 #include "state.h"
 
-template <S = BinarySymbol, Action = std::string>
+template <class S = BinarySymbol, class Action = std::string>
 class Classifier
 {
 private:
