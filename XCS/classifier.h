@@ -4,6 +4,7 @@
 #include <cstdint>
 
 #include "state.h"
+#include "xcs_constants.h"
 
 template <class S = BinarySymbol, class Action = std::string>
 class Classifier
@@ -37,9 +38,17 @@ private:
 	uint32_t m_numerosity;
 	
 public:
-	Classifier(const State<S> & condition, const Action & action, uint32_t timeStamp)
-		: m_condition(condition), m_action(action), m_prediction(0/* FIXME: P_I */), m_predictionError(0/* FIXME: epsilon_I */),
-		m_fitness(0/* FIXME: F_I */), m_experience(0), m_timeStamp(timeStamp), m_actionSetSize(1), m_numerosity(1) {}
+	Classifier(const State<S> & condition, const Action & action, uint32_t timeStamp, const XCSConstants & constants) :
+		m_condition(condition),
+		m_action(action),
+		m_prediction(constants.initialPrediction),
+		m_predictionError(constants.initialPredictionError),
+		m_fitness(constants.initialFitness),
+		m_experience(0),
+		m_timeStamp(timeStamp),
+		m_actionSetSize(1),
+		m_numerosity(1)
+		{}
 
 	bool equals(const Classifier<S, Action> & classifier) const
 	{
