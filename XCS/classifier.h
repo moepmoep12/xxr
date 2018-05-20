@@ -41,19 +41,9 @@ public:
 		: m_condition(condition), m_action(action), m_prediction(0/* FIXME: P_I */), m_predictionError(0/* FIXME: epsilon_I */),
 		m_fitness(0/* FIXME: F_I */), m_experience(0), m_timeStamp(timeStamp), m_actionSetSize(1), m_numerosity(1) {}
 
-	bool contains(const Classifier<S, Action> & classifier) const
+	bool isMoreGeneral(const Classifier<S, Action> & classifier) const
 	{
-		assert(std::size(m_condition) == std::size(classifier.m_symbols));
-
-		for (size_t i = 0; i < std::size(m_symbols); ++i)
-		{
-			if (!m_symbols[i].contains(classifier.m_symbols[i]))
-			{
-				return false;
-			}
-		}
-
-		return true;
+		return m_condition.contains(classifier) && m_condition != classifier.m_condition;
 	}
 
 	friend std::ostream & operator<< (std::ostream & os, const Classifier & obj)
