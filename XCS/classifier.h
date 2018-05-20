@@ -36,6 +36,9 @@ private:
 
 	// Numerosity (num)
 	uint32_t m_numerosity;
+
+	// Learning parameters
+	const XCSConstants m_constants;
 	
 public:
 	Classifier(const State<S> & condition, const Action & action, uint32_t timeStamp, const XCSConstants & constants) :
@@ -47,7 +50,8 @@ public:
 		m_experience(0),
 		m_timeStamp(timeStamp),
 		m_actionSetSize(1),
-		m_numerosity(1)
+		m_numerosity(1),
+		m_constants(constants)
 		{}
 
 	bool equals(const Classifier<S, Action> & classifier) const
@@ -58,6 +62,16 @@ public:
 	bool isMoreGeneral(const Classifier<S, Action> & classifier) const
 	{
 		return m_condition.contains(classifier) && m_condition != classifier.m_condition;
+	}
+
+	bool isSubsumer() const
+	{
+		return m_experience > m_constants.thetaSub && m_predictionError < m_constants.predictionErrorThreshold;
+	}
+
+	bool subsumes(const Classifier<S, Action> & classifier) const
+	{
+		return isSubsumer() && isMoreGeneral(classifier);
 	}
 
 	friend std::ostream & operator<< (std::ostream & os, const Classifier<S, Action> & obj)
