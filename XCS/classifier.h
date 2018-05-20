@@ -51,7 +51,7 @@ public:
 		return m_condition.contains(classifier) && m_condition != classifier.m_condition;
 	}
 
-	friend std::ostream & operator<< (std::ostream & os, const Classifier & obj)
+	friend std::ostream & operator<< (std::ostream & os, const Classifier<S, Action> & obj)
 	{
 		return os << obj.m_condition << ":" << obj.m_action;
 	}
