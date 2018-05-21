@@ -10,12 +10,6 @@ template <class S = BinarySymbol, class Action = std::string>
 class Classifier
 {
 private:
-	// Condition (C)
-	State<S> m_condition;
-
-	// Action (A)
-	Action m_action;
-
 	// Prediction (p)
 	double m_prediction;
 
@@ -41,9 +35,15 @@ private:
 	const XCSConstants m_constants;
 	
 public:
+	// Condition (C)
+	const State<S> condition;
+
+	// Action (A)
+	const Action action;
+
 	Classifier(const State<S> & condition, const Action & action, uint32_t timeStamp, const XCSConstants & constants) :
-		m_condition(condition),
-		m_action(action),
+		condition(condition),
+		action(action),
 		m_prediction(constants.initialPrediction),
 		m_predictionError(constants.initialPredictionError),
 		m_fitness(constants.initialFitness),
@@ -56,12 +56,12 @@ public:
 
 	bool equals(const Classifier<S, Action> & classifier) const
 	{
-		return m_condition == classifier.m_condition && m_action == classifier.m_action;
+		return condition == classifier.condition && action == classifier.action;
 	}
 
 	bool isMoreGeneral(const Classifier<S, Action> & classifier) const
 	{
-		return m_condition.contains(classifier) && m_condition != classifier.m_condition;
+		return condition.contains(classifier) && condition != classifier.condition;
 	}
 
 	bool isSubsumer() const
@@ -76,6 +76,16 @@ public:
 
 	friend std::ostream & operator<< (std::ostream & os, const Classifier<S, Action> & obj)
 	{
-		return os << obj.m_condition << ":" << obj.m_action;
+		return os << obj.condition << ":" << obj.action;
+	}
+
+	auto prediction() const
+	{
+		return m_prediction;
+	}
+
+	auto fitness() const
+	{
+		return m_fitness;
 	}
 };

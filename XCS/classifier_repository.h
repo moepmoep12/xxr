@@ -12,7 +12,7 @@ protected:
 	std::list<Classifier<S, Action>> m_classifiers;
 
 public:
-	std::list<Classifier<S, Action>> classifiers() const
+	const auto & classifiers() const
 	{
 		return m_classifiers;
 	}
