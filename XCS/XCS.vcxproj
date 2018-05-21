@@ -19,8 +19,10 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="classifier.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="symbol.h" />
+    <ClInclude Include="xcs_constants.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
