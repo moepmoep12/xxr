@@ -19,7 +19,11 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="action_set.h" />
     <ClInclude Include="classifier.h" />
+    <ClInclude Include="classifier_repository.h" />
+    <ClInclude Include="match_set.h" />
+    <ClInclude Include="prediction_array.h" />
     <ClInclude Include="state.h" />
     <ClInclude Include="symbol.h" />
     <ClInclude Include="xcs_constants.h" />

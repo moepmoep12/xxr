@@ -13,7 +13,7 @@ private:
 	std::unordered_map<Action, double> m_pa;
 
 public:
-	PredictionArray(const MatchSet<S, Action> & matchSet)
+	explicit PredictionArray(const MatchSet<S, Action> & matchSet)
 	{
 		// FSA (Fitness Sum Array)
 		std::unordered_map<Action, double> fsa;
@@ -24,7 +24,7 @@ public:
 			fsa[cl.action] += cl.fitness();
 		}
 
-		for (std::pair<Action, double> & pair : m_pa)
+		for (auto && pair : m_pa)
 		{
 			if (fabs(fsa[pair.first]) > 0.0)
 			{
