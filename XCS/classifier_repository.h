@@ -12,6 +12,8 @@ protected:
 	std::list<Classifier<S, Action>> m_classifiers;
 
 public:
+	~ClassifierRepository() = 0;
+
 	const auto & classifiers() const
 	{
 		return m_classifiers;
