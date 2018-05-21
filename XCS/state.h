@@ -52,7 +52,7 @@ public:
 
 	bool contains(const State & state) const
 	{
-		assert(std::size(m_symbols) == std::size(classifier.m_symbols));
+		assert(std::size(m_symbols) == std::size(state.m_symbols));
 
 		for (size_t i = 0; i < std::size(m_symbols); ++i)
 		{
