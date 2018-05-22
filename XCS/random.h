@@ -15,14 +15,14 @@ private:
 	}
 
 public:
-	template <typename T>
+	template <typename T = double>
 	static T nextDouble(T min = 0.0, T max = 1.0)
 	{
 		std::uniform_real_distribution<T> dist(min, max);
 		return dist(engine());
 	}
 
-	template <typename T>
+	template <typename T = int>
 	static T nextInt(T min, T max)
 	{
 		std::uniform_int_distribution<T> dist(min, max);
@@ -33,7 +33,9 @@ public:
 	static T chooseFrom(const std::vector<T> vec)
 	{
 		auto size = std::size(vec);
-		std::uniform_int_distribution<decltype(max)> dist(0, size - 1);
+		std::uniform_int_distribution<decltype(size)> dist(0, size - 1);
 		return vec.at(dist(engine()));
 	}
 };
+
+std::random_device Random::m_device;
