@@ -13,9 +13,12 @@ class ClassifierRepository
 private:
 	std::list<Classifier<S, Action>> m_classifiers;
     std::unordered_map<Action, size_t> m_actionClassifierCounts;
-    size_t m_actionCount;
 
 protected:
+    size_t m_actionCount;
+
+    ClassifierRepository() : m_actionCount(0) {}
+
     void addClassifier(const Classifier<S, Action> & cl)
     {
         m_classifiers.push_back(cl);
