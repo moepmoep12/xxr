@@ -65,6 +65,19 @@ public:
 };
 
 template <class S = BinarySymbol, class Action = std::string>
+class GreedyPredictionArray : public PredictonArray<S, Action>
+{
+public:
+	using PredictonArray<S, Action>::PredictonArray;
+
+	Action selectAction()
+	{
+		// Choose best action
+		return Random::chooseFrom(m_bestPAActions);
+	}
+};
+
+template <class S = BinarySymbol, class Action = std::string>
 class EpsilonGreedyPredictionArray : public PredictonArray<S, Action>
 {
 private:
