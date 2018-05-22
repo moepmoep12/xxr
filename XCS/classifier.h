@@ -7,7 +7,32 @@
 #include "xcs_constants.h"
 
 template <class S = BinarySymbol, class Action = std::string>
-class Classifier
+struct ConditionActionPair
+{
+	// Condition (C)
+	const State<S> condition;
+
+	// Action (A)
+	const Action action;
+
+	bool equals(const ConditionActionPair<S, Action> & cl) const
+	{
+		return condition == cl.condition && action == cl.action;
+	}
+
+	bool isMoreGeneral(const ConditionActionPair<S, Action> & cl) const
+	{
+		return condition.contains(cl) && condition != cl.condition;
+	}
+
+	friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<S, Action> & obj)
+	{
+		return os << obj.condition << ":" << obj.action;
+	}
+};
+
+template <class S = BinarySymbol, class Action = std::string>
+class Classifier : public ConditionActionPair<S, Action>
 {
 private:
 	// Prediction (p)
@@ -33,17 +58,10 @@ private:
 
 	// Learning parameters
 	const XCSConstants m_constants;
-	
+
 public:
-	// Condition (C)
-	const State<S> condition;
-
-	// Action (A)
-	const Action action;
-
 	Classifier(const State<S> & condition, const Action & action, uint32_t timeStamp, const XCSConstants & constants) :
-		condition(condition),
-		action(action),
+		ConditionActionPair{condition, action},
 		m_prediction(constants.initialPrediction),
 		m_predictionError(constants.initialPredictionError),
 		m_fitness(constants.initialFitness),
@@ -54,29 +72,14 @@ public:
 		m_constants(constants)
 		{}
 
-	bool equals(const Classifier<S, Action> & classifier) const
-	{
-		return condition == classifier.condition && action == classifier.action;
-	}
-
-	bool isMoreGeneral(const Classifier<S, Action> & classifier) const
-	{
-		return condition.contains(classifier) && condition != classifier.condition;
-	}
-
 	bool isSubsumer() const
 	{
 		return m_experience > m_constants.thetaSub && m_predictionError < m_constants.predictionErrorThreshold;
 	}
 
-	bool subsumes(const Classifier<S, Action> & classifier) const
+	bool subsumes(const Classifier<S, Action> & cl) const
 	{
-		return isSubsumer() && isMoreGeneral(classifier);
-	}
-
-	friend std::ostream & operator<< (std::ostream & os, const Classifier<S, Action> & obj)
-	{
-		return os << obj.condition << ":" << obj.action;
+		return isSubsumer() && isMoreGeneral(cl);
 	}
 
 	auto prediction() const
