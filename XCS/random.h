@@ -1,6 +1,7 @@
 #pragma once
 
 #include <random>
+#include <vector>
 
 class Random
 {
@@ -14,9 +15,25 @@ private:
 	}
 
 public:
-	static double nextDouble(double max = 1.0, double min = 0.0)
+	template <typename T>
+	static T nextDouble(T min = 0.0, T max = 1.0)
 	{
-		std::uniform_real_distribution<double> dist(min, max);
-		return dist(engine);
+		std::uniform_real_distribution<T> dist(min, max);
+		return dist(engine());
+	}
+
+	template <typename T>
+	static T nextInt(T min, T max)
+	{
+		std::uniform_int_distribution<T> dist(min, max);
+		return dist(engine());
+	}
+
+	template <typename T>
+	static T chooseFrom(const std::vector<T> vec)
+	{
+		auto size = std::size(vec);
+		std::uniform_int_distribution<decltype(max)> dist(0, size - 1);
+		return vec.at(dist(engine()));
 	}
 };
