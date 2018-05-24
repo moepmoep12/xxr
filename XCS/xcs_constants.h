@@ -7,7 +7,7 @@ struct XCSConstants
     // The maximum size of the population (N)
     // (the sum of the classifier numerosities in micro-classifiers)
     // Recommended: large enough
-    uint32_t maxPopulationClassifierCount = 1000;
+    uint64_t maxPopulationClassifierCount = 1000;
 
     // The learning rate for updating fitness, prediction, prediction error, and
     // action set size estimate in XCS's classifiers (beta)
@@ -33,7 +33,7 @@ struct XCSConstants
 
     // The threshold for the GA application in an action set (theta_GA)
     // Recommended: 25-50
-    uint32_t thetaGA = 25;
+    uint64_t thetaGA = 25;
 
     // The probability of applying crossover (chi)
     // Recommended: 0.5-1.0
@@ -43,8 +43,8 @@ struct XCSConstants
     // Recommended: 0.01-0.05
     double mutationProbability = 0.04;
 
-    // The threshold over which the fitness of a classifier may be considered in
-    // its deletion probability (theta_del)
+    // The experience threshold over which the fitness of a classifier may be
+	// considered in its deletion probability (theta_del)
     // Recommended: 20
     double thetaDel = 20;
 

@@ -47,19 +47,19 @@ private:
 	double m_experience;
 
 	// Time stamp (ts)
-	uint32_t m_timeStamp;
+	uint64_t m_timeStamp;
 
 	// Action set size (as)
 	double m_actionSetSize;
 
 	// Numerosity (num)
-	uint32_t m_numerosity;
+	uint64_t m_numerosity;
 
 	// Learning parameters
 	const XCSConstants m_constants;
 
 public:
-	Classifier(const State<S> & condition, Action action, uint32_t timeStamp, const XCSConstants & constants) :
+	Classifier(const State<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
 		ConditionActionPair{condition, action},
 		m_prediction(constants.initialPrediction),
 		m_predictionError(constants.initialPredictionError),
@@ -89,5 +89,30 @@ public:
 	auto fitness() const
 	{
 		return m_fitness;
+	}
+
+	auto experience() const
+	{
+		return m_experience;
+	}
+
+	auto timeStamp() const
+	{
+		return m_timeStamp;
+	}
+
+	auto actionSetSize() const
+	{
+		return m_actionSetSize;
+	}
+
+	auto numerosity() const
+	{
+		return m_numerosity;
+	}
+
+	void decreaseNumerosity()
+	{
+		--m_numerosity;
 	}
 };

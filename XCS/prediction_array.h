@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <list>
+#include <deque>
 #include <unordered_map>
 #include <random>
 #include <limits>
@@ -25,7 +25,7 @@ protected:
 	std::vector<Action> m_bestPAActions;
 
 public:
-	explicit PredictionArray(const std::list<Classifier<S, Action>> & matchSet)
+	explicit PredictionArray(const std::deque<Classifier<S, Action>> & matchSet)
 	{
 		// FSA (Fitness Sum Array)
 		std::unordered_map<Action, double> fsa;
@@ -85,7 +85,7 @@ private:
 	double m_epsilon;
 
 public:
-	EpsilonGreedyPredictionArray(double epsilon, const std::list<Classifier<S, Action>> & matchSet)
+	EpsilonGreedyPredictionArray(const std::deque<Classifier<S, Action>> & matchSet, double epsilon)
 		: PredictionArray(matchSet), m_epsilon(epsilon) {}
 
 	Action selectAction()
