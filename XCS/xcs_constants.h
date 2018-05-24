@@ -44,7 +44,7 @@ struct XCSConstants
     double mutationProbability = 0.04;
 
     // The experience threshold over which the fitness of a classifier may be
-	// considered in its deletion probability (theta_del)
+    // considered in its deletion probability (theta_del)
     // Recommended: 20
     double thetaDel = 20;
 
