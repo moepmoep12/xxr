@@ -55,8 +55,9 @@ private:
 	// Numerosity (num)
 	uint64_t m_numerosity;
 
-	// Learning parameters
-	const XCSConstants m_constants;
+	// Constants
+	const double m_thetaSub;
+	const double m_predictionErrorThreshold;
 
 public:
 	Classifier(const State<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
@@ -68,12 +69,13 @@ public:
 		m_timeStamp(timeStamp),
 		m_actionSetSize(1),
 		m_numerosity(1),
-		m_constants(constants)
+		m_thetaSub(constants.thetaSub),
+		m_predictionErrorThreshold(constants.predictionErrorThreshold)
 		{}
 
 	bool isSubsumer() const
 	{
-		return m_experience > m_constants.thetaSub && m_predictionError < m_constants.predictionErrorThreshold;
+		return m_experience > m_thetaSub && m_predictionError < m_predictionErrorThreshold;
 	}
 
 	bool subsumes(const Classifier<S, Action> & cl) const
