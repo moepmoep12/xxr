@@ -1,13 +1,14 @@
 #pragma once
 
+#include <vector>
+#include <list>
 #include <unordered_map>
-#include <unordered_set>
 #include <random>
 #include <limits>
 #include <cfloat>
 #include <cmath>
 
-#include "match_set.h"
+#include "classifier.h"
 #include "random.h"
 
 template <class S = BinarySymbol, class Action = std::string>
@@ -24,12 +25,12 @@ protected:
 	std::vector<Action> m_bestPAActions;
 
 public:
-	explicit PredictionArray(const MatchSet<S, Action> & matchSet)
+	explicit PredictionArray(const std::list<Classifier<S, Action>> & matchSet)
 	{
 		// FSA (Fitness Sum Array)
 		std::unordered_map<Action, double> fsa;
 
-		for (auto && cl : matchSet.classifiers())
+		for (auto && cl : matchSet)
 		{
 			if (m_pa.count(cl.action) == 0) {
 				m_paActions.push_back(cl.action);
@@ -84,7 +85,7 @@ private:
 	double m_epsilon;
 
 public:
-	EpsilonGreedyPredictionArray(double epsilon, const MatchSet<S, Action> & matchSet)
+	EpsilonGreedyPredictionArray(double epsilon, const std::list<Classifier<S, Action>> & matchSet)
 		: PredictionArray(matchSet), m_epsilon(epsilon) {}
 
 	Action selectAction()
