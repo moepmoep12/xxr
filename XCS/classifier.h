@@ -59,7 +59,7 @@ private:
 	const XCSConstants m_constants;
 
 public:
-	Classifier(const State<S> & condition, const Action & action, uint32_t timeStamp, const XCSConstants & constants) :
+	Classifier(const State<S> & condition, Action action, uint32_t timeStamp, const XCSConstants & constants) :
 		ConditionActionPair{condition, action},
 		m_prediction(constants.initialPrediction),
 		m_predictionError(constants.initialPredictionError),
