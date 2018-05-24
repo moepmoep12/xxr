@@ -118,5 +118,5 @@ protected:
     }
 
 public:
-    explicit XCS(const XCSConstants & constants, const std::set<Action> & actionChoices) : m_constants(constants), m_actionChoices(actionChoices), m_timeStamp(0) {}
+    explicit XCS(const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) : m_constants(constants), m_actionChoices(actionChoices), m_timeStamp(0) {}
 };
