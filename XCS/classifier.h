@@ -1,12 +1,11 @@
 #pragma once
 
-#include <string>
 #include <cstdint>
 
 #include "state.h"
 #include "xcs_constants.h"
 
-template <class S = BinarySymbol, class Action = std::string>
+template <class S = BinarySymbol, typename Action = int>
 struct ConditionActionPair
 {
 	// Condition (C)
@@ -31,7 +30,7 @@ struct ConditionActionPair
 	}
 };
 
-template <class S = BinarySymbol, class Action = std::string>
+template <class S = BinarySymbol, typename Action = int>
 class Classifier : public ConditionActionPair<S, Action>
 {
 private:

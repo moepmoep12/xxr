@@ -1,12 +1,11 @@
 #pragma once
 
-#include <string>
 #include <list>
 
 #include "symbol.h"
 #include "classifier.h"
 
-template <class S = BinarySymbol, class Action = std::string>
+template <class S = BinarySymbol, typename Action = int>
 class XCS
 {
 protected:

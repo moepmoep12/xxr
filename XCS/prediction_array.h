@@ -11,7 +11,7 @@
 #include "classifier.h"
 #include "random.h"
 
-template <class S = BinarySymbol, class Action = std::string>
+template <class S = BinarySymbol, typename Action = int>
 class PredictionArray
 {
 protected:
@@ -65,7 +65,7 @@ public:
 	Action selectAction() = 0;
 };
 
-template <class S = BinarySymbol, class Action = std::string>
+template <class S = BinarySymbol, typename Action = int>
 class GreedyPredictionArray : public PredictonArray<S, Action>
 {
 public:
@@ -78,7 +78,7 @@ public:
 	}
 };
 
-template <class S = BinarySymbol, class Action = std::string>
+template <class S = BinarySymbol, typename Action = int>
 class EpsilonGreedyPredictionArray : public PredictonArray<S, Action>
 {
 private:
