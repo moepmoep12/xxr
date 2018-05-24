@@ -19,6 +19,8 @@ public:
 	}
 
 	virtual bool contains(const Derived & symbol) const = 0;
+
+	virtual void generalize() = 0;
 };
 
 class BinarySymbol : public Symbol<BinarySymbol>
@@ -63,5 +65,10 @@ public:
 	bool contains(const BinarySymbol & symbol) const override
 	{
 		return isDontCare() || m_condition == symbol.m_condition;
+	}
+
+	void generalize() override
+	{
+		m_condition = Tribool::DontCare;
 	}
 };

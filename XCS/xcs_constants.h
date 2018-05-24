@@ -60,7 +60,7 @@ struct XCSConstants
     // The probability of using a don't care symbol in an allele when covering
     // (P_sharp)
     // Recommended: 0.33
-    double dontCareProbability = 0.33;
+    double generalizeProbability = 0.33;
 
     // The initial prediction value when generating a new classifier (p_I)
     // Recommended: very small (essentially zero)
@@ -79,11 +79,6 @@ struct XCSConstants
     // randomly (p_explr)
     // Recommended: 0.5 (depends on the type of experiment)
     double exploreProbability = 0.5;
-
-    // The minimal number of actions that must be present in a match set [M],
-    // or else covering will occur (theta_mna)
-    // Recommended: equal to the number of available actions
-    uint32_t thetaMinActionCount = 2;
 
     // Whether offspring are to be tested for possible logical subsumption by
     // parents

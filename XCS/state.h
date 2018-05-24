@@ -7,6 +7,7 @@
 #include <cassert>
 
 #include "symbol.h"
+#include "random.h"
 
 template <class S = BinarySymbol>
 class State
@@ -68,5 +69,16 @@ public:
 	size_t size() const
 	{
 		return std::size(m_symbols);
+	}
+
+	void randomGeneralize(double generalizeProbability)
+	{
+		for (auto && symbol : m_symbols)
+		{
+			if (Random::nextDouble() < generalizeProbability)
+			{
+				symbol.generalize();
+			}
+		}
 	}
 };
