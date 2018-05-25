@@ -60,8 +60,21 @@ private:
     const double m_predictionErrorThreshold;
 
 public:
+    Classifier(const Classifier<S, Action> & obj) :
+        ConditionActionPair<S, Action>{ obj.condition, obj.action },
+        m_prediction(obj.m_prediction),
+        m_predictionError(obj.m_predictionError),
+        m_fitness(obj.m_fitness),
+        m_experience(obj.m_experience),
+        m_timeStamp(obj.m_timeStamp),
+        m_actionSetSize(obj.m_actionSetSize),
+        m_numerosity(obj.m_numerosity),
+        m_thetaSub(obj.m_thetaSub),
+        m_predictionErrorThreshold(obj.m_predictionErrorThreshold)
+        {}
+
     Classifier(const State<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        ConditionActionPair{condition, action},
+        ConditionActionPair<S, Action>{ condition, action },
         m_prediction(constants.initialPrediction),
         m_predictionError(constants.initialPredictionError),
         m_fitness(constants.initialFitness),
@@ -117,4 +130,6 @@ public:
     {
         --m_numerosity;
     }
+
+    Classifier<S, Action> & operator= (const Classifier<S, Action> &) { return *this; };
 };

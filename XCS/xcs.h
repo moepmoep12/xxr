@@ -56,13 +56,13 @@ protected:
         condition.randomGeneralize(m_constants.generalizeProbability);
 
         // Generate a classifier
-        Classifier<S, Action> cl(condition, action, m_timeStamp);
+        Classifier<S, Action> cl(condition, action, m_timeStamp, m_constants);
         return cl;
     }
 
     void deleteFromPopulation()
     {
-        // No need to delete classifiers if the sum of numerosity has not met its maximum limit
+        // Return if the sum of numerosity has not met its maximum limit
         uint64_t numerositySum = 0;
         for (auto && c : m_population)
         {
@@ -74,8 +74,8 @@ protected:
         }
 
         // Prepare a roulette wheel by the weights
-        double voteSum;
-        std::vector<double> rouletteWheel(std::count(m_population));
+        double voteSum = 0.0;
+        std::vector<double> rouletteWheel(std::size(m_population));
         for (auto && c : m_population)
         {
             voteSum += deletionVote(c);
@@ -83,13 +83,12 @@ protected:
         }
 
         // Spin the roulette wheel
-        auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0, voteSum));
-        size_t populationIterator = std::begin(m_population) + std::distance(std::begin(rouletteWheel), rouletteIterator);
-        auto && selectedClassifier = *populationIterator;
+        auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0.0, voteSum));
+        auto populationIterator = std::begin(m_population) + std::distance(std::begin(rouletteWheel), rouletteIterator);
 
         // Distrust the selected classifier
-        if (selectedClassifier.numerosity() > 1)
-            selectedClassifier.decreaseNumerosity();
+        if ((*populationIterator).numerosity() > 1)
+            (*populationIterator).decreaseNumerosity();
         else
             m_population.erase(populationIterator);
     }
