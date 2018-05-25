@@ -1,5 +1,6 @@
 #pragma once
 
+#include <string>
 #include <cstdint>
 
 #include "state.h"
@@ -71,7 +72,8 @@ public:
         m_numerosity(obj.m_numerosity),
         m_thetaSub(obj.m_thetaSub),
         m_predictionErrorThreshold(obj.m_predictionErrorThreshold)
-        {}
+    {
+    }
 
     Classifier(const State<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
         ConditionActionPair<S, Action>{ condition, action },
@@ -84,7 +86,13 @@ public:
         m_numerosity(1),
         m_thetaSub(constants.thetaSub),
         m_predictionErrorThreshold(constants.predictionErrorThreshold)
-        {}
+    {
+    }
+
+    Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        Classifier(State<S>(condition), action, timeStamp, constants)
+    {
+    }
 
     bool isSubsumer() const
     {
