@@ -16,9 +16,9 @@ private:
     std::vector<S> m_symbols;
 
 public:
-    State(const std::vector<S> symbols) : m_symbols(symbols) {}
+    State(const std::vector<S> & symbols) : m_symbols(symbols) {}
 
-    State(const std::string symbols)
+    State(const std::string & symbols)
     {
         for (const char symbol : symbols)
         {
