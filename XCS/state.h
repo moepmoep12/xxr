@@ -36,6 +36,16 @@ public:
         return str;
     }
 
+    S & operator[] (size_t idx)
+    {
+        return m_symbols[idx];
+    }
+
+    const S & operator[] (size_t idx) const
+    {
+        return m_symbols[idx];
+    }
+
     friend std::ostream & operator<< (std::ostream & os, const State & obj)
     {
         return os << obj.toString();

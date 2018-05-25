@@ -35,11 +35,23 @@ private:
 public:
     BinarySymbol(char c) : m_condition(c == '0' ? Tribool::Zero : c == '#' ? Tribool::DontCare : Tribool::One) {}
 
+    BinarySymbol(int b) : m_condition(b ? Tribool::One : Tribool::Zero) {}
+
     BinarySymbol(const std::string & c) : m_condition(c == "0" ? Tribool::Zero : c == "#" ? Tribool::DontCare : Tribool::One) {}
 
     bool isDontCare() const override
     {
         return m_condition == Tribool::DontCare;
+    }
+
+    char toChar() const
+    {
+        if (isDontCare())
+            return '#';
+        else if (m_condition == Tribool::Zero)
+            return '0';
+        else
+            return '1';
     }
 
     std::string toString() const override
