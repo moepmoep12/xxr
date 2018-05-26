@@ -123,5 +123,8 @@ public:
         return isSubsumer() && isMoreGeneral(cl);
     }
 
-    Classifier<Symbol, Action> & operator= (const Classifier<Symbol, Action> &) { return *this; };
+    Classifier<Symbol, Action> & operator= (const Classifier<Symbol, Action> &)
+    {
+        return *this;
+    };
 };

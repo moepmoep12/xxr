@@ -87,7 +87,7 @@ public:
     bool getAnswer(const Situation<BinarySymbol> & situation) const
     {
         size_t address = 0;
-        for(size_t i = 0; i < m_addressBitLength; ++i)
+        for (size_t i = 0; i < m_addressBitLength; ++i)
         {
             if (situation[i].toChar() == '1')
             {
