@@ -12,7 +12,7 @@
 #include "random.h"
 
 template <class Symbol, typename Action>
-class PredictionArray
+class AbstractPredictionArray
 {
 protected:
     // PA (Prediction Array)
@@ -25,7 +25,7 @@ protected:
     std::vector<Action> m_bestPAActions;
 
 public:
-    explicit PredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet)
+    explicit AbstractPredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet)
     {
         // FSA (Fitness Sum Array)
         std::unordered_map<Action, double> fsa;
