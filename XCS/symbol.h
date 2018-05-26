@@ -6,14 +6,14 @@
 #include <cstdint>
 
 template <class Derived>
-class Symbol
+class AbstractSymbol
 {
 public:
     virtual bool isDontCare() const = 0;
 
     virtual std::string toString() const = 0;
 
-    friend std::ostream & operator<< (std::ostream & os, const Symbol & obj)
+    friend std::ostream & operator<< (std::ostream & os, const AbstractSymbol & obj)
     {
         return os << obj.toString();
     }
@@ -23,7 +23,7 @@ public:
     virtual void generalize() = 0;
 };
 
-class BinarySymbol : public Symbol<BinarySymbol>
+class BinarySymbol : public AbstractSymbol<BinarySymbol>
 {
 private:
     enum class Tribool {

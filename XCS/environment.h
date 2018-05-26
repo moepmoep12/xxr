@@ -8,31 +8,31 @@
 #include "situation.h"
 #include "xcs.h"
 
-template <class S = BinarySymbol, typename Action = int>
-class Environment
+template <class Symbol = BinarySymbol, typename Action = int>
+class AbstractEnvironment
 {
 protected:
     // Constructor with available action choices
-    Environment(const std::unordered_set<Action> & actionChoices) : actionChoices(actionChoices) {}
+    AbstractEnvironment(const std::unordered_set<Action> & actionChoices) : actionChoices(actionChoices) {}
 
 public:
     // Available action choices
     const std::unordered_set<Action> actionChoices;
 
     // Disable default constructor to force derived classes to set available action choices
-    Environment() = delete;
+    AbstractEnvironment() = delete;
 
     // Destructor
-    virtual ~Environment() = default;
+    virtual ~AbstractEnvironment() = default;
 
     // Returns current situation
-    virtual Situation<S> situation() const = 0;
+    virtual Situation<Symbol> situation() const = 0;
 
     // Executes action (and update situation) and returns reward
     virtual double executeAction(Action action) = 0;
 };
 
-class MultiplexerEnvironment : public Environment<BinarySymbol, bool>
+class MultiplexerEnvironment : public AbstractEnvironment<BinarySymbol, bool>
 {
 private:
     const size_t m_totalLength;
@@ -58,7 +58,7 @@ private:
 
 public:
     explicit MultiplexerEnvironment(size_t length) :
-        Environment({ 0, 1 }),
+        AbstractEnvironment({ 0, 1 }),
         m_totalLength(length),
         m_addressBitLength(addressBitLength(length, 0)),
         m_registerBitLength(length - m_addressBitLength),

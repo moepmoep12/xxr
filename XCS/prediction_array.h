@@ -11,7 +11,7 @@
 #include "classifier.h"
 #include "random.h"
 
-template <class S = BinarySymbol, typename Action = int>
+template <class Symbol = BinarySymbol, typename Action = int>
 class PredictionArray
 {
 protected:
@@ -25,7 +25,7 @@ protected:
     std::vector<Action> m_bestPAActions;
 
 public:
-    explicit PredictionArray(const std::deque<Classifier<S, Action>> & matchSet)
+    explicit PredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet)
     {
         // FSA (Fitness Sum Array)
         std::unordered_map<Action, double> fsa;
@@ -65,11 +65,11 @@ public:
     Action selectAction() = 0;
 };
 
-template <class S = BinarySymbol, typename Action = int>
-class GreedyPredictionArray : public PredictonArray<S, Action>
+template <class Symbol = BinarySymbol, typename Action = int>
+class GreedyPredictionArray : public PredictonArray<Symbol, Action>
 {
 public:
-    using PredictonArray<S, Action>::PredictonArray;
+    using PredictonArray<Symbol, Action>::PredictonArray;
 
     Action selectAction()
     {
@@ -78,14 +78,14 @@ public:
     }
 };
 
-template <class S = BinarySymbol, typename Action = int>
-class EpsilonGreedyPredictionArray : public PredictonArray<S, Action>
+template <class Symbol = BinarySymbol, typename Action = int>
+class EpsilonGreedyPredictionArray : public PredictonArray<Symbol, Action>
 {
 private:
     double m_epsilon;
 
 public:
-    EpsilonGreedyPredictionArray(const std::deque<Classifier<S, Action>> & matchSet, double epsilon)
+    EpsilonGreedyPredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet, double epsilon)
         : PredictionArray(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction()

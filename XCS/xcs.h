@@ -14,34 +14,34 @@
 #include "environment.h"
 #include "random.h"
 
-template <class Env, class S, typename Action>
+template <class Environment, class Symbol, typename Action>
 class XCS
 {
 protected:
     // [P]
     //   The population [P] consists of all classifier that exist in XCS at any time.
-    std::deque<Classifier<S, Action>> m_population;
+    std::deque<Classifier<Symbol, Action>> m_population;
 
     // [M]
     //   The match set [M] is formed out of the current [P].
     //   It includes all classifiers that match the current situation.
-    std::deque<Classifier<S, Action>> m_matchSet;
+    std::deque<Classifier<Symbol, Action>> m_matchSet;
 
     // [A]
     //   The action set [A] is formed out of the current [M].
     //   It includes all classifiers of [M] that propose the executed action.
-    std::deque<Classifier<S, Action>> m_actionSet;
+    std::deque<Classifier<Symbol, Action>> m_actionSet;
 
     // [A]_-1
     //   The previous action set [A]_-1 is the action set that was active in the last
     //   execution cycle.
-    std::deque<Classifier<S, Action>> m_prevActionSet;
+    std::deque<Classifier<Symbol, Action>> m_prevActionSet;
 
     XCSConstants m_constants;
 
     uint64_t m_timeStamp;
 
-    void generateMatchSet(const State<S> & situation)
+    void generateMatchSet(const Situation<Symbol> & situation)
     {
         m_matchSet.clear();
 
@@ -79,14 +79,14 @@ protected:
         }
     }
 
-    auto generateCoveringClassifier(const State<S> & situation, Action action)
+    auto generateCoveringClassifier(const Situation<Symbol> & situation, Action action)
     {
         // Generate a more general condition than the situation
         auto condition = situation;
         condition.randomGeneralize(m_constants.generalizeProbability);
 
         // Generate a classifier
-        Classifier<S, Action> cl(condition, action, m_timeStamp, m_constants);
+        Classifier<Symbol, Action> cl(condition, action, m_timeStamp, m_constants);
         return cl;
     }
 
@@ -123,7 +123,7 @@ protected:
             m_population.erase(populationIterator);
     }
 
-    double deletionVote(const Classifier<S, Action> & cl)
+    double deletionVote(const Classifier<Symbol, Action> & cl)
     {
         double vote = cl.actionSetSize() * cl.numerosity();
 
@@ -147,9 +147,9 @@ protected:
     }
 
 public:
-    Env environment;
+    Environment environment;
 
-    XCS(const Env & environment, const XCSConstants & constants)
+    XCS(const Environment & environment, const XCSConstants & constants)
         : environment(environment),
         m_constants(constants),
         m_timeStamp(0)
