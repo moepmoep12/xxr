@@ -19,7 +19,7 @@ struct ConditionActionPair
     //   that the classifier proposes.
     const Action action;
 
-    ConditionActionPair(condition, action) : condition(condition), action(action) {}
+    ConditionActionPair(Situation<Symbol> condition, Action action) : condition(condition), action(action) {}
 
     virtual ~ConditionActionPair() = default;
 
@@ -30,7 +30,7 @@ struct ConditionActionPair
 
     bool isMoreGeneral(const ConditionActionPair<Symbol, Action> & cl) const
     {
-        return condition.contains(cl) && condition != cl.condition;
+        return condition.contains(cl.condition) && condition != cl.condition;
     }
 
     friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Symbol, Action> & obj)

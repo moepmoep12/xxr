@@ -20,6 +20,8 @@ private:
     mutable bool dontCareCountCacheExists;
 
 public:
+    static constexpr bool isCacheEnabled = isCacheEnabled;
+
     Situation(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
 
     Situation(const std::string & symbols)
@@ -114,10 +116,5 @@ public:
         }
 
         return dontCareCountCache;
-    }
-
-    static constexpr bool isCacheEnabled()
-    {
-        return isCacheEnabled;
     }
 };

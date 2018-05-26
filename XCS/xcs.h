@@ -19,24 +19,27 @@ template <class Environment, class Symbol, typename Action>
 class XCS
 {
 protected:
+    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtrSet = std::unordered_set<ClassifierPtr>;
+
     // [P]
     //   The population [P] consists of all classifier that exist in XCS at any time.
-    std::deque<Classifier<Symbol, Action>> m_population;
+    ClassifierPtrSet m_population;
 
     // [M]
     //   The match set [M] is formed out of the current [P].
     //   It includes all classifiers that match the current situation.
-    std::deque<Classifier<Symbol, Action>> m_matchSet;
+    ClassifierPtrSet m_matchSet;
 
     // [A]
     //   The action set [A] is formed out of the current [M].
     //   It includes all classifiers of [M] that propose the executed action.
-    std::deque<Classifier<Symbol, Action>> m_actionSet;
+    ClassifierPtrSet m_actionSet;
 
     // [A]_-1
     //   The previous action set [A]_-1 is the action set that was active in the last
     //   execution cycle.
-    std::deque<Classifier<Symbol, Action>> m_prevActionSet;
+    ClassifierPtrSet m_prevActionSet;
 
     XCSConstants m_constants;
 
@@ -50,10 +53,10 @@ protected:
 
         for (auto && cl : m_population)
         {
-            if (cl.condition.contains(situation))
+            if (cl->condition.contains(situation))
             {
                 m_matchSet.push_back(cl);
-                unselectedActions.erase(cl.action);
+                unselectedActions.erase(cl->action);
             }
         }
 
@@ -73,7 +76,7 @@ protected:
 
         for (auto && cl : m_matchSet)
         {
-            if (cl.action == action)
+            if (cl->action == action)
             {
                 m_actionSet.push_back(cl);
             }
@@ -87,8 +90,7 @@ protected:
         condition.randomGeneralize(m_constants.generalizeProbability);
 
         // Generate a classifier
-        Classifier<Symbol, Action> cl(condition, action, m_timeStamp, m_constants);
-        return cl;
+        return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);;
     }
 
     void deleteFromPopulation()
@@ -97,7 +99,7 @@ protected:
         uint64_t numerositySum = 0;
         for (auto && c : m_population)
         {
-            numerositySum += c.numerosity;
+            numerositySum += c->numerosity;
         }
         if (numerositySum < m_constants.maxPopulationClassifierCount)
         {
@@ -109,19 +111,19 @@ protected:
         std::vector<double> rouletteWheel(std::size(m_population));
         for (auto && c : m_population)
         {
-            voteSum += deletionVote(c);
+            voteSum += deletionVote(*c);
             rouletteWheel.push_back(voteSum);
         }
 
         // Spin the roulette wheel
         auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0.0, voteSum));
-        auto populationIterator = std::begin(m_population) + std::distance(std::begin(rouletteWheel), rouletteIterator);
+        auto rouletteIdx = std::distance(std::begin(rouletteWheel), rouletteIterator);
 
         // Distrust the selected classifier
-        if ((*populationIterator).numerosity > 1)
-            (*populationIterator).numerosity--;
+        if (m_population[rouletteIdx]->numerosity > 1)
+            m_population[rouletteIdx]->numerosity--;
         else
-            m_population.erase(populationIterator);
+            m_population.erase(std::begin(m_population) + rouletteIdx);
     }
 
     double deletionVote(const Classifier<Symbol, Action> & cl)
@@ -133,8 +135,8 @@ protected:
         uint64_t numerositySum = 0;
         for (auto && c : m_population)
         {
-            fitnessSum += c.fitness;
-            numerositySum += c.numerosity;
+            fitnessSum += c->fitness;
+            numerositySum += c->numerosity;
         }
         double averageFitness = fitnessSum / numerositySum;
 
@@ -153,25 +155,25 @@ protected:
         uint64_t numerositySum = 0;
         for (auto && cl : m_actionSet)
         {
-            numerositySum += cl.numerosity;
+            numerositySum += cl->numerosity;
         }
 
         for (auto && cl : m_actionSet)
         {
-            ++cl.experience;
+            ++cl->experience;
             
             // Update prediction, prediction error, and action set size estimate
-            if (cl.experience < 1.0 / m_constants.learningRate)
+            if (cl->experience < 1.0 / m_constants.learningRate)
             {
-                cl.prediction += (p - cl.prediction) / cl.experience;
-                cl.predictionError += (fabs(p - cl.prediction) - cl.predictionError) / cl.experience;
-                cl.actionSetSize += (numerositySum - cl.actionSetSize) / cl.experience;
+                cl->prediction += (p - cl->prediction) / cl->experience;
+                cl->predictionError += (fabs(p - cl->prediction) - cl->predictionError) / cl->experience;
+                cl->actionSetSize += (numerositySum - cl->actionSetSize) / cl->experience;
             }
             else
             {
-                cl.prediction += m_constants.learningRate * (p - cl.prediction);
-                cl.predictionError += m_constants.learningRate * (fabs(p - cl.prediction) - cl.predictionError);
-                cl.actionSetSize += m_constants.learningRate * (numerositySum - cl.actionSetSize);
+                cl->prediction += m_constants.learningRate * (p - cl->prediction);
+                cl->predictionError += m_constants.learningRate * (fabs(p - cl->prediction) - cl->predictionError);
+                cl->actionSetSize += m_constants.learningRate * (numerositySum - cl->actionSetSize);
             }
         }
 
@@ -191,60 +193,62 @@ protected:
         {
             double kappaCl;
 
-            if (cl.predictionError < m_constants.predictionErrorThreshold)
+            if (cl->predictionError < m_constants.predictionErrorThreshold)
             {
                 kappaCl = 1.0;
             }
             else
             {
-                kappaCl = m_constants.alpha * pow(cl.predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
+                kappaCl = m_constants.alpha * pow(cl->predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
             }
             kappa.push_back(kappaCl);
 
-            accuracySum += kappaCl * cl.numerosity;
+            accuracySum += kappaCl * cl->numerosity;
         }
 
-        auto kappaIt = std::begin(kappa);
+        auto kappaItr = std::begin(kappa);
         for (auto && cl : m_actionSet)
         {
-            cl.fitness += m_constants.learningRate * (*kappaIt * cl.numerosity / accuracySum - cl.fitness);
-            ++kappaIt;
+            cl->fitness += m_constants.learningRate * (*kappaItr * cl->numerosity / accuracySum - cl->fitness);
+            ++kappaItr;
         }
     }
 
     void doActionSetSubsumption()
     {
-        Classifier<Symbol, Action> * cl = nullptr;
+        ClassifierPtr cl;
 
         for (auto && c : m_actionSet)
         {
-            if (c.isSubsumer())
+            if (c->isSubsumer())
             {
+                size_t cDontCareCount;
+                size_t clDontCareCount;
                 if ((cl == nullptr) ||
-                    ((cDontCareCount = c.condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
+                    ((cDontCareCount = c->condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
                     ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))
                 {
-                    cl = &c;
+                    cl = c;
                 }
             }
         }
 
-        if (cl != nullptr)
+        if (cl.get() != nullptr)
         {
-            auto it = std::begin(m_actionSet);
-
-            while (it != m_actionSet.end())
+            std::vector<ClassifierPtr> removedClassifiers;
+            for (auto && c : m_actionSet)
             {
-                if (cl->isMoreGeneral(*it))
+                if (cl->isMoreGeneral(*c))
                 {
-                    cl->numerosity += (*it).numerosity;
-                    m_actionSet.erase(it);
-                    // FIXME: need deletion from population
+                    cl->numerosity += c->numerosity;
+                    removedClassifiers.push_back(c);
                 }
-                else
-                {
-                    ++it;
-                }
+            }
+
+            for (auto && removedClassifier : removedClassifiers)
+            {
+                m_actionSet.erase(removedClassifier);
+                m_population.erase(removedClassifier);
             }
         }
     }
