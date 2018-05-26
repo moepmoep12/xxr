@@ -9,10 +9,14 @@
 template <class S = BinarySymbol, typename Action = int>
 struct ConditionActionPair
 {
-    // Condition (C)
+    // C
+    //   The condition specifies the input states (sensory situations)
+    //   in which the classifier can be applied (matches).
     const State<S> condition;
 
-    // Action (A)
+    // A
+    //   The action specifies the action (possibly a clasification)
+    //   that the classifier proposes.
     const Action action;
 
     bool equals(const ConditionActionPair<S, Action> & cl) const
@@ -35,25 +39,38 @@ template <class S = BinarySymbol, typename Action = int>
 class Classifier : public ConditionActionPair<S, Action>
 {
 private:
-    // Prediction (p)
+    // p
+    //   The prediction p estimates (keeps an average of) the payoff expected if the
+    //   classifier matches and its action is taken by the system.
     double m_prediction;
 
-    // Prediction error (epsilon)
+    // epsilon
+    //   The prediction error epsilon estimates the errors made in the predictions.
     double m_predictionError;
 
-    // Fitness (f)
+    // F
+    //   The fitness F denotes the classifier's fitness.
     double m_fitness;
 
-    // Experience (exp)
+    // exp
+    //   The experience exp counts the number of times since its creation that the
+    //   classifier has belonged to an action set.
     double m_experience;
 
-    // Time stamp (ts)
+    // ts
+    //   The time stamp ts denotes the time-step of the last occurrence of a GA in
+    //   an action set to which this classifier belonged.
     uint64_t m_timeStamp;
 
-    // Action set size (as)
+    // as
+    //   The action set size as estimates the average size of the action sets this
+    //   classifier has belonged to.
     double m_actionSetSize;
 
-    // Numerosity (num)
+    // n
+    //   The numerosity n reflects the number of micro-classifiers (ordinary
+    //   classifiers) this classifier - which is technically called a macro-
+    //   classifier - represents.
     uint64_t m_numerosity;
 
     // Constants

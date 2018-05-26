@@ -19,21 +19,21 @@ class XCS
 {
 protected:
     // [P]
-    //   The population consists of all classifier that exist in XCS at any time.
+    //   The population [P] consists of all classifier that exist in XCS at any time.
     std::deque<Classifier<S, Action>> m_population;
 
     // [M]
-    //   The match set is formed out of the current [P].
+    //   The match set [M] is formed out of the current [P].
     //   It includes all classifiers that match the current situation.
     std::deque<Classifier<S, Action>> m_matchSet;
 
     // [A]
-    //   The action set is formed out of the current [M].
+    //   The action set [A] is formed out of the current [M].
     //   It includes all classifiers of [M] that propose the executed action.
     std::deque<Classifier<S, Action>> m_actionSet;
 
     // [A]_-1
-    //   The previous action set is the action set that was active in the last
+    //   The previous action set [A]_-1 is the action set that was active in the last
     //   execution cycle.
     std::deque<Classifier<S, Action>> m_prevActionSet;
 
