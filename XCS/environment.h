@@ -1,19 +1,34 @@
 #pragma once
 
+#include <unordered_set>
 #include <cstddef>
 #include <cassert>
 
 #include "symbol.h"
 #include "state.h"
+#include "xcs.h"
 
 template <class S = BinarySymbol, typename Action = int>
 class Environment
 {
+protected:
+    // Constructor with available action choices
+    Environment(const std::unordered_set<Action> & actionChoices) : actionChoices(actionChoices) {}
+
 public:
-    // Returns condition
+    // Available action choices
+    const std::unordered_set<Action> actionChoices;
+
+    // Disable default constructor to force derived classes to set available action choices
+    Environment() = delete;
+
+    // Destructor
+    virtual ~Environment() = default;
+
+    // Returns current situation
     virtual State<S> situation() const = 0;
 
-    // Returns reward for action execution
+    // Executes action (and update situation) and returns reward
     virtual double executeAction(Action action) = 0;
 };
 
@@ -25,10 +40,10 @@ private:
     const size_t m_registerBitLength;
     State<BinarySymbol> m_situation;
 
-    // Convert total length to address bit length
+    // Get address bit length from total length
     static constexpr size_t addressBitLength(size_t l, size_t c)
     {
-        return (l == 0) ? c : addressBitLength(l >> 1, c + 1);
+        return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
     }
 
     static State<BinarySymbol> randomSituation(size_t totalLength)
@@ -42,17 +57,15 @@ private:
     }
 
 public:
-    using S = BinarySymbol;
-    using Action = bool;
-
     explicit MultiplexerEnvironment(size_t length) :
+        Environment({ 0, 1 }),
         m_totalLength(length),
         m_addressBitLength(addressBitLength(length, 0)),
         m_registerBitLength(length - m_addressBitLength),
         m_situation(randomSituation(length))
     {
         // Total length must be n + 2^n (n > 0)
-        assert(m_totalLength == (m_addressBitLength - 1 + ((size_t)1 << (m_addressBitLength - 1))));
+        assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
     }
 
     State<BinarySymbol> situation() const override
@@ -60,7 +73,7 @@ public:
         return m_situation;
     }
 
-    double executeAction(Action action) override
+    double executeAction(bool action) override
     {
         double reward = (action == getAnswer(m_situation)) ? 1.0 : 0.0;
 
@@ -70,8 +83,8 @@ public:
         return reward;
     }
 
-    // Returns answer for situation
-    Action getAnswer(const State<BinarySymbol> & situation) const
+    // Returns answer to situation
+    bool getAnswer(const State<BinarySymbol> & situation) const
     {
         size_t address = 0;
         for(size_t i = 0; i < m_addressBitLength; ++i)

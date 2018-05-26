@@ -1,6 +1,7 @@
 #pragma once
 
 #include <algorithm>
+#include <memory>
 #include <vector>
 #include <deque>
 #include <unordered_set>
@@ -10,9 +11,10 @@
 #include "xcs_constants.h"
 #include "symbol.h"
 #include "classifier.h"
+#include "environment.h"
 #include "random.h"
 
-template <class S = BinarySymbol, typename Action = int>
+template <class Env, class S, typename Action>
 class XCS
 {
 protected:
@@ -20,15 +22,13 @@ protected:
 
     XCSConstants m_constants;
 
-    std::unordered_set<Action> m_actionChoices;
-
     uint64_t m_timeStamp;
 
     void generateMatchSet(std::deque<Classifier<S, Action>> & matchSet, const State<S> & situation)
     {
         matchSet.clear();
 
-        auto unselectedActions = m_actionChoices;
+        auto unselectedActions = m_environment.actionChoices;
 
         for (auto && cl : m_population)
         {
@@ -117,5 +117,12 @@ protected:
     }
 
 public:
-    explicit XCS(const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) : m_constants(constants), m_actionChoices(actionChoices), m_timeStamp(0) {}
+    Env environment;
+
+    XCS(const Env & environment, const XCSConstants & constants)
+        : environment(environment),
+        m_constants(constants),
+        m_timeStamp(0)
+    {
+    }
 };
