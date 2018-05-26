@@ -7,6 +7,7 @@
 #include <unordered_set>
 #include <cstdint>
 #include <cstddef>
+#include <cmath>
 
 #include "xcs_constants.h"
 #include "symbol.h"
@@ -144,6 +145,39 @@ protected:
         }
 
         return vote;
+    }
+
+    void updateSet(double p)
+    {
+        // Calculate numerosity sum used for updating action set size estimate
+        uint64_t numerositySum = 0;
+        for (auto && cl : m_actionSet)
+        {
+            numerositySum += cl.numerosity;
+        }
+
+        for (auto && cl : m_actionSet)
+        {
+            ++cl.experience;
+            
+            // Update prediction, prediction error, and action set size estimate
+            if (cl.experience < 1.0 / m_constants.learningRate)
+            {
+                cl.prediction += (p - cl.prediction) / cl.experience;
+                cl.predictionError += (fabs(p - cl.prediction) - cl.predictionError) / cl.experience;
+                cl.actionSetSize += (numerositySum - cl.actionSetSize) / cl.experience;
+            }
+            else
+            {
+                cl.prediction += m_constants.learningRate * (p - cl.prediction);
+                cl.predictionError += m_constants.learningRate * (fabs(p - cl.prediction) - cl.predictionError);
+                cl.actionSetSize += m_constants.learningRate * (numerositySum - cl.actionSetSize);
+            }
+        }
+
+        // TODO: update fitness
+
+        // TODO: action set subsumption
     }
 
 public:
