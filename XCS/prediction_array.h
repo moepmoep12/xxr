@@ -11,7 +11,7 @@
 #include "classifier.h"
 #include "random.h"
 
-template <class Symbol = BinarySymbol, typename Action = int>
+template <class Symbol, typename Action>
 class PredictionArray
 {
 protected:
@@ -65,7 +65,7 @@ public:
     Action selectAction() = 0;
 };
 
-template <class Symbol = BinarySymbol, typename Action = int>
+template <class Symbol, typename Action>
 class GreedyPredictionArray : public PredictonArray<Symbol, Action>
 {
 public:
@@ -78,7 +78,7 @@ public:
     }
 };
 
-template <class Symbol = BinarySymbol, typename Action = int>
+template <class Symbol, typename Action>
 class EpsilonGreedyPredictionArray : public PredictonArray<Symbol, Action>
 {
 private:

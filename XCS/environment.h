@@ -8,7 +8,7 @@
 #include "situation.h"
 #include "xcs.h"
 
-template <class Symbol = BinarySymbol, typename Action = int>
+template <class Symbol, typename Action>
 class AbstractEnvironment
 {
 protected:

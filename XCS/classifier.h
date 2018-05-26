@@ -6,37 +6,37 @@
 #include "situation.h"
 #include "xcs_constants.h"
 
-template <class S = BinarySymbol, typename Action = int>
+template <class Symbol, typename Action>
 struct ConditionActionPair
 {
     // C
     //   The condition specifies the input states (sensory situations)
     //   in which the classifier can be applied (matches).
-    const Situation<S> condition;
+    const Situation<Symbol> condition;
 
     // A
     //   The action specifies the action (possibly a clasification)
     //   that the classifier proposes.
     const Action action;
 
-    bool equals(const ConditionActionPair<S, Action> & cl) const
+    bool equals(const ConditionActionPair<Symbol, Action> & cl) const
     {
         return condition == cl.condition && action == cl.action;
     }
 
-    bool isMoreGeneral(const ConditionActionPair<S, Action> & cl) const
+    bool isMoreGeneral(const ConditionActionPair<Symbol, Action> & cl) const
     {
         return condition.contains(cl) && condition != cl.condition;
     }
 
-    friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<S, Action> & obj)
+    friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Symbol, Action> & obj)
     {
         return os << obj.condition << ":" << obj.action;
     }
 };
 
-template <class S = BinarySymbol, typename Action = int>
-class Classifier : public ConditionActionPair<S, Action>
+template <class Symbol, typename Action>
+class Classifier : public ConditionActionPair<Symbol, Action>
 {
 private:
     // p
@@ -78,8 +78,8 @@ private:
     const double m_predictionErrorThreshold;
 
 public:
-    Classifier(const Classifier<S, Action> & obj) :
-        ConditionActionPair<S, Action>{ obj.condition, obj.action },
+    Classifier(const Classifier<Symbol, Action> & obj) :
+        ConditionActionPair<Symbol, Action>{ obj.condition, obj.action },
         m_prediction(obj.m_prediction),
         m_predictionError(obj.m_predictionError),
         m_fitness(obj.m_fitness),
@@ -92,8 +92,8 @@ public:
     {
     }
 
-    Classifier(const Situation<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        ConditionActionPair<S, Action>{ condition, action },
+    Classifier(const Situation<Symbol> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        ConditionActionPair<Symbol, Action>{ condition, action },
         m_prediction(constants.initialPrediction),
         m_predictionError(constants.initialPredictionError),
         m_fitness(constants.initialFitness),
@@ -107,7 +107,7 @@ public:
     }
 
     Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        Classifier(Situation<S>(condition), action, timeStamp, constants)
+        Classifier(Situation<Symbol>(condition), action, timeStamp, constants)
     {
     }
 
@@ -116,7 +116,7 @@ public:
         return m_experience > m_thetaSub && m_predictionError < m_predictionErrorThreshold;
     }
 
-    bool subsumes(const Classifier<S, Action> & cl) const
+    bool subsumes(const Classifier<Symbol, Action> & cl) const
     {
         return isSubsumer() && isMoreGeneral(cl);
     }
@@ -156,5 +156,5 @@ public:
         --m_numerosity;
     }
 
-    Classifier<S, Action> & operator= (const Classifier<S, Action> &) { return *this; };
+    Classifier<Symbol, Action> & operator= (const Classifier<Symbol, Action> &) { return *this; };
 };

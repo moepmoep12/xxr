@@ -9,14 +9,14 @@
 #include "symbol.h"
 #include "random.h"
 
-template <class S = BinarySymbol>
+template <class Symbol>
 class Situation
 {
 private:
-    std::vector<S> m_symbols;
+    std::vector<Symbol> m_symbols;
 
 public:
-    Situation(const std::vector<S> & symbols) : m_symbols(symbols) {}
+    Situation(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
 
     Situation(const std::string & symbols)
     {
@@ -36,12 +36,12 @@ public:
         return str;
     }
 
-    S & operator[] (size_t idx)
+    Symbol & operator[] (size_t idx)
     {
         return m_symbols[idx];
     }
 
-    const S & operator[] (size_t idx) const
+    const Symbol & operator[] (size_t idx) const
     {
         return m_symbols[idx];
     }
