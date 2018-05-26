@@ -9,11 +9,15 @@
 #include "symbol.h"
 #include "random.h"
 
-template <class Symbol>
+// Set isCacheEnabled to false if the number of don't care symbols can change randomly
+template <class Symbol, bool isCacheEnabled = true>
 class Situation
 {
 private:
     std::vector<Symbol> m_symbols;
+
+    mutable size_t dontCareCountCache;
+    mutable bool dontCareCountCacheExists;
 
 public:
     Situation(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
@@ -90,5 +94,30 @@ public:
                 symbol.generalize();
             }
         }
+
+        dontCareCountCacheExists = false;
+    }
+
+    size_t dontCareCount() const
+    {
+        // Cache the result in case of a huge number of symbols
+        if (!isCacheEnabled || !dontCareCountCacheExists)
+        {
+            dontCareCountCache = 0;
+            for (auto && symbol : m_symbols)
+            {
+                if (symbol.isDontCare())
+                {
+                    dontCareCountCache++;
+                }
+            }
+        }
+
+        return dontCareCountCache;
+    }
+
+    static constexpr bool isCacheEnabled()
+    {
+        return isCacheEnabled;
     }
 };

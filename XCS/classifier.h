@@ -19,6 +19,8 @@ struct ConditionActionPair
     //   that the classifier proposes.
     const Action action;
 
+    ConditionActionPair(condition, action) : condition(condition), action(action) {}
+
     virtual ~ConditionActionPair() = default;
 
     bool equals(const ConditionActionPair<Symbol, Action> & cl) const
@@ -81,7 +83,7 @@ private:
 
 public:
     Classifier(const Classifier<Symbol, Action> & obj) :
-        ConditionActionPair<Symbol, Action>{ obj.condition, obj.action },
+        ConditionActionPair<Symbol, Action>(obj.condition, obj.action),
         prediction(obj.prediction),
         predictionError(obj.predictionError),
         fitness(obj.fitness),
@@ -95,7 +97,7 @@ public:
     }
 
     Classifier(const Situation<Symbol> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        ConditionActionPair<Symbol, Action>{ condition, action },
+        ConditionActionPair<Symbol, Action>(condition, action),
         prediction(constants.initialPrediction),
         predictionError(constants.initialPredictionError),
         fitness(constants.initialFitness),

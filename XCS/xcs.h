@@ -212,6 +212,43 @@ protected:
         }
     }
 
+    void doActionSetSubsumption()
+    {
+        Classifier<Symbol, Action> * cl = nullptr;
+
+        for (auto && c : m_actionSet)
+        {
+            if (c.isSubsumer())
+            {
+                if ((cl == nullptr) ||
+                    ((cDontCareCount = c.condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
+                    ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))
+                {
+                    cl = &c;
+                }
+            }
+        }
+
+        if (cl != nullptr)
+        {
+            auto it = std::begin(m_actionSet);
+
+            while (it != m_actionSet.end())
+            {
+                if (cl->isMoreGeneral(*it))
+                {
+                    cl->numerosity += (*it).numerosity;
+                    m_actionSet.erase(it);
+                    // FIXME: need deletion from population
+                }
+                else
+                {
+                    ++it;
+                }
+            }
+        }
+    }
+
 public:
     Environment environment;
 
