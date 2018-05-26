@@ -49,13 +49,13 @@ protected:
     {
         m_matchSet.clear();
 
-        auto unselectedActions = m_environment.actionChoices;
+        auto unselectedActions = environment.actionChoices;
 
         for (auto && cl : m_population)
         {
             if (cl->condition.contains(situation))
             {
-                m_matchSet.push_back(cl);
+                m_matchSet.insert(cl);
                 unselectedActions.erase(cl->action);
             }
         }
@@ -64,9 +64,9 @@ protected:
         for (Action action : unselectedActions)
         {
             auto coveringClassifier = generateCoveringClassifier(situation, action);
-            m_population.push_back(coveringClassifier);
+            m_population.insert(coveringClassifier);
             deleteFromPopulation();
-            m_matchSet.push_back(coveringClassifier);
+            m_matchSet.insert(coveringClassifier);
         }
     }
 
@@ -78,7 +78,7 @@ protected:
         {
             if (cl->action == action)
             {
-                m_actionSet.push_back(cl);
+                m_actionSet.insert(cl);
             }
         }
     }
@@ -91,6 +91,19 @@ protected:
 
         // Generate a classifier
         return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);;
+    }
+
+    void insertInPopulation(const Classifier<Symbol, Action> & cl)
+    {
+        for (auto && c : m_population)
+        {
+            if (static_cast<ConditionActionPair<Symbol, Action>>(*c).equals(cl))
+            {
+                ++c->numerosity;
+                return;
+            }
+        }
+        m_population.insert(std::make_shared<Classifier<Symbol, Action>>(cl));
     }
 
     void deleteFromPopulation()
@@ -109,10 +122,12 @@ protected:
         // Prepare a roulette wheel by the weights
         double voteSum = 0.0;
         std::vector<double> rouletteWheel(std::size(m_population));
+        std::vector<const ClassifierPtr *> rouletteWheelTarget(std::size(m_population));
         for (auto && c : m_population)
         {
             voteSum += deletionVote(*c);
             rouletteWheel.push_back(voteSum);
+            rouletteWheelTarget.push_back(&c);
         }
 
         // Spin the roulette wheel
@@ -120,10 +135,14 @@ protected:
         auto rouletteIdx = std::distance(std::begin(rouletteWheel), rouletteIterator);
 
         // Distrust the selected classifier
-        if (m_population[rouletteIdx]->numerosity > 1)
-            m_population[rouletteIdx]->numerosity--;
+        if ((*rouletteWheelTarget[rouletteIdx])->numerosity > 1)
+        {
+            (*rouletteWheelTarget[rouletteIdx])->numerosity--;
+        }
         else
-            m_population.erase(std::begin(m_population) + rouletteIdx);
+        {
+            m_population.erase(*rouletteWheelTarget[rouletteIdx]);
+        }
     }
 
     double deletionVote(const Classifier<Symbol, Action> & cl)
@@ -235,20 +254,20 @@ protected:
 
         if (cl.get() != nullptr)
         {
-            std::vector<ClassifierPtr> removedClassifiers;
+            std::vector<const ClassifierPtr *> removedClassifiers;
             for (auto && c : m_actionSet)
             {
                 if (cl->isMoreGeneral(*c))
                 {
                     cl->numerosity += c->numerosity;
-                    removedClassifiers.push_back(c);
+                    removedClassifiers.push_back(&c);
                 }
             }
 
             for (auto && removedClassifier : removedClassifiers)
             {
-                m_actionSet.erase(removedClassifier);
-                m_population.erase(removedClassifier);
+                m_actionSet.erase(*removedClassifier);
+                m_population.erase(*removedClassifier);
             }
         }
     }
