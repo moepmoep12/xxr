@@ -175,9 +175,41 @@ protected:
             }
         }
 
-        // TODO: update fitness
+        updateFitness();
 
         // TODO: action set subsumption
+    }
+
+    void updateFitness()
+    {
+        double accuracySum = 0.0;
+
+        // Accuracy vector
+        std::vector<double> kappa(std::size(m_actionSet));
+
+        for (auto && cl : m_actionSet)
+        {
+            double kappaCl;
+
+            if (cl.predictionError < m_constants.predictionErrorThreshold)
+            {
+                kappaCl = 1.0;
+            }
+            else
+            {
+                kappaCl = m_constants.alpha * pow(cl.predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
+            }
+            kappa.push_back(kappaCl);
+
+            accuracySum += kappaCl * cl.numerosity;
+        }
+
+        auto kappaIt = std::begin(kappa);
+        for (auto && cl : m_actionSet)
+        {
+            cl.fitness += m_constants.learningRate * (*kappaIt * cl.numerosity / accuracySum - cl.fitness);
+            ++kappaIt;
+        }
     }
 
 public:
