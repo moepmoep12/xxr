@@ -18,15 +18,32 @@ template <class Env, class S, typename Action>
 class XCS
 {
 protected:
-    std::deque<Classifier<S, Action>> m_population; // [P]
+    // [P]
+    //   The population consists of all classifier that exist in XCS at any time.
+    std::deque<Classifier<S, Action>> m_population;
+
+    // [M]
+    //   The match set is formed out of the current [P].
+    //   It includes all classifiers that match the current situation.
+    std::deque<Classifier<S, Action>> m_matchSet;
+
+    // [A]
+    //   The action set is formed out of the current [M].
+    //   It includes all classifiers of [M] that propose the executed action.
+    std::deque<Classifier<S, Action>> m_actionSet;
+
+    // [A]_-1
+    //   The previous action set is the action set that was active in the last
+    //   execution cycle.
+    std::deque<Classifier<S, Action>> m_prevActionSet;
 
     XCSConstants m_constants;
 
     uint64_t m_timeStamp;
 
-    void generateMatchSet(std::deque<Classifier<S, Action>> & matchSet, const State<S> & situation)
+    void generateMatchSet(const State<S> & situation)
     {
-        matchSet.clear();
+        m_matchSet.clear();
 
         auto unselectedActions = m_environment.actionChoices;
 
@@ -34,7 +51,7 @@ protected:
         {
             if (cl.condition.contains(situation))
             {
-                matchSet.push_back(cl);
+                m_matchSet.push_back(cl);
                 unselectedActions.erase(cl.action);
             }
         }
@@ -45,7 +62,20 @@ protected:
             auto coveringClassifier = generateCoveringClassifier(situation, action);
             m_population.push_back(coveringClassifier);
             deleteFromPopulation();
-            matchSet.push_back(coveringClassifier);
+            m_matchSet.push_back(coveringClassifier);
+        }
+    }
+
+    void generateActionSet(Action action)
+    {
+        m_actionSet.clear();
+
+        for (auto && cl : m_matchSet)
+        {
+            if (cl.action == action)
+            {
+                m_actionSet.push_back(cl);
+            }
         }
     }
 
