@@ -10,15 +10,15 @@
 #include "random.h"
 
 template <class S = BinarySymbol>
-class State
+class Situation
 {
 private:
     std::vector<S> m_symbols;
 
 public:
-    State(const std::vector<S> & symbols) : m_symbols(symbols) {}
+    Situation(const std::vector<S> & symbols) : m_symbols(symbols) {}
 
-    State(const std::string & symbols)
+    Situation(const std::string & symbols)
     {
         for (const char symbol : symbols)
         {
@@ -46,22 +46,22 @@ public:
         return m_symbols[idx];
     }
 
-    friend std::ostream & operator<< (std::ostream & os, const State & obj)
+    friend std::ostream & operator<< (std::ostream & os, const Situation & obj)
     {
         return os << obj.toString();
     }
 
-    friend bool operator== (const State & lhs, const State & rhs)
+    friend bool operator== (const Situation & lhs, const Situation & rhs)
     {
         return lhs.m_symbols == rhs.m_symbols;
     }
 
-    friend bool operator!= (const State & lhs, const State & rhs)
+    friend bool operator!= (const Situation & lhs, const Situation & rhs)
     {
         return lhs.m_symbols != rhs.m_symbols;
     }
 
-    bool contains(const State & state) const
+    bool contains(const Situation & state) const
     {
         assert(std::size(m_symbols) == std::size(state.m_symbols));
 

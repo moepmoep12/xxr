@@ -5,7 +5,7 @@
 #include <cassert>
 
 #include "symbol.h"
-#include "state.h"
+#include "situation.h"
 #include "xcs.h"
 
 template <class S = BinarySymbol, typename Action = int>
@@ -26,7 +26,7 @@ public:
     virtual ~Environment() = default;
 
     // Returns current situation
-    virtual State<S> situation() const = 0;
+    virtual Situation<S> situation() const = 0;
 
     // Executes action (and update situation) and returns reward
     virtual double executeAction(Action action) = 0;
@@ -38,7 +38,7 @@ private:
     const size_t m_totalLength;
     const size_t m_addressBitLength;
     const size_t m_registerBitLength;
-    State<BinarySymbol> m_situation;
+    Situation<BinarySymbol> m_situation;
 
     // Get address bit length from total length
     static constexpr size_t addressBitLength(size_t l, size_t c)
@@ -46,14 +46,14 @@ private:
         return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
     }
 
-    static State<BinarySymbol> randomSituation(size_t totalLength)
+    static Situation<BinarySymbol> randomSituation(size_t totalLength)
     {
         std::vector<BinarySymbol> symbols;
         for (size_t i = 0; i < totalLength; ++i)
         {
             symbols.push_back(BinarySymbol(Random::nextInt(0, 1)));
         }
-        return State<BinarySymbol>(symbols);
+        return Situation<BinarySymbol>(symbols);
     }
 
 public:
@@ -68,7 +68,7 @@ public:
         assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
     }
 
-    State<BinarySymbol> situation() const override
+    Situation<BinarySymbol> situation() const override
     {
         return m_situation;
     }
@@ -84,7 +84,7 @@ public:
     }
 
     // Returns answer to situation
-    bool getAnswer(const State<BinarySymbol> & situation) const
+    bool getAnswer(const Situation<BinarySymbol> & situation) const
     {
         size_t address = 0;
         for(size_t i = 0; i < m_addressBitLength; ++i)

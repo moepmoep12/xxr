@@ -3,7 +3,7 @@
 #include <string>
 #include <cstdint>
 
-#include "state.h"
+#include "situation.h"
 #include "xcs_constants.h"
 
 template <class S = BinarySymbol, typename Action = int>
@@ -12,7 +12,7 @@ struct ConditionActionPair
     // C
     //   The condition specifies the input states (sensory situations)
     //   in which the classifier can be applied (matches).
-    const State<S> condition;
+    const Situation<S> condition;
 
     // A
     //   The action specifies the action (possibly a clasification)
@@ -92,7 +92,7 @@ public:
     {
     }
 
-    Classifier(const State<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+    Classifier(const Situation<S> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
         ConditionActionPair<S, Action>{ condition, action },
         m_prediction(constants.initialPrediction),
         m_predictionError(constants.initialPredictionError),
@@ -107,7 +107,7 @@ public:
     }
 
     Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        Classifier(State<S>(condition), action, timeStamp, constants)
+        Classifier(Situation<S>(condition), action, timeStamp, constants)
     {
     }
 
