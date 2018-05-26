@@ -96,7 +96,7 @@ protected:
         uint64_t numerositySum = 0;
         for (auto && c : m_population)
         {
-            numerositySum += c.numerosity();
+            numerositySum += c.numerosity;
         }
         if (numerositySum < m_constants.maxPopulationClassifierCount)
         {
@@ -117,30 +117,30 @@ protected:
         auto populationIterator = std::begin(m_population) + std::distance(std::begin(rouletteWheel), rouletteIterator);
 
         // Distrust the selected classifier
-        if ((*populationIterator).numerosity() > 1)
-            (*populationIterator).decreaseNumerosity();
+        if ((*populationIterator).numerosity > 1)
+            (*populationIterator).numerosity--;
         else
             m_population.erase(populationIterator);
     }
 
     double deletionVote(const Classifier<Symbol, Action> & cl)
     {
-        double vote = cl.actionSetSize() * cl.numerosity();
+        double vote = cl.actionSetSize * cl.numerosity;
 
         // Calculate the average fitness in the population
         double fitnessSum = 0.0;
         uint64_t numerositySum = 0;
         for (auto && c : m_population)
         {
-            fitnessSum += c.fitness();
-            numerositySum += c.numerosity();
+            fitnessSum += c.fitness;
+            numerositySum += c.numerosity;
         }
         double averageFitness = fitnessSum / numerositySum;
 
         // Consider the fitness
-        if ((cl.experience() > m_constants.thetaDel) && (cl.fitness() / cl.numerosity() < averageFitness))
+        if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
         {
-            vote *= averageFitness / (cl.fitness() / cl.numerosity());
+            vote *= averageFitness / (cl.fitness / cl.numerosity);
         }
 
         return vote;

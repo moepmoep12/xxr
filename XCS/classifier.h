@@ -36,43 +36,43 @@ struct ConditionActionPair
 };
 
 template <class Symbol, typename Action>
-class Classifier : public ConditionActionPair<Symbol, Action>
+struct Classifier : ConditionActionPair<Symbol, Action>
 {
-private:
     // p
     //   The prediction p estimates (keeps an average of) the payoff expected if the
     //   classifier matches and its action is taken by the system.
-    double m_prediction;
+    double prediction;
 
     // epsilon
     //   The prediction error epsilon estimates the errors made in the predictions.
-    double m_predictionError;
+    double predictionError;
 
     // F
     //   The fitness F denotes the classifier's fitness.
-    double m_fitness;
+    double fitness;
 
     // exp
     //   The experience exp counts the number of times since its creation that the
     //   classifier has belonged to an action set.
-    double m_experience;
+    double experience;
 
     // ts
     //   The time stamp ts denotes the time-step of the last occurrence of a GA in
     //   an action set to which this classifier belonged.
-    uint64_t m_timeStamp;
+    uint64_t timeStamp;
 
     // as
     //   The action set size as estimates the average size of the action sets this
     //   classifier has belonged to.
-    double m_actionSetSize;
+    double actionSetSize;
 
     // n
     //   The numerosity n reflects the number of micro-classifiers (ordinary
     //   classifiers) this classifier - which is technically called a macro-
     //   classifier - represents.
-    uint64_t m_numerosity;
+    uint64_t numerosity;
 
+private:
     // Constants
     const double m_thetaSub;
     const double m_predictionErrorThreshold;
@@ -80,13 +80,13 @@ private:
 public:
     Classifier(const Classifier<Symbol, Action> & obj) :
         ConditionActionPair<Symbol, Action>{ obj.condition, obj.action },
-        m_prediction(obj.m_prediction),
-        m_predictionError(obj.m_predictionError),
-        m_fitness(obj.m_fitness),
-        m_experience(obj.m_experience),
-        m_timeStamp(obj.m_timeStamp),
-        m_actionSetSize(obj.m_actionSetSize),
-        m_numerosity(obj.m_numerosity),
+        prediction(obj.prediction),
+        predictionError(obj.predictionError),
+        fitness(obj.fitness),
+        experience(obj.experience),
+        timeStamp(obj.timeStamp),
+        actionSetSize(obj.actionSetSize),
+        numerosity(obj.numerosity),
         m_thetaSub(obj.m_thetaSub),
         m_predictionErrorThreshold(obj.m_predictionErrorThreshold)
     {
@@ -94,13 +94,13 @@ public:
 
     Classifier(const Situation<Symbol> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
         ConditionActionPair<Symbol, Action>{ condition, action },
-        m_prediction(constants.initialPrediction),
-        m_predictionError(constants.initialPredictionError),
-        m_fitness(constants.initialFitness),
-        m_experience(0),
-        m_timeStamp(timeStamp),
-        m_actionSetSize(1),
-        m_numerosity(1),
+        prediction(constants.initialPrediction),
+        predictionError(constants.initialPredictionError),
+        fitness(constants.initialFitness),
+        experience(0),
+        timeStamp(timeStamp),
+        actionSetSize(1),
+        numerosity(1),
         m_thetaSub(constants.thetaSub),
         m_predictionErrorThreshold(constants.predictionErrorThreshold)
     {
@@ -113,47 +113,12 @@ public:
 
     bool isSubsumer() const
     {
-        return m_experience > m_thetaSub && m_predictionError < m_predictionErrorThreshold;
+        return experience > m_thetaSub && predictionError < m_predictionErrorThreshold;
     }
 
     bool subsumes(const Classifier<Symbol, Action> & cl) const
     {
         return isSubsumer() && isMoreGeneral(cl);
-    }
-
-    auto prediction() const
-    {
-        return m_prediction;
-    }
-
-    auto fitness() const
-    {
-        return m_fitness;
-    }
-
-    auto experience() const
-    {
-        return m_experience;
-    }
-
-    auto timeStamp() const
-    {
-        return m_timeStamp;
-    }
-
-    auto actionSetSize() const
-    {
-        return m_actionSetSize;
-    }
-
-    auto numerosity() const
-    {
-        return m_numerosity;
-    }
-
-    void decreaseNumerosity()
-    {
-        --m_numerosity;
     }
 
     Classifier<Symbol, Action> & operator= (const Classifier<Symbol, Action> &) { return *this; };

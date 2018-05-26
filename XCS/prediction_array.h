@@ -35,8 +35,8 @@ public:
             if (m_pa.count(cl.action) == 0) {
                 m_paActions.push_back(cl.action);
             }
-            m_pa[cl.action] += cl.prediction() * cl.fitness();
-            fsa[cl.action] += cl.fitness();
+            m_pa[cl.action] += cl.prediction * cl.fitness;
+            fsa[cl.action] += cl.fitness;
         }
 
         double max = numeric_limits<double>::lowest();
