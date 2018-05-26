@@ -19,6 +19,8 @@ struct ConditionActionPair
     //   that the classifier proposes.
     const Action action;
 
+    virtual ~ConditionActionPair() = default;
+
     bool equals(const ConditionActionPair<Symbol, Action> & cl) const
     {
         return condition == cl.condition && action == cl.action;

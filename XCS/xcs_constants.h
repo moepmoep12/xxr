@@ -102,4 +102,6 @@ struct XCSConstants
     // doActionSetSubsumption
     //   Whether action sets are to be tested for subsuming classifiers
     bool doActionSetSubsumption = true;
+
+    virtual ~XCSConstants() = default;
 };

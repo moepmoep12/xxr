@@ -9,6 +9,8 @@ template <class Derived>
 class AbstractSymbol
 {
 public:
+    virtual ~AbstractSymbol() = default;
+
     virtual bool isDontCare() const = 0;
 
     virtual std::string toString() const = 0;

@@ -62,6 +62,8 @@ public:
         }
     }
 
+    virtual ~AbstractPredictionArray() = default;
+
     Action selectAction() = 0;
 };
 
