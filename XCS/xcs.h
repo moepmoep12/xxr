@@ -278,16 +278,24 @@ public:
                 m_prevReward = reward;
                 m_prevSituation = situation;
             }
-            std::cout << m_timeStamp << ": " << std::size(m_population) << std::endl;
             ++m_timeStamp;
         }
     }
 
     void dumpPopulation() const
     {
+        std::cout << "C:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
         for (auto && cl : m_population)
         {
-            std::cout << *cl << "|" << cl->numerosity << "|" << cl->fitness << std::endl;
+            std::cout
+                << *cl << ","
+                << cl->prediction << ","
+                << cl->predictionError << ","
+                << cl->fitness << ","
+                << cl->experience << ","
+                << cl->timeStamp << ","
+                << cl->actionSetSize << ","
+                << cl->numerosity << std::endl;
         }
     }
 };
