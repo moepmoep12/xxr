@@ -71,10 +71,10 @@ public:
 };
 
 template <class Symbol, typename Action>
-class GreedyPredictionArray : public PredictonArray<Symbol, Action>
+class GreedyPredictionArray : public AbstractPredictionArray<Symbol, Action>
 {
 public:
-    using PredictonArray<Symbol, Action>::PredictonArray;
+    using AbstractPredictionArray<Symbol, Action>::AbstractPredictionArray;
 
     Action selectAction() const override
     {
@@ -84,14 +84,14 @@ public:
 };
 
 template <class Symbol, typename Action>
-class EpsilonGreedyPredictionArray : public PredictonArray<Symbol, Action>
+class EpsilonGreedyPredictionArray : public AbstractPredictionArray<Symbol, Action>
 {
 private:
     double m_epsilon;
 
 public:
     EpsilonGreedyPredictionArray(const ClassifierPtrSet & matchSet, double epsilon)
-        : PredictionArray(matchSet), m_epsilon(epsilon) {}
+        : AbstractPredictionArray(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction() const override
     {
