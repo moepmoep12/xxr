@@ -67,7 +67,7 @@ public:
 
     virtual ~AbstractPredictionArray() = default;
 
-    Action selectAction() = 0;
+    Action selectAction() const = 0;
 };
 
 template <class Symbol, typename Action>
@@ -76,7 +76,7 @@ class GreedyPredictionArray : public PredictonArray<Symbol, Action>
 public:
     using PredictonArray<Symbol, Action>::PredictonArray;
 
-    Action selectAction()
+    Action selectAction() const override
     {
         // Choose best action
         return Random::chooseFrom(m_bestPAActions);
@@ -93,7 +93,7 @@ public:
     EpsilonGreedyPredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet, double epsilon)
         : PredictionArray(matchSet), m_epsilon(epsilon) {}
 
-    Action selectAction()
+    Action selectAction() const override
     {
         if (Random::nextDouble() < m_epsilon)
             return Random::chooseFrom(m_paActions); // Choose random action
