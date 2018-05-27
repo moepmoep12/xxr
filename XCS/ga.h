@@ -17,6 +17,7 @@ public:
 
     const double m_crossoverProbability;
     const double m_mutationProbability;
+    const bool m_doGASubsumption;
 
     const std::unordered_set<Action> & m_actionChoices;
 
@@ -52,17 +53,17 @@ public:
 
     void crossover(Classifier<Symbol, Action> & cl1, Classifier<Symbol, Action> & cl2) const
     {
-        assert(cl1.condition.size() == cl2.condition.size());
+        assert(std::size(cl1.condition) == std::size(cl2.condition));
 
-        size_t x = Random::nextDouble() * (std::size(cl1) + 1);
-        size_t y = Random::nextDouble() * (std::size(cl1) + 1);
+        size_t x = static_cast<size_t>(Random::nextDouble() * (std::size(cl1.condition) + 1));
+        size_t y = static_cast<size_t>(Random::nextDouble() * (std::size(cl1.condition) + 1));
 
         if (x > y)
         {
             std::swap(x, y);
         }
 
-        for (int i = x; i < y; ++i)
+        for (size_t i = x; i < y; ++i)
         {
             std::swap(cl1.condition[i], cl2.condition[i]);
         }
@@ -70,7 +71,7 @@ public:
 
     void mutate(Classifier<Symbol, Action> & cl, const Situation<Symbol> & situation) const
     {
-        assert(cl.condition.size() == situation.size());
+        assert(std::size(cl.condition) == std::size(situation));
 
         for (int i = 0; i < std::size(cl.condition); ++i)
         {
@@ -96,17 +97,18 @@ public:
     }
 
 public:
-    GA(double crossoverProbability, double mutationProbability, const std::unordered_set<Action> & actionChoices) :
+    GA(double crossoverProbability, double mutationProbability, bool doGASubsumption, const std::unordered_set<Action> & actionChoices) :
         m_crossoverProbability(crossoverProbability),
         m_mutationProbability(mutationProbability),
+        m_doGASubsumption(doGASubsumption),
         m_actionChoices(actionChoices)
     {
     }
 
     void run(ClassifierPtrSet & actionSet, const Situation<Symbol> & situation, ClassifierPtrSet & population) const
     {
-        auto parent1 = selectOffspring();
-        auto parent2 = selectOffspring();
+        auto parent1 = selectOffspring(actionSet);
+        auto parent2 = selectOffspring(actionSet);
 
         assert(parent1->condition.size() == parent2->condition.size());
 
@@ -116,7 +118,7 @@ public:
         child1.numerosity = child2.numerosity = 1;
         child1.experience = child2.experience = 0;
 
-        if (Random::nextDouble() < m_constants.crossoverProbability)
+        if (Random::nextDouble() < m_crossoverProbability)
         {
             crossover(child1, child2);
 
@@ -135,9 +137,9 @@ public:
 
         for (auto && child : { &child1, &child2 })
         {
-            child->applyMutation(situation);
+            mutate(*child, situation);
 
-            if (m_constants.doGASubsumption)
+            if (m_doGASubsumption)
             {
                 if (parent1->subsumes(*child))
                 {
@@ -149,15 +151,15 @@ public:
                 }
                 else
                 {
-                    insertInPopulation(*child);
+                    // FIXME: insertInPopulation(*child);
                 }
             }
             else
             {
-                insertInPopulation(*child);
+                // FIXME: insertInPopulation(*child);
             }
 
-            deleteFromPopulation();
+            // FIXME: deleteFromPopulation();
         }
     }
 };

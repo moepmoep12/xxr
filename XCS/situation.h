@@ -22,6 +22,8 @@ private:
 public:
     static constexpr bool isCacheEnabled = isCacheEnabled;
 
+    Situation() = default;
+
     Situation(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
 
     Situation(const std::string & symbols)
@@ -80,6 +82,11 @@ public:
         }
 
         return true;
+    }
+
+    bool empty() const
+    {
+        return m_symbols.empty();
     }
 
     size_t size() const

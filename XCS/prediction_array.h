@@ -24,8 +24,11 @@ protected:
     // Array of PA keys (for random action selection)
     std::vector<Action> m_paActions;
 
+    // The maximum value of PA
+    double m_maxPA;
+
     // The best actions of PA
-    std::vector<Action> m_bestPAActions;
+    std::vector<Action> m_maxPAActions;
 
 public:
     explicit AbstractPredictionArray(const ClassifierPtrSet & matchSet)
@@ -42,7 +45,7 @@ public:
             fsa[cl->action] += cl->fitness;
         }
 
-        double max = numeric_limits<double>::lowest();
+        m_maxPA = std::numeric_limits<double>::lowest();
 
         for (auto && pair : m_pa)
         {
@@ -52,22 +55,28 @@ public:
             }
 
             // Update the best actions
-            if (fabs(max - pair.second) < DBL_EPSILON) // max == pair.second
+            if (fabs(m_maxPA - pair.second) < DBL_EPSILON) // max == pair.second
             {
                 m_paActions.push_back(pair.first);
             }
-            else if (max < pair.second)
+            else if (m_maxPA < pair.second)
             {
                 m_paActions.clear();
                 m_paActions.push_back(pair.first);
-                max = pair.second;
+                m_maxPA = pair.second;
             }
         }
     }
 
     virtual ~AbstractPredictionArray() = default;
 
-    Action selectAction() const = 0;
+    double max() const
+    {
+        assert(m_maxPA == std::numeric_limits<double>::lowest());
+        return m_maxPA;
+    }
+
+    virtual Action selectAction() const = 0;
 };
 
 template <class Symbol, typename Action>
@@ -79,7 +88,7 @@ public:
     Action selectAction() const override
     {
         // Choose best action
-        return Random::chooseFrom(m_bestPAActions);
+        return Random::chooseFrom(m_maxPAActions);
     }
 };
 
@@ -98,6 +107,6 @@ public:
         if (Random::nextDouble() < m_epsilon)
             return Random::chooseFrom(m_paActions); // Choose random action
         else
-            return Random::chooseFrom(m_bestPAActions); // Choose best action
+            return Random::chooseFrom(m_maxPAActions); // Choose best action
     }
 };

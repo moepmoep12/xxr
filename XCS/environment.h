@@ -30,6 +30,10 @@ public:
 
     // Executes action (and update situation) and returns reward
     virtual double executeAction(Action action) = 0;
+
+    // Returns true if the problem was solved by the previous action
+    // (always true for a single-step problem after the first action execution)
+    virtual bool isEndOfProblem() const = 0;
 };
 
 class MultiplexerEnvironment : public AbstractEnvironment<BinarySymbol, bool>
@@ -39,6 +43,7 @@ private:
     const size_t m_addressBitLength;
     const size_t m_registerBitLength;
     Situation<BinarySymbol> m_situation;
+    bool m_isEndOfProblem;
 
     // Get address bit length from total length
     static constexpr size_t addressBitLength(size_t l, size_t c)
@@ -62,7 +67,8 @@ public:
         m_totalLength(length),
         m_addressBitLength(addressBitLength(length, 0)),
         m_registerBitLength(length - m_addressBitLength),
-        m_situation(randomSituation(length))
+        m_situation(randomSituation(length)),
+        m_isEndOfProblem(false)
     {
         // Total length must be n + 2^n (n > 0)
         assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
@@ -80,7 +86,15 @@ public:
         // Update situation
         m_situation = randomSituation(m_totalLength);
 
+        // Single-step problem
+        m_isEndOfProblem = true;
+
         return reward;
+    }
+
+    bool isEndOfProblem() const override
+    {
+        return m_isEndOfProblem;
     }
 
     // Returns answer to situation

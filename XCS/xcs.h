@@ -13,6 +13,7 @@
 #include "symbol.h"
 #include "classifier.h"
 #include "ga.h"
+#include "prediction_array.h"
 #include "environment.h"
 #include "random.h"
 
@@ -47,6 +48,10 @@ protected:
     GA<Symbol, Action> m_ga;
 
     uint64_t m_timeStamp;
+
+    double m_prevReward;
+
+    Situation<Symbol> m_prevSituation;
 
     void generateMatchSet(const Situation<Symbol> & situation)
     {
@@ -171,16 +176,16 @@ protected:
         return vote;
     }
 
-    void updateSet(double p)
+    void updateSet(ClassifierPtrSet & actionSet, double p)
     {
         // Calculate numerosity sum used for updating action set size estimate
         uint64_t numerositySum = 0;
-        for (auto && cl : m_actionSet)
+        for (auto && cl : actionSet)
         {
             numerositySum += cl->numerosity;
         }
 
-        for (auto && cl : m_actionSet)
+        for (auto && cl : actionSet)
         {
             ++cl->experience;
             
@@ -199,22 +204,22 @@ protected:
             }
         }
 
-        updateFitness();
+        updateFitness(actionSet);
 
         if (m_constants.doActionSetSubsumption)
         {
-            doActionSetSubsumption();
+            doActionSetSubsumption(actionSet);
         }
     }
 
-    void updateFitness()
+    void updateFitness(ClassifierPtrSet & actionSet)
     {
         double accuracySum = 0.0;
 
         // Accuracy vector
-        std::vector<double> kappa(std::size(m_actionSet));
+        std::vector<double> kappa(std::size(actionSet));
 
-        for (auto && cl : m_actionSet)
+        for (auto && cl : actionSet)
         {
             double kappaCl;
 
@@ -232,18 +237,18 @@ protected:
         }
 
         auto kappaItr = std::begin(kappa);
-        for (auto && cl : m_actionSet)
+        for (auto && cl : actionSet)
         {
             cl->fitness += m_constants.learningRate * (*kappaItr * cl->numerosity / accuracySum - cl->fitness);
             ++kappaItr;
         }
     }
 
-    void doActionSetSubsumption()
+    void doActionSetSubsumption(ClassifierPtrSet & actionSet)
     {
         ClassifierPtr cl;
 
-        for (auto && c : m_actionSet)
+        for (auto && c : actionSet)
         {
             if (c->isSubsumer())
             {
@@ -261,7 +266,7 @@ protected:
         if (cl.get() != nullptr)
         {
             std::vector<const ClassifierPtr *> removedClassifiers;
-            for (auto && c : m_actionSet)
+            for (auto && c : actionSet)
             {
                 if (cl->isMoreGeneral(*c))
                 {
@@ -272,22 +277,24 @@ protected:
 
             for (auto && removedClassifier : removedClassifiers)
             {
-                m_actionSet.erase(*removedClassifier);
+                actionSet.erase(*removedClassifier);
                 m_population.erase(*removedClassifier);
             }
         }
     }
 
-    void runGA(const Situation<Symbol> & situation)
+    void runGA(ClassifierPtrSet & actionSet, const Situation<Symbol> & situation)
     {
         uint64_t timeStampNumerositySum = 0;
         uint64_t numerositySum = 0;
 
-        for (auto && cl : m_actionSet)
+        for (auto && cl : actionSet)
         {
             timeStampNumerositySum += cl->timeStamp * cl->numerosity;
             numerositySum += cl->numerosity;
         }
+
+        assert(numerositySum > 0.0);
 
         if (m_timeStamp - timeStampNumerositySum / numerositySum > m_constants.thetaGA)
         {
@@ -296,7 +303,7 @@ protected:
                 cl->timeStamp = m_timeStamp;
             }
 
-            GA.run(m_actionSet, situation, m_population);
+            m_ga.run(actionSet, situation, m_population);
         }
     }
 
@@ -305,9 +312,46 @@ public:
 
     XCS(const Environment & environment, const XCSConstants & constants)
         : environment(environment),
-        m_ga(constants.crossoverProbability, constants.mutationProbability, environment.actionChoices),
+        m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, environment.actionChoices),
         m_constants(constants),
-        m_timeStamp(0)
+        m_timeStamp(0),
+        m_prevReward(0.0)
     {
+    }
+
+    void run(uint64_t loopCount)
+    {
+        for (uint64_t i = 0; i < loopCount; ++i)
+        {
+            auto situation = environment.situation();
+
+            generateMatchSet(situation);
+
+            EpsilonGreedyPredictionArray<Symbol, Action> predictionArray(m_matchSet, m_constants.exploreProbability);
+
+            Action action = predictionArray.selectAction();
+
+            double reward = environment.executeAction(action);
+
+            if (!m_prevActionSet.empty())
+            {
+                double p = m_prevReward + m_constants.gamma * predictionArray.max();
+                updateSet(m_prevActionSet, p);
+                runGA(m_prevActionSet, m_prevSituation);
+            }
+
+            if (environment.isEndOfProblem())
+            {
+                updateSet(m_actionSet, reward);
+                runGA(m_actionSet, situation);
+                m_prevActionSet.clear();
+            }
+            else
+            {
+                m_prevActionSet = m_actionSet;
+                m_prevReward = reward;
+                m_prevSituation = situation;
+            }
+        }
     }
 };
