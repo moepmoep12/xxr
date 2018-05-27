@@ -7,6 +7,7 @@
 
 #include "classifier.h"
 #include "classifier_ptr_set.h"
+#include "population.h"
 #include "random.h"
 
 template <class Symbol, typename Action>
@@ -105,7 +106,7 @@ public:
     {
     }
 
-    void run(ClassifierPtrSet<Symbol, Action> & actionSet, const Situation<Symbol> & situation, ClassifierPtrSet<Symbol, Action> & population) const
+    void run(ClassifierPtrSet<Symbol, Action> & actionSet, const Situation<Symbol> & situation, Population<Symbol, Action> & population) const
     {
         auto parent1 = selectOffspring(actionSet);
         auto parent2 = selectOffspring(actionSet);
@@ -151,15 +152,15 @@ public:
                 }
                 else
                 {
-                    // FIXME: insertInPopulation(*child);
+                    population.insertOrIncrementNumerosity(*child);
                 }
             }
             else
             {
-                // FIXME: insertInPopulation(*child);
+                population.insertOrIncrementNumerosity(*child);
             }
 
-            // FIXME: deleteFromPopulation();
+            population.deleteExtraClassifiers();
         }
     }
 };

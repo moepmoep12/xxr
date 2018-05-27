@@ -7,7 +7,7 @@
 template <class Symbol, typename Action>
 class ClassifierPtrSet
 {
-private:
+protected:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
     std::unordered_set<ClassifierPtr> m_set;
 

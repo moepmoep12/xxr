@@ -11,6 +11,7 @@
 #include "symbol.h"
 #include "classifier.h"
 #include "classifier_ptr_set.h"
+#include "population.h"
 #include "ga.h"
 #include "prediction_array.h"
 #include "environment.h"
@@ -24,7 +25,7 @@ protected:
 
     // [P]
     //   The population [P] consists of all classifier that exist in XCS at any time.
-    ClassifierPtrSet<Symbol, Action> m_population;
+    Population<Symbol, Action> m_population;
 
     // [M]
     //   The match set [M] is formed out of the current [P].
@@ -71,7 +72,7 @@ protected:
         {
             auto coveringClassifier = generateCoveringClassifier(situation, action);
             m_population.insert(coveringClassifier);
-            deleteFromPopulation();
+            m_population.deleteExtraClassifiers();
             m_matchSet.insert(coveringClassifier);
         }
     }
@@ -97,81 +98,6 @@ protected:
 
         // Generate a classifier
         return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);;
-    }
-
-    void insertInPopulation(const Classifier<Symbol, Action> & cl)
-    {
-        for (auto && c : m_population)
-        {
-            if (static_cast<ConditionActionPair<Symbol, Action>>(*c).equals(cl))
-            {
-                ++c->numerosity;
-                return;
-            }
-        }
-        m_population.insert(std::make_shared<Classifier<Symbol, Action>>(cl));
-    }
-
-    void deleteFromPopulation()
-    {
-        // Return if the sum of numerosity has not met its maximum limit
-        uint64_t numerositySum = 0;
-        for (auto && c : m_population)
-        {
-            numerositySum += c->numerosity;
-        }
-        if (numerositySum < m_constants.maxPopulationClassifierCount)
-        {
-            return;
-        }
-
-        // Prepare a roulette wheel by the weights
-        double voteSum = 0.0;
-        std::vector<double> rouletteWheel(std::size(m_population));
-        std::vector<const ClassifierPtr *> rouletteWheelTarget(std::size(m_population));
-        for (auto && c : m_population)
-        {
-            voteSum += deletionVote(*c);
-            rouletteWheel.push_back(voteSum);
-            rouletteWheelTarget.push_back(&c);
-        }
-
-        // Spin the roulette wheel
-        auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0.0, voteSum));
-        auto rouletteIdx = std::distance(std::begin(rouletteWheel), rouletteIterator);
-
-        // Distrust the selected classifier
-        if ((*rouletteWheelTarget[rouletteIdx])->numerosity > 1)
-        {
-            (*rouletteWheelTarget[rouletteIdx])->numerosity--;
-        }
-        else
-        {
-            m_population.erase(*rouletteWheelTarget[rouletteIdx]);
-        }
-    }
-
-    double deletionVote(const Classifier<Symbol, Action> & cl) const
-    {
-        double vote = cl.actionSetSize * cl.numerosity;
-
-        // Calculate the average fitness in the population
-        double fitnessSum = 0.0;
-        uint64_t numerositySum = 0;
-        for (auto && c : m_population)
-        {
-            fitnessSum += c->fitness;
-            numerositySum += c->numerosity;
-        }
-        double averageFitness = fitnessSum / numerositySum;
-
-        // Consider the fitness
-        if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
-        {
-            vote *= averageFitness / (cl.fitness / cl.numerosity);
-        }
-
-        return vote;
     }
 
     void updateSet(ClassifierPtrSet<Symbol, Action> & actionSet, double p)
@@ -311,6 +237,7 @@ public:
     XCS(const Environment & environment, const XCSConstants & constants)
         : environment(environment),
         m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, environment.actionChoices),
+        m_population(constants.maxPopulationClassifierCount, constants.thetaDel),
         m_constants(constants),
         m_timeStamp(0),
         m_prevReward(0.0)
