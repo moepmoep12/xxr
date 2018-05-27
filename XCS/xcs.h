@@ -256,6 +256,8 @@ public:
 
             Action action = predictionArray.selectAction();
 
+            generateActionSet(action);
+
             double reward = environment.executeAction(action);
 
             if (!m_prevActionSet.empty())
