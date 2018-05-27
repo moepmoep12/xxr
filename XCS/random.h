@@ -2,6 +2,7 @@
 
 #include <random>
 #include <vector>
+#include <unordered_set>
 
 class Random
 {
@@ -30,11 +31,19 @@ public:
     }
 
     template <typename T>
-    static T chooseFrom(const std::vector<T> vec)
+    static auto chooseFrom(const std::vector<T> & container)
     {
-        auto size = std::size(vec);
+        auto size = std::size(container);
         std::uniform_int_distribution<decltype(size)> dist(0, size - 1);
-        return vec.at(dist(engine()));
+        return *(std::begin(container) + dist(engine()));
+    }
+
+    template <typename T>
+    static auto chooseFrom(const std::unordered_set<T> & container)
+    {
+        std::vector<T> vec(std::size(container));
+        vec.insert(vec.end(), container.begin(), container.end());
+        return chooseFrom(vec);
     }
 };
 

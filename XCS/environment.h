@@ -89,12 +89,12 @@ public:
         size_t address = 0;
         for (size_t i = 0; i < m_addressBitLength; ++i)
         {
-            if (situation[i].toChar() == '1')
+            if (situation.at(i).toChar() == '1')
             {
                 address += (size_t)1 << (m_addressBitLength - i - 1);
             }
         }
 
-        return situation[m_addressBitLength + address].toChar() == '1';
+        return situation.at(m_addressBitLength + address).toChar() == '1';
     }
 };

@@ -12,6 +12,7 @@
 #include "xcs_constants.h"
 #include "symbol.h"
 #include "classifier.h"
+#include "ga.h"
 #include "environment.h"
 #include "random.h"
 
@@ -42,6 +43,8 @@ protected:
     ClassifierPtrSet m_prevActionSet;
 
     XCSConstants m_constants;
+
+    GA<Symbol, Action> m_ga;
 
     uint64_t m_timeStamp;
 
@@ -272,11 +275,34 @@ protected:
         }
     }
 
+    void runGA(const Situation<Symbol> & situation)
+    {
+        uint64_t timeStampNumerositySum = 0;
+        uint64_t numerositySum = 0;
+
+        for (auto && cl : m_actionSet)
+        {
+            timeStampNumerositySum += cl->timeStamp * cl->numerosity;
+            numerositySum += cl->numerosity;
+        }
+
+        if (m_timeStamp - timeStampNumerositySum / numerositySum > m_constants.thetaGA)
+        {
+            for (auto && cl : actionSet)
+            {
+                cl->timeStamp = m_timeStamp;
+            }
+
+            GA.run(m_actionSet, situation, m_population);
+        }
+    }
+
 public:
     Environment environment;
 
     XCS(const Environment & environment, const XCSConstants & constants)
         : environment(environment),
+        m_ga(constants.crossoverProbability, constants.mutationProbability, environment.actionChoices),
         m_constants(constants),
         m_timeStamp(0)
     {

@@ -42,14 +42,14 @@ public:
         return str;
     }
 
-    Symbol & operator[] (size_t idx)
+    auto operator[] (size_t idx)
     {
         return m_symbols[idx];
     }
 
-    const Symbol & operator[] (size_t idx) const
+    auto at(size_t idx) const
     {
-        return m_symbols[idx];
+        return m_symbols.at(idx);
     }
 
     friend std::ostream & operator<< (std::ostream & os, const Situation & obj)

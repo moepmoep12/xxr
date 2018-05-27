@@ -1,5 +1,6 @@
 #pragma once
 
+#include <unordered_set>
 #include <string>
 #include <cstdint>
 
@@ -12,12 +13,12 @@ struct ConditionActionPair
     // C
     //   The condition specifies the input states (sensory situations)
     //   in which the classifier can be applied (matches).
-    const Situation<Symbol> condition;
+    Situation<Symbol> condition;
 
     // A
     //   The action specifies the action (possibly a clasification)
     //   that the classifier proposes.
-    const Action action;
+    Action action;
 
     ConditionActionPair(Situation<Symbol> condition, Action action) : condition(condition), action(action) {}
 
@@ -124,9 +125,4 @@ public:
     {
         return isSubsumer() && isMoreGeneral(cl);
     }
-
-    Classifier<Symbol, Action> & operator= (const Classifier<Symbol, Action> &)
-    {
-        return *this;
-    };
 };

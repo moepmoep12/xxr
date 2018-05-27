@@ -41,6 +41,8 @@ public:
 
     BinarySymbol(const std::string & c) : m_condition(c == "0" ? Tribool::Zero : c == "#" ? Tribool::DontCare : Tribool::One) {}
 
+    BinarySymbol(const BinarySymbol & s) : m_condition(s.m_condition) {}
+
     bool isDontCare() const override
     {
         return m_condition == Tribool::DontCare;
@@ -74,6 +76,12 @@ public:
     friend bool operator!= (const BinarySymbol & lhs, const BinarySymbol & rhs)
     {
         return rhs != lhs;
+    }
+
+    BinarySymbol & operator= (const BinarySymbol & obj)
+    {
+        m_condition = obj.m_condition;
+        return *this;
     }
 
     bool contains(const BinarySymbol & symbol) const override
