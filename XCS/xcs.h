@@ -284,4 +284,12 @@ public:
             ++m_timeStamp;
         }
     }
+
+    void dumpPopulation() const
+    {
+        for (auto && cl : m_population)
+        {
+            std::cout << *cl << std::endl;
+        }
+    }
 };
