@@ -56,24 +56,27 @@ protected:
     {
         m_matchSet.clear();
 
-        auto unselectedActions = environment.actionChoices;
-
-        for (auto && cl : m_population)
+        while (m_matchSet.empty())
         {
-            if (cl->condition.contains(situation))
+            auto unselectedActions = environment.actionChoices;
+
+            for (auto && cl : m_population)
             {
-                m_matchSet.insert(cl);
-                unselectedActions.erase(cl->action);
+                if (cl->condition.contains(situation))
+                {
+                    m_matchSet.insert(cl);
+                    unselectedActions.erase(cl->action);
+                }
             }
-        }
 
-        // Generate classifiers covering the unselected actions
-        for (Action action : unselectedActions)
-        {
-            auto coveringClassifier = generateCoveringClassifier(situation, action);
-            m_population.insert(coveringClassifier);
-            m_population.deleteExtraClassifiers();
-            m_matchSet.insert(coveringClassifier);
+            // Generate classifiers covering the unselected actions
+            if(!unselectedActions.empty())
+            {
+                auto coveringClassifier = generateCoveringClassifier(situation, Random::chooseFrom(unselectedActions));
+                m_population.insert(coveringClassifier);
+                m_population.deleteExtraClassifiers();
+                m_matchSet.clear();
+            }
         }
     }
 
@@ -93,11 +96,11 @@ protected:
     auto generateCoveringClassifier(const Situation<Symbol> & situation, Action action) const
     {
         // Generate a more general condition than the situation
-        auto condition = situation;
+        Situation<Symbol> condition(situation);
         condition.randomGeneralize(m_constants.generalizeProbability);
 
         // Generate a classifier
-        return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);;
+        return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);
     }
 
     void updateSet(ClassifierPtrSet<Symbol, Action> & actionSet, double p)
@@ -289,7 +292,7 @@ public:
     {
         for (auto && cl : m_population)
         {
-            std::cout << *cl << std::endl;
+            std::cout << *cl << "|" << cl->numerosity << "|" << cl->fitness << std::endl;
         }
     }
 };
