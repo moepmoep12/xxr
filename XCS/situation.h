@@ -44,12 +44,12 @@ public:
         return str;
     }
 
-    auto operator[] (size_t idx)
+    auto && operator[] (size_t idx)
     {
         return m_symbols[idx];
     }
 
-    auto at(size_t idx) const
+    auto && at(size_t idx) const
     {
         return m_symbols.at(idx);
     }
@@ -110,7 +110,7 @@ public:
     size_t dontCareCount() const
     {
         // Cache the result in case of a huge number of symbols
-        if (!isCacheEnabled || !dontCareCountCacheExists)
+        if (!isCacheEnabled || !dontCareCountCacheExists || true)
         {
             dontCareCountCache = 0;
             for (auto && symbol : m_symbols)
