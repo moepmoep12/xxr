@@ -144,30 +144,25 @@ protected:
         double accuracySum = 0.0;
 
         // Accuracy vector
-        std::vector<double> kappa(std::size(actionSet));
+        std::unordered_map<const ClassifierPtr *, double> kappa(std::size(actionSet));
 
         for (auto && cl : actionSet)
         {
-            double kappaCl;
-
             if (cl->predictionError < m_constants.predictionErrorThreshold)
             {
-                kappaCl = 1.0;
+                kappa[&cl] = 1.0;
             }
             else
             {
-                kappaCl = m_constants.alpha * pow(cl->predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
+                kappa[&cl] = m_constants.alpha * pow(cl->predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
             }
-            kappa.push_back(kappaCl);
 
-            accuracySum += kappaCl * cl->numerosity;
+            accuracySum += kappa[&cl] * cl->numerosity;
         }
 
-        auto kappaItr = std::begin(kappa);
         for (auto && cl : actionSet)
         {
-            cl->fitness += m_constants.learningRate * (*kappaItr * cl->numerosity / accuracySum - cl->fitness);
-            ++kappaItr;
+            cl->fitness += m_constants.learningRate * (kappa[&cl] * cl->numerosity / accuracySum - cl->fitness);
         }
     }
 
