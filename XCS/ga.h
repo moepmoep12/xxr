@@ -49,6 +49,8 @@ public:
             }
         }
 
+        assert(false);
+
         return *std::begin(actionSet);
     }
 
@@ -64,7 +66,7 @@ public:
             std::swap(x, y);
         }
 
-        for (size_t i = x; i < y; ++i)
+        for (size_t i = x + 1; i < y; ++i)
         {
             std::swap(cl1.condition[i], cl2.condition[i]);
         }
@@ -113,8 +115,8 @@ public:
 
         assert(parent1->condition.size() == parent2->condition.size());
 
-        auto child1 = *parent1;
-        auto child2 = *parent2;
+        Classifier<Symbol, Action> child1(*parent1);
+        Classifier<Symbol, Action> child2(*parent2);
 
         child1.numerosity = child2.numerosity = 1;
         child1.experience = child2.experience = 0;
