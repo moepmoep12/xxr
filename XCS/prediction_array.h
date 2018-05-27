@@ -15,6 +15,9 @@ template <class Symbol, typename Action>
 class AbstractPredictionArray
 {
 protected:
+    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtrSet = std::unordered_set<ClassifierPtr>;
+
     // PA (Prediction Array)
     std::unordered_map<Action, double> m_pa;
 
@@ -25,18 +28,18 @@ protected:
     std::vector<Action> m_bestPAActions;
 
 public:
-    explicit AbstractPredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet)
+    explicit AbstractPredictionArray(const ClassifierPtrSet & matchSet)
     {
         // FSA (Fitness Sum Array)
         std::unordered_map<Action, double> fsa;
 
         for (auto && cl : matchSet)
         {
-            if (m_pa.count(cl.action) == 0) {
-                m_paActions.push_back(cl.action);
+            if (m_pa.count(cl->action) == 0) {
+                m_paActions.push_back(cl->action);
             }
-            m_pa[cl.action] += cl.prediction * cl.fitness;
-            fsa[cl.action] += cl.fitness;
+            m_pa[cl->action] += cl->prediction * cl->fitness;
+            fsa[cl->action] += cl->fitness;
         }
 
         double max = numeric_limits<double>::lowest();
