@@ -246,6 +246,7 @@ public:
 
     void run(uint64_t loopCount)
     {
+        // Main loop
         for (uint64_t i = 0; i < loopCount; ++i)
         {
             auto situation = environment.situation();
@@ -279,6 +280,7 @@ public:
                 m_prevReward = reward;
                 m_prevSituation = situation;
             }
+            ++m_timeStamp;
         }
     }
 };
