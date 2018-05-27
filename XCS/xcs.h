@@ -176,7 +176,7 @@ protected:
             {
                 size_t cDontCareCount;
                 size_t clDontCareCount;
-                if ((cl == nullptr) ||
+                if ((cl.get() == nullptr) ||
                     ((cDontCareCount = c->condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
                     ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))
                 {
@@ -216,7 +216,7 @@ protected:
             numerositySum += cl->numerosity;
         }
 
-        assert(numerositySum > 0.0);
+        assert(numerositySum > 0);
 
         if (m_timeStamp - timeStampNumerositySum / numerositySum > m_constants.thetaGA)
         {
