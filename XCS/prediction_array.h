@@ -90,7 +90,7 @@ private:
     double m_epsilon;
 
 public:
-    EpsilonGreedyPredictionArray(const std::deque<Classifier<Symbol, Action>> & matchSet, double epsilon)
+    EpsilonGreedyPredictionArray(const ClassifierPtrSet & matchSet, double epsilon)
         : PredictionArray(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction() const override
