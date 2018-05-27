@@ -2,6 +2,8 @@
 
 #include <unordered_set>
 
+#include "classifier.h"
+
 template <class Symbol, typename Action>
 class ClassifierPtrSet
 {

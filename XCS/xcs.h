@@ -3,8 +3,6 @@
 #include <algorithm>
 #include <memory>
 #include <vector>
-#include <deque>
-#include <unordered_set>
 #include <cstdint>
 #include <cstddef>
 #include <cmath>
@@ -12,6 +10,7 @@
 #include "xcs_constants.h"
 #include "symbol.h"
 #include "classifier.h"
+#include "classifier_ptr_set.h"
 #include "ga.h"
 #include "prediction_array.h"
 #include "environment.h"
@@ -22,26 +21,25 @@ class XCS
 {
 protected:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
-    using ClassifierPtrSet = std::unordered_set<ClassifierPtr>;
 
     // [P]
     //   The population [P] consists of all classifier that exist in XCS at any time.
-    ClassifierPtrSet m_population;
+    ClassifierPtrSet<Symbol, Action> m_population;
 
     // [M]
     //   The match set [M] is formed out of the current [P].
     //   It includes all classifiers that match the current situation.
-    ClassifierPtrSet m_matchSet;
+    ClassifierPtrSet<Symbol, Action> m_matchSet;
 
     // [A]
     //   The action set [A] is formed out of the current [M].
     //   It includes all classifiers of [M] that propose the executed action.
-    ClassifierPtrSet m_actionSet;
+    ClassifierPtrSet<Symbol, Action> m_actionSet;
 
     // [A]_-1
     //   The previous action set [A]_-1 is the action set that was active in the last
     //   execution cycle.
-    ClassifierPtrSet m_prevActionSet;
+    ClassifierPtrSet<Symbol, Action> m_prevActionSet;
 
     XCSConstants m_constants;
 
@@ -176,7 +174,7 @@ protected:
         return vote;
     }
 
-    void updateSet(ClassifierPtrSet & actionSet, double p)
+    void updateSet(ClassifierPtrSet<Symbol, Action> & actionSet, double p)
     {
         // Calculate numerosity sum used for updating action set size estimate
         uint64_t numerositySum = 0;
@@ -212,7 +210,7 @@ protected:
         }
     }
 
-    void updateFitness(ClassifierPtrSet & actionSet)
+    void updateFitness(ClassifierPtrSet<Symbol, Action> & actionSet)
     {
         double accuracySum = 0.0;
 
@@ -244,7 +242,7 @@ protected:
         }
     }
 
-    void doActionSetSubsumption(ClassifierPtrSet & actionSet)
+    void doActionSetSubsumption(ClassifierPtrSet<Symbol, Action> & actionSet)
     {
         ClassifierPtr cl;
 
@@ -283,7 +281,7 @@ protected:
         }
     }
 
-    void runGA(ClassifierPtrSet & actionSet, const Situation<Symbol> & situation)
+    void runGA(ClassifierPtrSet<Symbol, Action> & actionSet, const Situation<Symbol> & situation)
     {
         uint64_t timeStampNumerositySum = 0;
         uint64_t numerositySum = 0;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <vector>
-#include <deque>
 #include <unordered_map>
 #include <random>
 #include <limits>
@@ -9,6 +8,7 @@
 #include <cmath>
 
 #include "classifier.h"
+#include "classifier_ptr_set.h"
 #include "random.h"
 
 template <class Symbol, typename Action>
@@ -16,7 +16,6 @@ class AbstractPredictionArray
 {
 protected:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
-    using ClassifierPtrSet = std::unordered_set<ClassifierPtr>;
 
     // PA (Prediction Array)
     std::unordered_map<Action, double> m_pa;
@@ -31,7 +30,7 @@ protected:
     std::vector<Action> m_maxPAActions;
 
 public:
-    explicit AbstractPredictionArray(const ClassifierPtrSet & matchSet)
+    explicit AbstractPredictionArray(const ClassifierPtrSet<Symbol, Action> & matchSet)
     {
         // FSA (Fitness Sum Array)
         std::unordered_map<Action, double> fsa;
@@ -99,7 +98,7 @@ private:
     double m_epsilon;
 
 public:
-    EpsilonGreedyPredictionArray(const ClassifierPtrSet & matchSet, double epsilon)
+    EpsilonGreedyPredictionArray(const ClassifierPtrSet<Symbol, Action> & matchSet, double epsilon)
         : AbstractPredictionArray(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction() const override

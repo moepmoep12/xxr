@@ -6,6 +6,7 @@
 #include <cstddef>
 
 #include "classifier.h"
+#include "classifier_ptr_set.h"
 #include "random.h"
 
 template <class Symbol, typename Action>
@@ -13,7 +14,6 @@ class GA
 {
 public:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
-    using ClassifierPtrSet = std::unordered_set<ClassifierPtr>;
 
     const double m_crossoverProbability;
     const double m_mutationProbability;
@@ -21,7 +21,7 @@ public:
 
     const std::unordered_set<Action> & m_actionChoices;
 
-    ClassifierPtr selectOffspring(const ClassifierPtrSet & actionSet) const
+    ClassifierPtr selectOffspring(const ClassifierPtrSet<Symbol, Action> & actionSet) const
     {
         double choicePoint;
         {
@@ -105,7 +105,7 @@ public:
     {
     }
 
-    void run(ClassifierPtrSet & actionSet, const Situation<Symbol> & situation, ClassifierPtrSet & population) const
+    void run(ClassifierPtrSet<Symbol, Action> & actionSet, const Situation<Symbol> & situation, ClassifierPtrSet<Symbol, Action> & population) const
     {
         auto parent1 = selectOffspring(actionSet);
         auto parent2 = selectOffspring(actionSet);
