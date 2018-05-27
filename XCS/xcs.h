@@ -86,7 +86,7 @@ protected:
         }
     }
 
-    auto generateCoveringClassifier(const Situation<Symbol> & situation, Action action)
+    auto generateCoveringClassifier(const Situation<Symbol> & situation, Action action) const
     {
         // Generate a more general condition than the situation
         auto condition = situation;
@@ -148,7 +148,7 @@ protected:
         }
     }
 
-    double deletionVote(const Classifier<Symbol, Action> & cl)
+    double deletionVote(const Classifier<Symbol, Action> & cl) const
     {
         double vote = cl.actionSetSize * cl.numerosity;
 
