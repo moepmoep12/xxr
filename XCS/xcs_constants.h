@@ -8,7 +8,7 @@ struct XCSConstants
     //   The maximum size of the population
     //   (the sum of the classifier numerosities in micro-classifiers)
     //   Recommended: large enough
-    uint64_t maxPopulationClassifierCount = 1000;
+    uint64_t maxPopulationClassifierCount = 400;
 
     // beta
     //   The learning rate for updating fitness, prediction, prediction error, and
@@ -24,7 +24,7 @@ struct XCSConstants
     // epsilon_0
     //   The error threshold under which the accuracy of a classifier is set to one
     //   Recommended: 1% of the maximum reward
-    double predictionErrorThreshold = 1;
+    double predictionErrorThreshold = 0.01;
 
     // nu
     //   The exponent in the power function for the fitness evaluation
