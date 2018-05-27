@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <unordered_set>
+#include <cassert>
 
 class Random
 {
@@ -34,6 +35,9 @@ public:
     static auto chooseFrom(const std::vector<T> & container)
     {
         auto size = std::size(container);
+
+        assert(size > 0);
+
         std::uniform_int_distribution<decltype(size)> dist(0, size - 1);
         return *(std::begin(container) + dist(engine()));
     }

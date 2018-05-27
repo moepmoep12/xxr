@@ -54,14 +54,14 @@ public:
             }
 
             // Update the best actions
-            if (fabs(m_maxPA - pair.second) < DBL_EPSILON) // max == pair.second
+            if (fabs(m_maxPA - pair.second) < DBL_EPSILON) // m_maxPA == pair.second
             {
-                m_paActions.push_back(pair.first);
+                m_maxPAActions.push_back(pair.first);
             }
             else if (m_maxPA < pair.second)
             {
-                m_paActions.clear();
-                m_paActions.push_back(pair.first);
+                m_maxPAActions.clear();
+                m_maxPAActions.push_back(pair.first);
                 m_maxPA = pair.second;
             }
         }
@@ -87,6 +87,7 @@ public:
     Action selectAction() const override
     {
         // Choose best action
+        assert(!m_maxPAActions.empty());
         return Random::chooseFrom(m_maxPAActions);
     }
 };
@@ -104,8 +105,14 @@ public:
     Action selectAction() const override
     {
         if (Random::nextDouble() < m_epsilon)
+        {
+            assert(!m_paActions.empty());
             return Random::chooseFrom(m_paActions); // Choose random action
+        }
         else
+        {
+            assert(!m_maxPAActions.empty());
             return Random::chooseFrom(m_maxPAActions); // Choose best action
+        }
     }
 };
