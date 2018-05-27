@@ -42,8 +42,6 @@ protected:
     //   execution cycle.
     ClassifierPtrSet<Symbol, Action> m_prevActionSet;
 
-    XCSConstants m_constants;
-
     GA<Symbol, Action> m_ga;
 
     uint64_t m_timeStamp;
@@ -51,6 +49,8 @@ protected:
     double m_prevReward;
 
     Situation<Symbol> m_prevSituation;
+
+    const XCSConstants m_constants;
 
     void generateMatchSet(const Situation<Symbol> & situation)
     {
