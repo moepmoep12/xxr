@@ -201,8 +201,8 @@ protected:
 
             for (auto && removedClassifier : removedClassifiers)
             {
-                actionSet.erase(*removedClassifier);
                 m_population.erase(*removedClassifier);
+                actionSet.erase(*removedClassifier);
             }
         }
     }
@@ -280,6 +280,7 @@ public:
                 m_prevReward = reward;
                 m_prevSituation = situation;
             }
+            std::cout << m_timeStamp << ": " << std::size(m_population) << std::endl;
             ++m_timeStamp;
         }
     }
