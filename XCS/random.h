@@ -34,7 +34,7 @@ public:
     template <typename T>
     static auto chooseFrom(const std::vector<T> & container)
     {
-        auto size = std::size(container);
+        auto size = container.size();
 
         assert(size > 0);
 
@@ -45,7 +45,7 @@ public:
     template <typename T>
     static auto chooseFrom(const std::unordered_set<T> & container)
     {
-        std::vector<T> vec(std::size(container));
+        std::vector<T> vec(container.size());
         vec.insert(vec.end(), container.begin(), container.end());
         return chooseFrom(vec);
     }

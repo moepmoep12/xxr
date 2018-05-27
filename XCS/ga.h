@@ -56,10 +56,10 @@ public:
 
     void crossover(Classifier<Symbol, Action> & cl1, Classifier<Symbol, Action> & cl2) const
     {
-        assert(std::size(cl1.condition) == std::size(cl2.condition));
+        assert(cl1.condition.size() == cl2.condition.size());
 
-        size_t x = static_cast<size_t>(Random::nextDouble() * (std::size(cl1.condition) + 1));
-        size_t y = static_cast<size_t>(Random::nextDouble() * (std::size(cl1.condition) + 1));
+        size_t x = static_cast<size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
+        size_t y = static_cast<size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
 
         if (x > y)
         {
@@ -74,9 +74,9 @@ public:
 
     void mutate(Classifier<Symbol, Action> & cl, const Situation<Symbol> & situation) const
     {
-        assert(std::size(cl.condition) == std::size(situation));
+        assert(cl.condition.size() == situation.size());
 
-        for (int i = 0; i < std::size(cl.condition); ++i)
+        for (int i = 0; i < cl.condition.size(); ++i)
         {
             if (Random::nextDouble() < m_mutationProbability)
             {
@@ -91,7 +91,7 @@ public:
             }
         }
 
-        if ((Random::nextDouble() < m_mutationProbability) && (std::size(m_actionChoices) >= 2))
+        if ((Random::nextDouble() < m_mutationProbability) && (m_actionChoices.size() >= 2))
         {
             std::unordered_set<Action> otherPossibleActions(m_actionChoices);
             otherPossibleActions.erase(cl.action);

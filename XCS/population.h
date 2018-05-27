@@ -74,8 +74,8 @@ public:
 
         // Prepare a roulette wheel by the weights
         double voteSum = 0.0;
-        std::vector<double> rouletteWheel(std::size(m_set));
-        std::vector<const ClassifierPtr *> rouletteWheelTarget(std::size(m_set));
+        std::vector<double> rouletteWheel(m_set.size());
+        std::vector<const ClassifierPtr *> rouletteWheelTarget(m_set.size());
         for (auto && c : m_set)
         {
             voteSum += deletionVote(*c, averageFitness, m_thetaDel);

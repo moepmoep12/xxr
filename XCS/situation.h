@@ -5,6 +5,7 @@
 #include <vector>
 #include <cstddef>
 #include <cassert>
+#include <iterator>
 
 #include "symbol.h"
 #include "random.h"
@@ -65,9 +66,9 @@ public:
 
     bool contains(const Situation & state) const
     {
-        assert(std::size(m_symbols) == std::size(state.m_symbols));
+        assert(m_symbols.size() == state.m_symbols.size());
 
-        for (size_t i = 0; i < std::size(m_symbols); ++i)
+        for (size_t i = 0; i < m_symbols.size(); ++i)
         {
             if (!m_symbols[i].contains(state.m_symbols[i]))
             {
@@ -85,7 +86,7 @@ public:
 
     size_t size() const
     {
-        return std::size(m_symbols);
+        return m_symbols.size();
     }
 
     void randomGeneralize(double generalizeProbability)

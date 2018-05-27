@@ -145,7 +145,7 @@ protected:
         double accuracySum = 0.0;
 
         // Accuracy vector
-        std::unordered_map<const ClassifierPtr *, double> kappa(std::size(actionSet));
+        std::unordered_map<const ClassifierPtr *, double> kappa(actionSet.size());
 
         for (auto && cl : actionSet)
         {
