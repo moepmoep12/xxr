@@ -201,7 +201,10 @@ protected:
 
         updateFitness();
 
-        // TODO: action set subsumption
+        if (m_constants.doActionSetSubsumption)
+        {
+            doActionSetSubsumption();
+        }
     }
 
     void updateFitness()
