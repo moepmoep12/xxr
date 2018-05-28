@@ -77,6 +77,8 @@ struct Classifier : ConditionActionPair<Symbol, Action>
     //   classifier - represents.
     uint64_t numerosity;
 
+    using ConditionActionPair<Symbol, Action>::isMoreGeneral;
+
 private:
     // Constants
     const double m_thetaSub;

@@ -6,6 +6,9 @@ template <class Symbol, typename Action>
 class Population : public ClassifierPtrSet<Symbol, Action>
 {
 protected:
+    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtrSet<Symbol, Action>::m_set;
+
     const uint64_t m_maxPopulationClassifierCount;
     const double m_thetaDel;
 
@@ -29,13 +32,13 @@ public:
     {}
 
     Population(const ClassifierPtrSet<Symbol, Action> & obj, uint64_t maxPopulationClassifierCount, double thetaDel) :
-        ClassifierPtrSet(obj),
+        ClassifierPtrSet<Symbol, Action>(obj),
         m_maxPopulationClassifierCount(maxPopulationClassifierCount),
         m_thetaDel(thetaDel)
     {}
 
     Population(const Population<Symbol, Action> & obj) :
-        ClassifierPtrSet(obj),
+        ClassifierPtrSet<Symbol, Action>(obj),
         m_maxPopulationClassifierCount(obj.m_maxPopulationClassifierCount),
         m_thetaDel(obj.m_thetaDel)
     {}

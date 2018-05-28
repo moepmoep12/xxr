@@ -81,6 +81,9 @@ public:
 template <class Symbol, typename Action>
 class GreedyPredictionArray : public AbstractPredictionArray<Symbol, Action>
 {
+private:
+    using AbstractPredictionArray<Symbol, Action>::m_maxPAActions;
+
 public:
     using AbstractPredictionArray<Symbol, Action>::AbstractPredictionArray;
 
@@ -97,10 +100,12 @@ class EpsilonGreedyPredictionArray : public AbstractPredictionArray<Symbol, Acti
 {
 private:
     double m_epsilon;
+    using AbstractPredictionArray<Symbol, Action>::m_paActions;
+    using AbstractPredictionArray<Symbol, Action>::m_maxPAActions;
 
 public:
     EpsilonGreedyPredictionArray(const ClassifierPtrSet<Symbol, Action> & matchSet, double epsilon)
-        : AbstractPredictionArray(matchSet), m_epsilon(epsilon) {}
+        : AbstractPredictionArray<Symbol, Action>(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction() const override
     {
