@@ -14,7 +14,7 @@ struct XCSConstants
     //   The learning rate for updating fitness, prediction, prediction error, and
     //   action set size estimate in XCS's classifiers
     //   Recommended: 0.1-0.2
-    double learningRate = 0.1;
+    double learningRate = 0.2;
 
     // alpha
     //   The fall of rate in the fitness evaluation
@@ -92,7 +92,7 @@ struct XCSConstants
     //   The probability during action selection of choosing the action uniform
     //   randomly
     //   Recommended: 0.5 (depends on the type of experiment)
-    double exploreProbability = 0.5;
+    double exploreProbability = 1.0;
 
     // doGASubsumption
     //   Whether offspring are to be tested for possible logical subsumption by
