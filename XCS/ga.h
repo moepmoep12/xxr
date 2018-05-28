@@ -76,7 +76,7 @@ public:
     {
         assert(cl.condition.size() == situation.size());
 
-        for (int i = 0; i < cl.condition.size(); ++i)
+        for (size_t i = 0; i < cl.condition.size(); ++i)
         {
             if (Random::nextDouble() < m_mutationProbability)
             {
