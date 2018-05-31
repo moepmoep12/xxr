@@ -4,5 +4,5 @@
 
 struct XCSRConstants : XCSConstants
 {
-
+    bool XCSConstants::doActionSetSubsumption = false;
 };
