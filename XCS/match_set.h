@@ -3,7 +3,9 @@
 #include <unordered_map>
 #include <cstdint>
 
+#include "xcs_constants.h"
 #include "classifier_ptr_set.h"
+#include "population.h"
 
 template <class Symbol, typename Action>
 class MatchSet : public ClassifierPtrSet<Symbol, Action>
