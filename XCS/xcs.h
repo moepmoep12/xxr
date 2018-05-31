@@ -13,6 +13,7 @@
 #include "classifier.h"
 #include "classifier_ptr_set.h"
 #include "population.h"
+#include "match_set.h"
 #include "ga.h"
 #include "prediction_array.h"
 #include "environment.h"
@@ -31,7 +32,7 @@ protected:
     // [M]
     //   The match set [M] is formed out of the current [P].
     //   It includes all classifiers that match the current situation.
-    ClassifierPtrSet<Symbol, Action> m_matchSet;
+    MatchSet<Symbol, Action> m_matchSet;
 
     // [A]
     //   The action set [A] is formed out of the current [M].
@@ -53,34 +54,6 @@ protected:
 
     const XCSConstants m_constants;
 
-    void generateMatchSet(const Situation<Symbol> & situation)
-    {
-        m_matchSet.clear();
-
-        while (m_matchSet.empty())
-        {
-            auto unselectedActions = environment.actionChoices;
-
-            for (auto && cl : m_population)
-            {
-                if (cl->condition.contains(situation))
-                {
-                    m_matchSet.insert(cl);
-                    unselectedActions.erase(cl->action);
-                }
-            }
-
-            // Generate classifiers covering the unselected actions
-            if(!unselectedActions.empty())
-            {
-                auto coveringClassifier = generateCoveringClassifier(situation, Random::chooseFrom(unselectedActions));
-                m_population.insert(coveringClassifier);
-                m_population.deleteExtraClassifiers();
-                m_matchSet.clear();
-            }
-        }
-    }
-
     void generateActionSet(Action action)
     {
         m_actionSet.clear();
@@ -92,16 +65,6 @@ protected:
                 m_actionSet.insert(cl);
             }
         }
-    }
-
-    auto generateCoveringClassifier(const Situation<Symbol> & situation, Action action) const
-    {
-        // Generate a more general condition than the situation
-        Situation<Symbol> condition(situation);
-        condition.randomGeneralize(m_constants.generalizeProbability);
-
-        // Generate a classifier
-        return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);
     }
 
     void updateSet(ClassifierPtrSet<Symbol, Action> & actionSet, double p)
@@ -250,7 +213,7 @@ public:
         {
             auto situation = environment.situation();
 
-            generateMatchSet(situation);
+            m_matchSet = MatchSet<Symbol, Action>(m_population, situation, environment.actionChoices, m_timeStamp, m_constants);
 
             EpsilonGreedyPredictionArray<Symbol, Action> predictionArray(m_matchSet, m_constants.exploreProbability);
 

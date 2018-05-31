@@ -30,7 +30,7 @@ protected:
     std::vector<Action> m_maxPAActions;
 
 public:
-    explicit AbstractPredictionArray(const ClassifierPtrSet<Symbol, Action> & matchSet)
+    explicit AbstractPredictionArray(const MatchSet<Symbol, Action> & matchSet)
     {
         // FSA (Fitness Sum Array)
         std::unordered_map<Action, double> fsa;
@@ -104,7 +104,7 @@ private:
     using AbstractPredictionArray<Symbol, Action>::m_maxPAActions;
 
 public:
-    EpsilonGreedyPredictionArray(const ClassifierPtrSet<Symbol, Action> & matchSet, double epsilon)
+    EpsilonGreedyPredictionArray(const MatchSet<Symbol, Action> & matchSet, double epsilon)
         : AbstractPredictionArray<Symbol, Action>(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction() const override
