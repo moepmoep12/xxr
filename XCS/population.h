@@ -8,16 +8,15 @@ class Population : public ClassifierPtrSet<Symbol, Action>
 protected:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
     using ClassifierPtrSet<Symbol, Action>::m_set;
+    using ClassifierPtrSet<Symbol, Action>::m_constants;
+    using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
 
-    const uint64_t m_maxPopulationClassifierCount;
-    const double m_thetaDel;
-
-    double deletionVote(const Classifier<Symbol, Action> & cl, double averageFitness, double thetaDel) const
+    double deletionVote(const Classifier<Symbol, Action> & cl, double averageFitness) const
     {
         double vote = cl.actionSetSize * cl.numerosity;
 
         // Consider fitness for deletion vote
-        if ((cl.experience > thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
+        if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
         {
             vote *= averageFitness / (cl.fitness / cl.numerosity);
         }
@@ -26,22 +25,7 @@ protected:
     }
 
 public:
-    Population(uint64_t maxPopulationClassifierCount, double thetaDel) :
-        m_maxPopulationClassifierCount(maxPopulationClassifierCount),
-        m_thetaDel(thetaDel)
-    {}
-
-    Population(const ClassifierPtrSet<Symbol, Action> & obj, uint64_t maxPopulationClassifierCount, double thetaDel) :
-        ClassifierPtrSet<Symbol, Action>(obj),
-        m_maxPopulationClassifierCount(maxPopulationClassifierCount),
-        m_thetaDel(thetaDel)
-    {}
-
-    Population(const Population<Symbol, Action> & obj) :
-        ClassifierPtrSet<Symbol, Action>(obj),
-        m_maxPopulationClassifierCount(obj.m_maxPopulationClassifierCount),
-        m_thetaDel(obj.m_thetaDel)
-    {}
+    using ClassifierPtrSet<Symbol, Action>::ClassifierPtrSet;
 
     void insertOrIncrementNumerosity(const Classifier<Symbol, Action> & cl)
     {
@@ -67,7 +51,7 @@ public:
         }
 
         // Return if the sum of numerosity has not met its maximum limit
-        if (numerositySum < m_maxPopulationClassifierCount)
+        if (numerositySum < m_constants.maxPopulationClassifierCount)
         {
             return;
         }
@@ -81,7 +65,7 @@ public:
         std::vector<const ClassifierPtr *> rouletteWheelTarget(m_set.size());
         for (auto && c : m_set)
         {
-            voteSum += deletionVote(*c, averageFitness, m_thetaDel);
+            voteSum += deletionVote(*c, averageFitness);
             rouletteWheel.push_back(voteSum);
             rouletteWheelTarget.push_back(&c);
         }

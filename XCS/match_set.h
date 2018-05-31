@@ -13,20 +13,23 @@ class MatchSet : public ClassifierPtrSet<Symbol, Action>
 protected:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
     using ClassifierPtrSet<Symbol, Action>::m_set;
-
-    auto generateCoveringClassifier(const Situation<Symbol> & situation, Action action) const
-    {
-
-        // Generate a classifier
-        return std::make_shared<Classifier<Symbol, Action>>(condition, action, m_timeStamp, m_constants);
-    }
+    using ClassifierPtrSet<Symbol, Action>::m_constants;
+    using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
 
 public:
-    MatchSet() = default;
+    using ClassifierPtrSet<Symbol, Action>::ClassifierPtrSet;
 
-    MatchSet(Population<Symbol, Action> & population, const Situation<Symbol> & situation, const std::unordered_set<Action> actionChoices, uint64_t timeStamp, const XCSConstants & constants)
+    MatchSet(Population<Symbol, Action> & population, const Situation<Symbol> & situation, uint64_t timeStamp, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ClassifierPtrSet<Symbol, Action>(constants, actionChoices)
     {
-        auto unselectedActions = actionChoices;
+        regenerate(population, situation, timeStamp);
+    }
+
+    void regenerate(Population<Symbol, Action> & population, const Situation<Symbol> & situation, uint64_t timeStamp)
+    {
+        auto unselectedActions = m_actionChoices;
+
+        m_set.clear();
 
         while (m_set.empty())
         {
@@ -44,9 +47,9 @@ public:
             {
                 // Generate a more general condition than the situation
                 Situation<Symbol> condition(situation);
-                condition.randomGeneralize(constants.generalizeProbability);
+                condition.randomGeneralize(m_constants.generalizeProbability);
 
-                auto coveringClassifier = std::make_shared<Classifier<Symbol, Action>>(condition, Random::chooseFrom(unselectedActions), timeStamp, constants);
+                auto coveringClassifier = std::make_shared<Classifier<Symbol, Action>>(condition, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
                 population.insert(coveringClassifier);
                 population.deleteExtraClassifiers();
                 m_set.clear();

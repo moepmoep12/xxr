@@ -45,8 +45,6 @@ protected:
     //   execution cycle.
     ActionSet<Symbol, Action> m_prevActionSet;
 
-    GA<Symbol, Action> m_ga;
-
     uint64_t m_timeStamp;
 
     double m_prevReward;
@@ -55,7 +53,7 @@ protected:
 
     const XCSConstants m_constants;
 
-    void updateSet(ClassifierPtrSet<Symbol, Action> & actionSet, double p)
+    void updateSet(ActionSet<Symbol, Action> & actionSet, double p)
     {
         // Calculate numerosity sum used for updating action set size estimate
         uint64_t numerositySum = 0;
@@ -83,101 +81,11 @@ protected:
             }
         }
 
-        updateFitness(actionSet);
+        actionSet.updateFitness();
 
         if (m_constants.doActionSetSubsumption)
         {
-            doActionSetSubsumption(actionSet);
-        }
-    }
-
-    void updateFitness(ClassifierPtrSet<Symbol, Action> & actionSet)
-    {
-        double accuracySum = 0.0;
-
-        // Accuracy vector
-        std::unordered_map<const ClassifierPtr *, double> kappa(actionSet.size());
-
-        for (auto && cl : actionSet)
-        {
-            if (cl->predictionError < m_constants.predictionErrorThreshold)
-            {
-                kappa[&cl] = 1.0;
-            }
-            else
-            {
-                kappa[&cl] = m_constants.alpha * pow(cl->predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
-            }
-
-            accuracySum += kappa[&cl] * cl->numerosity;
-        }
-
-        for (auto && cl : actionSet)
-        {
-            cl->fitness += m_constants.learningRate * (kappa[&cl] * cl->numerosity / accuracySum - cl->fitness);
-        }
-    }
-
-    void doActionSetSubsumption(ClassifierPtrSet<Symbol, Action> & actionSet)
-    {
-        ClassifierPtr cl;
-
-        for (auto && c : actionSet)
-        {
-            if (c->isSubsumer())
-            {
-                size_t cDontCareCount;
-                size_t clDontCareCount;
-                if ((cl.get() == nullptr) ||
-                    ((cDontCareCount = c->condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
-                    ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))
-                {
-                    cl = c;
-                }
-            }
-        }
-
-        if (cl.get() != nullptr)
-        {
-            std::vector<const ClassifierPtr *> removedClassifiers;
-            for (auto && c : actionSet)
-            {
-                if (cl->isMoreGeneral(*c))
-                {
-                    cl->numerosity += c->numerosity;
-                    removedClassifiers.push_back(&c);
-                }
-            }
-
-            for (auto && removedClassifier : removedClassifiers)
-            {
-                m_population.erase(*removedClassifier);
-                actionSet.erase(*removedClassifier);
-            }
-        }
-    }
-
-    void runGA(ClassifierPtrSet<Symbol, Action> & actionSet, const Situation<Symbol> & situation)
-    {
-        uint64_t timeStampNumerositySum = 0;
-        uint64_t numerositySum = 0;
-
-        for (auto && cl : actionSet)
-        {
-            timeStampNumerositySum += cl->timeStamp * cl->numerosity;
-            numerositySum += cl->numerosity;
-        }
-
-        assert(numerositySum > 0);
-
-        if (m_timeStamp - timeStampNumerositySum / numerositySum > m_constants.thetaGA)
-        {
-            for (auto && cl : actionSet)
-            {
-                cl->timeStamp = m_timeStamp;
-            }
-
-            m_ga.run(actionSet, situation, m_population);
+            actionSet.doSubsumption(m_population);
         }
     }
 
@@ -186,8 +94,10 @@ public:
 
     XCS(const Environment & environment, const XCSConstants & constants)
         : environment(environment),
-        m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, environment.actionChoices),
-        m_population(constants.maxPopulationClassifierCount, constants.thetaDel),
+        m_population(constants, environment.actionChoices),
+        m_matchSet(constants, environment.actionChoices),
+        m_actionSet(constants, environment.actionChoices),
+        m_prevActionSet(constants, environment.actionChoices),
         m_constants(constants),
         m_timeStamp(0),
         m_prevReward(0.0)
@@ -201,13 +111,13 @@ public:
         {
             auto situation = environment.situation();
 
-            m_matchSet = MatchSet<Symbol, Action>(m_population, situation, environment.actionChoices, m_timeStamp, m_constants);
+            m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
             EpsilonGreedyPredictionArray<Symbol, Action> predictionArray(m_matchSet, m_constants.exploreProbability);
 
             Action action = predictionArray.selectAction();
 
-            m_actionSet = ActionSet<Symbol, Action>(m_matchSet, action);
+            m_actionSet.regenerate(m_matchSet, action);
 
             double reward = environment.executeAction(action);
 
@@ -215,18 +125,18 @@ public:
             {
                 double p = m_prevReward + m_constants.gamma * predictionArray.max();
                 updateSet(m_prevActionSet, p);
-                runGA(m_prevActionSet, m_prevSituation);
+                m_prevActionSet.runGA(m_prevSituation, m_population, m_timeStamp);
             }
 
             if (environment.isEndOfProblem())
             {
                 updateSet(m_actionSet, reward);
-                runGA(m_actionSet, situation);
+                m_actionSet.runGA(situation, m_population, m_timeStamp);
                 m_prevActionSet.clear();
             }
             else
             {
-                m_prevActionSet = m_actionSet;
+                m_actionSet.copyTo(m_prevActionSet);
                 m_prevReward = reward;
                 m_prevSituation = situation;
             }

@@ -9,14 +9,25 @@ class ClassifierPtrSet
 {
 protected:
     using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+
+    const XCSConstants m_constants;
+    const std::unordered_set<Action> m_actionChoices;
+
     std::unordered_set<ClassifierPtr> m_set;
 
 public:
-    ClassifierPtrSet() = default;
+    ClassifierPtrSet(const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
+        m_constants(constants),
+        m_actionChoices(actionChoices)
+    {
+    }
 
-    ClassifierPtrSet(const ClassifierPtrSet<Symbol, Action> & obj) : m_set(obj.m_set) {}
-
-    explicit ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & obj) : m_set(obj) {}
+    ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
+        m_set(set),
+        m_constants(constants),
+        m_actionChoices(actionChoices)
+    {
+    }
 
     virtual ~ClassifierPtrSet() = default;
 
