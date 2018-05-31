@@ -14,6 +14,7 @@
 #include "classifier_ptr_set.h"
 #include "population.h"
 #include "match_set.h"
+#include "action_set.h"
 #include "ga.h"
 #include "prediction_array.h"
 #include "environment.h"
@@ -37,12 +38,12 @@ protected:
     // [A]
     //   The action set [A] is formed out of the current [M].
     //   It includes all classifiers of [M] that propose the executed action.
-    ClassifierPtrSet<Symbol, Action> m_actionSet;
+    ActionSet<Symbol, Action> m_actionSet;
 
     // [A]_-1
     //   The previous action set [A]_-1 is the action set that was active in the last
     //   execution cycle.
-    ClassifierPtrSet<Symbol, Action> m_prevActionSet;
+    ActionSet<Symbol, Action> m_prevActionSet;
 
     GA<Symbol, Action> m_ga;
 
@@ -53,19 +54,6 @@ protected:
     Situation<Symbol> m_prevSituation;
 
     const XCSConstants m_constants;
-
-    void generateActionSet(Action action)
-    {
-        m_actionSet.clear();
-
-        for (auto && cl : m_matchSet)
-        {
-            if (cl->action == action)
-            {
-                m_actionSet.insert(cl);
-            }
-        }
-    }
 
     void updateSet(ClassifierPtrSet<Symbol, Action> & actionSet, double p)
     {
@@ -219,7 +207,7 @@ public:
 
             Action action = predictionArray.selectAction();
 
-            generateActionSet(action);
+            m_actionSet = ActionSet<Symbol, Action>(m_matchSet, action);
 
             double reward = environment.executeAction(action);
 
