@@ -53,42 +53,6 @@ protected:
 
     const XCSConstants m_constants;
 
-    void updateSet(ActionSet<Symbol, Action> & actionSet, double p)
-    {
-        // Calculate numerosity sum used for updating action set size estimate
-        uint64_t numerositySum = 0;
-        for (auto && cl : actionSet)
-        {
-            numerositySum += cl->numerosity;
-        }
-
-        for (auto && cl : actionSet)
-        {
-            ++cl->experience;
-            
-            // Update prediction, prediction error, and action set size estimate
-            if (cl->experience < 1.0 / m_constants.learningRate)
-            {
-                cl->prediction += (p - cl->prediction) / cl->experience;
-                cl->predictionError += (fabs(p - cl->prediction) - cl->predictionError) / cl->experience;
-                cl->actionSetSize += (numerositySum - cl->actionSetSize) / cl->experience;
-            }
-            else
-            {
-                cl->prediction += m_constants.learningRate * (p - cl->prediction);
-                cl->predictionError += m_constants.learningRate * (fabs(p - cl->prediction) - cl->predictionError);
-                cl->actionSetSize += m_constants.learningRate * (numerositySum - cl->actionSetSize);
-            }
-        }
-
-        actionSet.updateFitness();
-
-        if (m_constants.doActionSetSubsumption)
-        {
-            actionSet.doSubsumption(m_population);
-        }
-    }
-
 public:
     Environment environment;
 
@@ -124,13 +88,13 @@ public:
             if (!m_prevActionSet.empty())
             {
                 double p = m_prevReward + m_constants.gamma * predictionArray.max();
-                updateSet(m_prevActionSet, p);
+                m_prevActionSet.update(p, m_population);
                 m_prevActionSet.runGA(m_prevSituation, m_population, m_timeStamp);
             }
 
             if (environment.isEndOfProblem())
             {
-                updateSet(m_actionSet, reward);
+                m_actionSet.update(reward, m_population);
                 m_actionSet.runGA(situation, m_population, m_timeStamp);
                 m_prevActionSet.clear();
             }

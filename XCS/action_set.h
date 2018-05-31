@@ -19,38 +19,6 @@ protected:
 
     GA<Symbol, Action> m_ga;
 
-public:
-    ActionSet(const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
-        ClassifierPtrSet<Symbol, Action>(constants, actionChoices),
-        m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
-    {
-    }
-
-    ActionSet(const MatchSet<Symbol, Action> & matchSet, Action action, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
-        ClassifierPtrSet<Symbol, Action>(constants, actionChoices),
-        m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
-    {
-        regenerate(matchSet, action);
-    }
-
-    void regenerate(const MatchSet<Symbol, Action> & matchSet, Action action)
-    {
-        m_set.clear();
-
-        for (auto && cl : matchSet)
-        {
-            if (cl->action == action)
-            {
-                m_set.insert(cl);
-            }
-        }
-    }
-
-    void copyTo(ActionSet<Symbol, Action> & dest)
-    {
-        dest.m_set = m_set; // don't copy m_ga since it contains const parameters
-    }
-
     void updateFitness()
     {
         double accuracySum = 0.0;
@@ -117,6 +85,38 @@ public:
         }
     }
 
+public:
+    ActionSet(const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ClassifierPtrSet<Symbol, Action>(constants, actionChoices),
+        m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
+    {
+    }
+
+    ActionSet(const MatchSet<Symbol, Action> & matchSet, Action action, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ClassifierPtrSet<Symbol, Action>(constants, actionChoices),
+        m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
+    {
+        regenerate(matchSet, action);
+    }
+
+    void regenerate(const MatchSet<Symbol, Action> & matchSet, Action action)
+    {
+        m_set.clear();
+
+        for (auto && cl : matchSet)
+        {
+            if (cl->action == action)
+            {
+                m_set.insert(cl);
+            }
+        }
+    }
+
+    void copyTo(ActionSet<Symbol, Action> & dest)
+    {
+        dest.m_set = m_set; // don't copy m_ga since it contains const parameters
+    }
+
     void runGA(const Situation<Symbol> & situation, Population<Symbol, Action> & population, uint64_t timeStamp)
     {
         uint64_t timeStampNumerositySum = 0;
@@ -138,6 +138,42 @@ public:
             }
 
             m_ga.run(*this, situation, population);
+        }
+    }
+
+    void update(double p, Population<Symbol, Action> & population)
+    {
+        // Calculate numerosity sum used for updating action set size estimate
+        uint64_t numerositySum = 0;
+        for (auto && cl : m_set)
+        {
+            numerositySum += cl->numerosity;
+        }
+
+        for (auto && cl : m_set)
+        {
+            ++cl->experience;
+
+            // Update prediction, prediction error, and action set size estimate
+            if (cl->experience < 1.0 / m_constants.learningRate)
+            {
+                cl->prediction += (p - cl->prediction) / cl->experience;
+                cl->predictionError += (fabs(p - cl->prediction) - cl->predictionError) / cl->experience;
+                cl->actionSetSize += (numerositySum - cl->actionSetSize) / cl->experience;
+            }
+            else
+            {
+                cl->prediction += m_constants.learningRate * (p - cl->prediction);
+                cl->predictionError += m_constants.learningRate * (fabs(p - cl->prediction) - cl->predictionError);
+                cl->actionSetSize += m_constants.learningRate * (numerositySum - cl->actionSetSize);
+            }
+        }
+
+        updateFitness();
+
+        if (m_constants.doActionSetSubsumption)
+        {
+            doSubsumption(population);
         }
     }
 };
