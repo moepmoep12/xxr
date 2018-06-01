@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../XCS/symbol.h"
+#include <string>
 
 class CSSymbol : public AbstractSymbol<CSSymbol>
 {
@@ -14,5 +15,27 @@ public:
     bool isDontCare() const override
     {
         return false;
+    }
+
+    std::string toString() const override
+    {
+        return std::to_string(m_c) + "(" + std::to_string(m_s) + ") ";
+    }
+
+    friend bool operator== (const CSSymbol & lhs, const CSSymbol & rhs)
+    {
+        return lhs.m_c == rhs.m_c && lhs.m_s == rhs.m_s;
+    }
+
+    friend bool operator!= (const CSSymbol & lhs, const CSSymbol & rhs)
+    {
+        return lhs.m_c != rhs.m_c || lhs.m_s != rhs.m_s;
+    }
+
+    CSSymbol & operator= (const CSSymbol & obj)
+    {
+        m_c = obj.m_c;
+        m_s = obj.m_s;
+        return *this;
     }
 };
