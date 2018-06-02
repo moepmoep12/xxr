@@ -29,6 +29,7 @@ struct ConditionActionPair
         return condition == cl.condition && action == cl.action;
     }
 
+    // IS MORE GENERAL
     bool isMoreGeneral(const ConditionActionPair<Symbol, Action> & cl) const
     {
         return condition.contains(cl.condition) && condition != cl.condition;
@@ -118,11 +119,13 @@ public:
     {
     }
 
+    // COULD SUBSUME
     bool isSubsumer() const
     {
         return experience > m_thetaSub && predictionError < m_predictionErrorThreshold;
     }
 
+    // DOES SUBSUME
     bool subsumes(const Classifier<Symbol, Action> & cl) const
     {
         return isSubsumer() && isMoreGeneral(cl);

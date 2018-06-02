@@ -19,6 +19,7 @@ protected:
 
     GA<Symbol, Action> m_ga;
 
+    // UPDATE FITNESS
     void updateFitness()
     {
         double accuracySum = 0.0;
@@ -46,6 +47,7 @@ protected:
         }
     }
 
+    // DO ACTION SET SUBSUMPTION
     void doSubsumption(Population<Symbol, Action> & population)
     {
         ClassifierPtr cl;
@@ -99,6 +101,7 @@ public:
         regenerate(matchSet, action);
     }
 
+    // GENERATE ACTION SET
     void regenerate(const MatchSet<Symbol, Action> & matchSet, Action action)
     {
         m_set.clear();
@@ -117,6 +120,7 @@ public:
         dest.m_set = m_set; // don't copy m_ga since it contains const parameters
     }
 
+    // RUN GA (refer to GA::run() for the latter part)
     void runGA(const Situation<Symbol> & situation, Population<Symbol, Action> & population, uint64_t timeStamp)
     {
         uint64_t timeStampNumerositySum = 0;
@@ -141,6 +145,7 @@ public:
         }
     }
 
+    // UPDATE SET
     void update(double p, Population<Symbol, Action> & population)
     {
         // Calculate numerosity sum used for updating action set size estimate

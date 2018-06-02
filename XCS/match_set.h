@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <unordered_map>
 #include <cstdint>
 
@@ -16,6 +17,15 @@ protected:
     using ClassifierPtrSet<Symbol, Action>::m_constants;
     using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
 
+    // GENERATE COVERING CLASSIFIER
+    auto generateCoveringClassifier(const Situation<Symbol> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
+    {
+        auto cl = std::make_shared<Classifier<Symbol, Action>>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+        cl->condition.randomGeneralize(m_constants.generalizeProbability);
+
+        return cl;
+    }
+
 public:
     using ClassifierPtrSet<Symbol, Action>::ClassifierPtrSet;
 
@@ -25,6 +35,7 @@ public:
         regenerate(population, situation, timeStamp);
     }
 
+    // GENERATE MATCH SET
     void regenerate(Population<Symbol, Action> & population, const Situation<Symbol> & situation, uint64_t timeStamp)
     {
         auto unselectedActions = m_actionChoices;
@@ -43,14 +54,9 @@ public:
             }
 
             // Generate classifiers covering the unselected actions
-            if (!unselectedActions.empty())
+            if (!unselectedActions.empty()) // this means the same as "the number of different actions in [M] < theta_mna"
             {
-                // Generate a more general condition than the situation
-                Situation<Symbol> condition(situation);
-                condition.randomGeneralize(m_constants.generalizeProbability);
-
-                auto coveringClassifier = std::make_shared<Classifier<Symbol, Action>>(condition, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
-                population.insert(coveringClassifier);
+                population.insert(generateCoveringClassifier(situation, unselectedActions, timeStamp));
                 population.deleteExtraClassifiers();
                 m_set.clear();
             }

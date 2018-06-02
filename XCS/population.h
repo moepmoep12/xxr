@@ -11,6 +11,7 @@ protected:
     using ClassifierPtrSet<Symbol, Action>::m_constants;
     using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
 
+    // DELETION VOTE
     double deletionVote(const Classifier<Symbol, Action> & cl, double averageFitness) const
     {
         double vote = cl.actionSetSize * cl.numerosity;
@@ -27,6 +28,7 @@ protected:
 public:
     using ClassifierPtrSet<Symbol, Action>::ClassifierPtrSet;
 
+    // INSERT IN POPULATION
     void insertOrIncrementNumerosity(const Classifier<Symbol, Action> & cl)
     {
         for (auto && c : m_set)
@@ -40,6 +42,7 @@ public:
         m_set.insert(std::make_shared<Classifier<Symbol, Action>>(cl));
     }
 
+    // DELETE FROM POPULATION
     void deleteExtraClassifiers()
     {
         uint64_t numerositySum = 0;

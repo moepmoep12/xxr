@@ -64,6 +64,7 @@ public:
         return lhs.m_symbols != rhs.m_symbols;
     }
 
+    // DOES MATCH
     bool contains(const Situation & state) const
     {
         assert(m_symbols.size() == state.m_symbols.size());

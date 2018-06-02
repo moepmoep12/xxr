@@ -30,6 +30,7 @@ protected:
     std::vector<Action> m_maxPAActions;
 
 public:
+    // GENERATE PREDICTION ARRAY
     explicit AbstractPredictionArray(const MatchSet<Symbol, Action> & matchSet)
     {
         // FSA (Fitness Sum Array)
@@ -75,6 +76,7 @@ public:
         return m_maxPA;
     }
 
+    // SELECT ACTION
     virtual Action selectAction() const = 0;
 };
 
