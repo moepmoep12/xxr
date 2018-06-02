@@ -71,6 +71,11 @@ public:
         return isDontCare() || (m_value == symbol.m_value && isDontCare() == symbol.isDontCare());
     }
 
+    bool equals(const T & value) const
+    {
+        return !isDontCare() && m_value == value;
+    }
+
     void generalize()
     {
         m_isDontCare = true;
