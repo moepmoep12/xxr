@@ -38,6 +38,9 @@ public:
     // GENERATE MATCH SET
     void regenerate(Population<Symbol, Action> & population, const Situation<Symbol> & situation, uint64_t timeStamp)
     {
+        // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
+        auto thetaMna = (m_constants.thetaMna == 0) ? m_actionChoices.size() : m_constants.thetaMna;
+
         auto unselectedActions = m_actionChoices;
 
         m_set.clear();
@@ -54,7 +57,7 @@ public:
             }
 
             // Generate classifiers covering the unselected actions
-            if (!unselectedActions.empty()) // this means the same as "the number of different actions in [M] < theta_mna"
+            if ((m_actionChoices.size() - unselectedActions.size() < thetaMna)) 
             {
                 population.insert(generateCoveringClassifier(situation, unselectedActions, timeStamp));
                 population.deleteExtraClassifiers();

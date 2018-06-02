@@ -94,6 +94,13 @@ struct XCSConstants
     //   Recommended: 0.5 (depends on the type of experiment)
     double exploreProbability = 1.0;
 
+    // theta_mna
+    //   The minimal number of actions that must be present in a match set [M],
+    //   or else covering will occur
+    //   Recommended: the number of available actions
+    //                (or use "0" to set automatically)
+    uint64_t thetaMna = 0;
+
     // doGASubsumption
     //   Whether offspring are to be tested for possible logical subsumption by
     //   parents
