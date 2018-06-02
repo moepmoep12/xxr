@@ -3,19 +3,16 @@
 #include "../XCS/symbol.h"
 #include <string>
 
-class CSSymbol : public AbstractSymbol<CSSymbol>
+// The standard symbol for XCSR (without "don't care")
+template <typename T>
+class CSSymbol : public AbstractSymbol<CSSymbol<T>>
 {
 private:
-    double m_c;
-    double m_s;
+    T m_c;
+    T m_s;
 
 public:
-    CSSymbol(double c, double s) : m_c(c), m_s(s) {}
-
-    bool isDontCare() const override
-    {
-        return false;
-    }
+    CSSymbol(T c, T s) : m_c(c), m_s(s) {}
 
     std::string toString() const override
     {
@@ -37,5 +34,10 @@ public:
         m_c = obj.m_c;
         m_s = obj.m_s;
         return *this;
+    }
+
+    bool contains(const Symbol<T> & symbol) const override
+    {
+        return (m_value == symbol.m_value && isDontCare() == symbol.isDontCare());
     }
 };
