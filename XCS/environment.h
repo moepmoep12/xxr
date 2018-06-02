@@ -36,13 +36,13 @@ public:
     virtual bool isEndOfProblem() const = 0;
 };
 
-class MultiplexerEnvironment : public AbstractEnvironment<BinarySymbol, bool>
+class MultiplexerEnvironment : public AbstractEnvironment<Symbol<bool>, bool>
 {
 private:
     const size_t m_totalLength;
     const size_t m_addressBitLength;
     const size_t m_registerBitLength;
-    Situation<BinarySymbol> m_situation;
+    Situation<Symbol<bool>> m_situation;
     bool m_isEndOfProblem;
 
     // Get address bit length from total length
@@ -51,14 +51,14 @@ private:
         return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
     }
 
-    static Situation<BinarySymbol> randomSituation(size_t totalLength)
+    static Situation<Symbol<bool>> randomSituation(size_t totalLength)
     {
-        std::vector<BinarySymbol> symbols;
+        std::vector<Symbol<bool>> symbols;
         for (size_t i = 0; i < totalLength; ++i)
         {
-            symbols.push_back(BinarySymbol(Random::nextInt(0, 1)));
+            symbols.push_back(Symbol<bool>(Random::nextInt(0, 1)));
         }
-        return Situation<BinarySymbol>(symbols);
+        return Situation<Symbol<bool>>(symbols);
     }
 
 public:
@@ -74,7 +74,7 @@ public:
         assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
     }
 
-    Situation<BinarySymbol> situation() const override
+    Situation<Symbol<bool>> situation() const override
     {
         return m_situation;
     }
@@ -98,17 +98,17 @@ public:
     }
 
     // Returns answer to situation
-    bool getAnswer(const Situation<BinarySymbol> & situation) const
+    bool getAnswer(const Situation<Symbol<bool>> & situation) const
     {
         size_t address = 0;
         for (size_t i = 0; i < m_addressBitLength; ++i)
         {
-            if (situation.at(i).toChar() == '1')
+            if (situation.at(i).toString() == "1")
             {
                 address += (size_t)1 << (m_addressBitLength - i - 1);
             }
         }
 
-        return situation.at(m_addressBitLength + address).toChar() == '1';
+        return situation.at(m_addressBitLength + address).toString() == "1";
     }
 };

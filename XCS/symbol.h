@@ -11,8 +11,6 @@ class AbstractSymbol
 public:
     virtual ~AbstractSymbol() = default;
 
-    virtual bool isDontCare() const = 0;
-
     virtual std::string toString() const = 0;
 
     friend std::ostream & operator<< (std::ostream & os, const AbstractSymbol & obj)
@@ -21,76 +19,60 @@ public:
     }
 
     virtual bool contains(const Derived & symbol) const = 0;
-
-    virtual void generalize() = 0;
 };
 
-class BinarySymbol : public AbstractSymbol<BinarySymbol>
+// The standard symbol for XCS (with "don't care")
+template <typename T>
+class Symbol : public AbstractSymbol<Symbol<T>>
 {
 private:
-    enum class Tribool {
-        Zero = 0,
-        One,
-        DontCare
-    } m_condition;
+    T m_value;
+    bool m_isDontCare;
 
 public:
-    BinarySymbol(char c) : m_condition(c == '0' ? Tribool::Zero : c == '#' ? Tribool::DontCare : Tribool::One) {}
+    Symbol(const T & value) : m_value(value), m_isDontCare(false) {}
 
-    BinarySymbol(int b) : m_condition(b ? Tribool::One : Tribool::Zero) {}
+    Symbol(const Symbol<T> & obj) : m_value(obj.m_value), m_isDontCare(obj.m_isDontCare) {}
 
-    BinarySymbol(const std::string & c) : m_condition(c == "0" ? Tribool::Zero : c == "#" ? Tribool::DontCare : Tribool::One) {}
+    virtual ~Symbol() = default;
 
-    BinarySymbol(const BinarySymbol & s) : m_condition(s.m_condition) {}
-
-    bool isDontCare() const override
+    virtual bool isDontCare() const
     {
-        return m_condition == Tribool::DontCare;
-    }
-
-    char toChar() const
-    {
-        if (isDontCare())
-            return '#';
-        else if (m_condition == Tribool::Zero)
-            return '0';
-        else
-            return '1';
+        return m_isDontCare;
     }
 
     std::string toString() const override
     {
         if (isDontCare())
             return "#";
-        else if (m_condition == Tribool::Zero)
-            return "0";
         else
-            return "1";
+            return std::to_string(m_value);
     }
 
-    friend bool operator== (const BinarySymbol & lhs, const BinarySymbol & rhs)
+    friend bool operator== (const Symbol<T> & lhs, const Symbol<T> & rhs)
     {
-        return lhs.m_condition == rhs.m_condition;
+        return lhs.isDontCare() == rhs.isDontCare() && lhs.m_value == rhs.m_value;
     }
 
-    friend bool operator!= (const BinarySymbol & lhs, const BinarySymbol & rhs)
+    friend bool operator!= (const Symbol<T> & lhs, const Symbol<T> & rhs)
     {
-        return rhs != lhs;
+        return lhs.isDontCare() != rhs.isDontCare() || lhs.m_value != rhs.m_value;
     }
 
-    BinarySymbol & operator= (const BinarySymbol & obj)
+    Symbol<T> & operator= (const Symbol<T> & obj)
     {
-        m_condition = obj.m_condition;
+        m_value = obj.m_value;
+        m_isDontCare = obj.m_isDontCare;
         return *this;
     }
 
-    bool contains(const BinarySymbol & symbol) const override
+    bool contains(const Symbol<T> & symbol) const override
     {
-        return isDontCare() || m_condition == symbol.m_condition;
+        return isDontCare() || (m_value == symbol.m_value && isDontCare() == symbol.isDontCare());
     }
 
-    void generalize() override
+    void generalize()
     {
-        m_condition = Tribool::DontCare;
+        m_isDontCare = true;
     }
 };
