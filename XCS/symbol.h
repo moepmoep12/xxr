@@ -19,7 +19,7 @@ public:
         return os << obj.toString();
     }
 
-    virtual bool contains(const T & symbol) const = 0;
+    virtual bool matches(const T & symbol) const = 0;
 };
 
 // The standard symbol for XCS (with "don't care")
@@ -74,7 +74,7 @@ public:
         return *this;
     }
 
-    bool contains(const T & value) const override
+    bool matches(const T & value) const override
     {
         return isDontCare() || this->value() == value;
     }

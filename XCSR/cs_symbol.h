@@ -36,7 +36,7 @@ public:
         return *this;
     }
 
-    bool contains(const Symbol<T> & symbol) const override
+    bool matches(const Symbol<T> & symbol) const override
     {
         return (m_value == symbol.m_value && isDontCare() == symbol.isDontCare());
     }

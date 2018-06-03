@@ -49,7 +49,7 @@ public:
         {
             for (auto && cl : population)
             {
-                if (cl->condition.contains(situation))
+                if (cl->condition.matches(situation))
                 {
                     m_set.insert(cl);
                     unselectedActions.erase(cl->action);

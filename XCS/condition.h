@@ -67,13 +67,13 @@ public:
     }
 
     // DOES MATCH
-    bool contains(const std::vector<T> & situation) const
+    bool matches(const std::vector<T> & situation) const
     {
         assert(m_symbols.size() == situation.size());
 
         for (size_t i = 0; i < m_symbols.size(); ++i)
         {
-            if (!m_symbols[i].contains(situation[i]))
+            if (!m_symbols[i].matches(situation[i]))
             {
                 return false;
             }
