@@ -41,7 +41,7 @@ int main()
         constants.generalizeProbability = 0.75;
     }
 
-    XCS<MultiplexerEnvironment, bool, bool> xcs(MultiplexerEnvironment(multiplexerLength), constants);
+    XCS<bool, bool> xcs(std::make_shared<MultiplexerEnvironment>(multiplexerLength), constants);
     xcs.run(1000000);
     xcs.dumpPopulation();
 

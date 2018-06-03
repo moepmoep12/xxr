@@ -64,7 +64,7 @@ private:
 
 public:
     explicit MultiplexerEnvironment(std::size_t length) :
-        AbstractEnvironment({ 0, 1 }),
+        AbstractEnvironment({ false, true }),
         m_totalLength(length),
         m_addressBitLength(addressBitLength(length, 0)),
         m_registerBitLength(length - m_addressBitLength),

@@ -20,7 +20,7 @@
 #include "environment.h"
 #include "random.h"
 
-template <class Environment, typename T, typename Action, class Symbol = Symbol<T>>
+template <typename T, typename Action, class Symbol = Symbol<T>>
 class XCS
 {
 protected:
@@ -53,15 +53,15 @@ protected:
 
     const XCSConstants m_constants;
 
-public:
-    Environment environment;
+    std::shared_ptr<AbstractEnvironment<T, Action>> m_environment;
 
-    XCS(const Environment & environment, const XCSConstants & constants)
-        : environment(environment),
-        m_population(constants, environment.actionChoices),
-        m_matchSet(constants, environment.actionChoices),
-        m_actionSet(constants, environment.actionChoices),
-        m_prevActionSet(constants, environment.actionChoices),
+public:
+    XCS(std::shared_ptr<AbstractEnvironment<T, Action>> environment, const XCSConstants & constants)
+        : m_environment(environment),
+        m_population(constants, environment->actionChoices),
+        m_matchSet(constants, environment->actionChoices),
+        m_actionSet(constants, environment->actionChoices),
+        m_prevActionSet(constants, environment->actionChoices),
         m_constants(constants),
         m_timeStamp(0),
         m_prevReward(0.0)
@@ -74,7 +74,7 @@ public:
         // Main loop
         for (uint64_t i = 0; i < loopCount; ++i)
         {
-            auto situation = environment.situation();
+            auto situation = m_environment->situation();
 
             m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
@@ -84,7 +84,7 @@ public:
 
             m_actionSet.regenerate(m_matchSet, action);
 
-            double reward = environment.executeAction(action);
+            double reward = m_environment->executeAction(action);
 
             if (!m_prevActionSet.empty())
             {
@@ -93,7 +93,7 @@ public:
                 m_prevActionSet.runGA(m_prevSituation, m_population, m_timeStamp);
             }
 
-            if (environment.isEndOfProblem())
+            if (m_environment->isEndOfProblem())
             {
                 m_actionSet.update(reward, m_population);
                 m_actionSet.runGA(situation, m_population, m_timeStamp);
