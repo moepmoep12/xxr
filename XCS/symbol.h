@@ -79,11 +79,6 @@ public:
         return isDontCare() || this->value() == value;
     }
 
-    bool equals(const T & value) const
-    {
-        return !isDontCare() && this->value() == value;
-    }
-
     void generalize()
     {
         m_isDontCare = true;
