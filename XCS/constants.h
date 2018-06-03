@@ -5,7 +5,7 @@
 namespace xcs
 {
 
-    struct XCSConstants
+    struct Constants
     {
         // N
         //   The maximum size of the population
@@ -113,7 +113,7 @@ namespace xcs
         //   Whether action sets are to be tested for subsuming classifiers
         bool doActionSetSubsumption = true;
 
-        virtual ~XCSConstants() = default;
+        virtual ~Constants() = default;
     };
 
 }

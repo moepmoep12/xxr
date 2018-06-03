@@ -7,7 +7,6 @@
 
 #include "symbol.h"
 #include "condition.h"
-#include "xcs.h"
 
 namespace xcs
 {

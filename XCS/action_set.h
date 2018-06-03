@@ -93,13 +93,13 @@ namespace xcs
         }
 
     public:
-        ActionSet(const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ActionSet(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
             ClassifierPtrSet<T, Action>(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
         {
         }
 
-        ActionSet(const MatchSet<T, Action> & matchSet, Action action, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ActionSet(const MatchSet<T, Action> & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
             ClassifierPtrSet<T, Action>(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
         {

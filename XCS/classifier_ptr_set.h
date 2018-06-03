@@ -13,19 +13,19 @@ namespace xcs
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
-        const XCSConstants m_constants;
+        const Constants m_constants;
         const std::unordered_set<Action> m_actionChoices;
 
         std::unordered_set<ClassifierPtr> m_set;
 
     public:
-        ClassifierPtrSet(const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
+        ClassifierPtrSet(const Constants & constants, const std::unordered_set<Action> actionChoices) :
             m_constants(constants),
             m_actionChoices(actionChoices)
         {
         }
 
-        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
+        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const Constants & constants, const std::unordered_set<Action> actionChoices) :
             m_set(set),
             m_constants(constants),
             m_actionChoices(actionChoices)

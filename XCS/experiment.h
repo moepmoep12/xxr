@@ -8,7 +8,7 @@
 #include <cstddef>
 #include <cmath>
 
-#include "xcs_constants.h"
+#include "constants.h"
 #include "symbol.h"
 #include "classifier.h"
 #include "classifier_ptr_set.h"
@@ -24,7 +24,7 @@ namespace xcs
 {
 
     template <typename T, typename Action, class Symbol = Symbol<T>>
-    class XCS
+    class Experiment
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
@@ -54,12 +54,12 @@ namespace xcs
 
         std::vector<T> m_prevSituation;
 
-        const XCSConstants m_constants;
+        const Constants m_constants;
 
         std::shared_ptr<AbstractEnvironment<T, Action>> m_environment;
 
     public:
-        XCS(std::shared_ptr<AbstractEnvironment<T, Action>> environment, const XCSConstants & constants)
+        Experiment(std::shared_ptr<AbstractEnvironment<T, Action>> environment, const Constants & constants)
             : m_environment(environment),
             m_population(constants, environment->actionChoices),
             m_matchSet(constants, environment->actionChoices),

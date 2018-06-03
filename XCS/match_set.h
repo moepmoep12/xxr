@@ -4,7 +4,7 @@
 #include <unordered_map>
 #include <cstdint>
 
-#include "xcs_constants.h"
+#include "constants.h"
 #include "classifier_ptr_set.h"
 #include "population.h"
 
@@ -32,7 +32,7 @@ namespace xcs
     public:
         using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
 
-        MatchSet(Population<T, Action> & population, const std::vector<T> & situation, uint64_t timeStamp, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        MatchSet(Population<T, Action> & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
             ClassifierPtrSet<T, Action>(constants, actionChoices)
         {
             regenerate(population, situation, timeStamp);

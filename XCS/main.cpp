@@ -5,7 +5,7 @@
 
 #include "condition.h"
 #include "classifier.h"
-#include "xcs.h"
+#include "experiment.h"
 
 using namespace xcs;
 
@@ -13,7 +13,7 @@ int main()
 {
     std::size_t multiplexerLength = 6;
 
-    XCSConstants constants;
+    Constants constants;
 
     if (multiplexerLength == 3)
     {
@@ -43,7 +43,7 @@ int main()
         constants.generalizeProbability = 0.75;
     }
 
-    XCS<bool, bool> xcs(std::make_shared<MultiplexerEnvironment>(multiplexerLength), constants);
+    Experiment<bool, bool> xcs(std::make_shared<MultiplexerEnvironment>(multiplexerLength), constants);
     xcs.run(1000000);
     xcs.dumpPopulation();
 

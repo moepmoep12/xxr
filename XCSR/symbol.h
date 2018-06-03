@@ -8,31 +8,31 @@ namespace xcsr
 
     // The standard symbol for XCSR (without "don't care")
     template <typename T>
-    class CSSymbol : public xcs::AbstractSymbol<T>
+    class Symbol : public xcs::AbstractSymbol<T>
     {
     private:
         T m_center;
         T m_spread;
 
     public:
-        CSSymbol(T c, T s) : m_center(c), m_spread(s) {}
+        Symbol(T c, T s) : m_center(c), m_spread(s) {}
 
         virtual std::string toString() const override
         {
             return std::to_string(m_center) + "(" + std::to_string(m_spread) + ") ";
         }
 
-        friend bool operator== (const CSSymbol & lhs, const CSSymbol & rhs)
+        friend bool operator== (const Symbol & lhs, const Symbol & rhs)
         {
             return lhs.m_center == rhs.m_center && lhs.m_spread == rhs.m_spread;
         }
 
-        friend bool operator!= (const CSSymbol & lhs, const CSSymbol & rhs)
+        friend bool operator!= (const Symbol & lhs, const Symbol & rhs)
         {
             return lhs.m_center != rhs.m_center || lhs.m_spread != rhs.m_spread;
         }
 
-        virtual CSSymbol & operator= (const CSSymbol & obj)
+        virtual Symbol & operator= (const Symbol & obj)
         {
             m_center = obj.m_center;
             m_spread = obj.m_spread;

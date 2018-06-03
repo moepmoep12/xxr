@@ -7,7 +7,7 @@
 #include <cassert>
 
 #include "condition.h"
-#include "xcs_constants.h"
+#include "constants.h"
 
 namespace xcs
 {
@@ -120,7 +120,7 @@ namespace xcs
         {
         }
 
-        Classifier(const Condition<T> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        Classifier(const Condition<T> & condition, Action action, uint64_t timeStamp, const Constants & constants) :
             ConditionActionPair<T, Action>(condition, action),
             prediction(constants.initialPrediction),
             predictionError(constants.initialPredictionError),
@@ -134,12 +134,12 @@ namespace xcs
         {
         }
 
-        Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const Constants & constants) :
             Classifier(Condition<T>(situation), action, timeStamp, constants)
         {
         }
 
-        Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        Classifier(const std::string & condition, Action action, uint64_t timeStamp, const Constants & constants) :
             Classifier(Condition<T>(condition), action, timeStamp, constants)
         {
         }
