@@ -8,36 +8,36 @@ template <typename T>
 class CSSymbol : public AbstractSymbol<T>
 {
 private:
-    T m_c;
-    T m_s;
+    T m_center;
+    T m_spread;
 
 public:
-    CSSymbol(T c, T s) : m_c(c), m_s(s) {}
+    CSSymbol(T c, T s) : m_center(c), m_spread(s) {}
 
     std::string toString() const override
     {
-        return std::to_string(m_c) + "(" + std::to_string(m_s) + ") ";
+        return std::to_string(m_center) + "(" + std::to_string(m_spread) + ") ";
     }
 
     friend bool operator== (const CSSymbol & lhs, const CSSymbol & rhs)
     {
-        return lhs.m_c == rhs.m_c && lhs.m_s == rhs.m_s;
+        return lhs.m_center == rhs.m_center && lhs.m_spread == rhs.m_spread;
     }
 
     friend bool operator!= (const CSSymbol & lhs, const CSSymbol & rhs)
     {
-        return lhs.m_c != rhs.m_c || lhs.m_s != rhs.m_s;
+        return lhs.m_center != rhs.m_center || lhs.m_spread != rhs.m_spread;
     }
 
     CSSymbol & operator= (const CSSymbol & obj)
     {
-        m_c = obj.m_c;
-        m_s = obj.m_s;
+        m_center = obj.m_center;
+        m_spread = obj.m_spread;
         return *this;
     }
 
-    bool matches(const Symbol<T> & symbol) const override
+    bool matches(const T & value) const override
     {
-        return (m_value == symbol.m_value && isDontCare() == symbol.isDontCare());
+        return (m_center - m_spread) <= value && value < (m_center + m_spread);
     }
 };
