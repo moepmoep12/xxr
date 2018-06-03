@@ -41,12 +41,12 @@ public:
         return str;
     }
 
-    virtual auto && operator[] (std::size_t idx)
+    virtual Symbol & operator[] (std::size_t idx)
     {
         return m_symbols[idx];
     }
 
-    virtual auto && at(std::size_t idx) const
+    virtual const Symbol & at(std::size_t idx) const
     {
         return m_symbols.at(idx);
     }
