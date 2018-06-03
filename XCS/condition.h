@@ -10,7 +10,7 @@
 #include "symbol.h"
 #include "random.h"
 
-template <class Symbol>
+template <typename T, class Symbol = Symbol<T>>
 class Condition
 {
 private:

@@ -8,35 +8,35 @@
 #include "classifier_ptr_set.h"
 #include "population.h"
 
-template <class Symbol, typename Action>
-class MatchSet : public ClassifierPtrSet<Symbol, Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
+class MatchSet : public ClassifierPtrSet<T, Action>
 {
 protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
-    using ClassifierPtrSet<Symbol, Action>::m_set;
-    using ClassifierPtrSet<Symbol, Action>::m_constants;
-    using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
+    using ClassifierPtrSet<T, Action>::m_set;
+    using ClassifierPtrSet<T, Action>::m_constants;
+    using ClassifierPtrSet<T, Action>::m_actionChoices;
 
     // GENERATE COVERING CLASSIFIER
-    auto generateCoveringClassifier(const Condition<Symbol> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
+    auto generateCoveringClassifier(const Condition<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
     {
-        auto cl = std::make_shared<Classifier<Symbol, Action>>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+        auto cl = std::make_shared<Classifier<T, Action>>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
         cl->condition.randomGeneralize(m_constants.generalizeProbability);
 
         return cl;
     }
 
 public:
-    using ClassifierPtrSet<Symbol, Action>::ClassifierPtrSet;
+    using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
 
-    MatchSet(Population<Symbol, Action> & population, const Condition<Symbol> & situation, uint64_t timeStamp, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
-        ClassifierPtrSet<Symbol, Action>(constants, actionChoices)
+    MatchSet(Population<T, Action> & population, const Condition<T> & situation, uint64_t timeStamp, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ClassifierPtrSet<T, Action>(constants, actionChoices)
     {
         regenerate(population, situation, timeStamp);
     }
 
     // GENERATE MATCH SET
-    void regenerate(Population<Symbol, Action> & population, const Condition<Symbol> & situation, uint64_t timeStamp)
+    void regenerate(Population<T, Action> & population, const Condition<T> & situation, uint64_t timeStamp)
     {
         // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
         auto thetaMna = (m_constants.thetaMna == 0) ? m_actionChoices.size() : m_constants.thetaMna;

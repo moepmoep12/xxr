@@ -11,11 +11,11 @@
 #include "classifier_ptr_set.h"
 #include "random.h"
 
-template <class Symbol, typename Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
 class AbstractPredictionArray
 {
 protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
     // PA (Prediction Array)
     std::unordered_map<Action, double> m_pa;
@@ -31,7 +31,7 @@ protected:
 
 public:
     // GENERATE PREDICTION ARRAY
-    explicit AbstractPredictionArray(const MatchSet<Symbol, Action> & matchSet)
+    explicit AbstractPredictionArray(const MatchSet<T, Action> & matchSet)
     {
         // FSA (Fitness Sum Array)
         std::unordered_map<Action, double> fsa;
@@ -80,14 +80,14 @@ public:
     virtual Action selectAction() const = 0;
 };
 
-template <class Symbol, typename Action>
-class GreedyPredictionArray : public AbstractPredictionArray<Symbol, Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
+class GreedyPredictionArray : public AbstractPredictionArray<T, Action>
 {
 private:
-    using AbstractPredictionArray<Symbol, Action>::m_maxPAActions;
+    using AbstractPredictionArray<T, Action>::m_maxPAActions;
 
 public:
-    using AbstractPredictionArray<Symbol, Action>::AbstractPredictionArray;
+    using AbstractPredictionArray<T, Action>::AbstractPredictionArray;
 
     Action selectAction() const override
     {
@@ -97,17 +97,17 @@ public:
     }
 };
 
-template <class Symbol, typename Action>
-class EpsilonGreedyPredictionArray : public AbstractPredictionArray<Symbol, Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
+class EpsilonGreedyPredictionArray : public AbstractPredictionArray<T, Action>
 {
 private:
     double m_epsilon;
-    using AbstractPredictionArray<Symbol, Action>::m_paActions;
-    using AbstractPredictionArray<Symbol, Action>::m_maxPAActions;
+    using AbstractPredictionArray<T, Action>::m_paActions;
+    using AbstractPredictionArray<T, Action>::m_maxPAActions;
 
 public:
-    EpsilonGreedyPredictionArray(const MatchSet<Symbol, Action> & matchSet, double epsilon)
-        : AbstractPredictionArray<Symbol, Action>(matchSet), m_epsilon(epsilon) {}
+    EpsilonGreedyPredictionArray(const MatchSet<T, Action> & matchSet, double epsilon)
+        : AbstractPredictionArray<T, Action>(matchSet), m_epsilon(epsilon) {}
 
     Action selectAction() const override
     {

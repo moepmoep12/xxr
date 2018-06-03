@@ -1,18 +1,19 @@
 #pragma once
 
+#include "symbol.h"
 #include "classifier_ptr_set.h"
 
-template <class Symbol, typename Action>
-class Population : public ClassifierPtrSet<Symbol, Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
+class Population : public ClassifierPtrSet<T, Action>
 {
 protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
-    using ClassifierPtrSet<Symbol, Action>::m_set;
-    using ClassifierPtrSet<Symbol, Action>::m_constants;
-    using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
+    using ClassifierPtrSet<T, Action>::m_set;
+    using ClassifierPtrSet<T, Action>::m_constants;
+    using ClassifierPtrSet<T, Action>::m_actionChoices;
 
     // DELETION VOTE
-    double deletionVote(const Classifier<Symbol, Action> & cl, double averageFitness) const
+    double deletionVote(const Classifier<T, Action> & cl, double averageFitness) const
     {
         double vote = cl.actionSetSize * cl.numerosity;
 
@@ -26,20 +27,20 @@ protected:
     }
 
 public:
-    using ClassifierPtrSet<Symbol, Action>::ClassifierPtrSet;
+    using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
 
     // INSERT IN POPULATION
-    void insertOrIncrementNumerosity(const Classifier<Symbol, Action> & cl)
+    void insertOrIncrementNumerosity(const Classifier<T, Action> & cl)
     {
         for (auto && c : m_set)
         {
-            if (static_cast<ConditionActionPair<Symbol, Action>>(*c).equals(cl))
+            if (static_cast<ConditionActionPair<T, Action>>(*c).equals(cl))
             {
                 ++c->numerosity;
                 return;
             }
         }
-        m_set.insert(std::make_shared<Classifier<Symbol, Action>>(cl));
+        m_set.insert(std::make_shared<Classifier<T, Action>>(cl));
     }
 
     // DELETE FROM POPULATION

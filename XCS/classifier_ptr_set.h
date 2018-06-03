@@ -4,11 +4,11 @@
 
 #include "classifier.h"
 
-template <class Symbol, typename Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
 class ClassifierPtrSet
 {
 protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
     const XCSConstants m_constants;
     const std::unordered_set<Action> m_actionChoices;

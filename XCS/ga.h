@@ -10,11 +10,11 @@
 #include "population.h"
 #include "random.h"
 
-template <class Symbol, typename Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
 class GA
 {
 public:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
     const double m_crossoverProbability;
     const double m_mutationProbability;
@@ -23,7 +23,7 @@ public:
     const std::unordered_set<Action> & m_actionChoices;
 
     // SELECT OFFSPRING
-    ClassifierPtr selectOffspring(const ClassifierPtrSet<Symbol, Action> & actionSet) const
+    ClassifierPtr selectOffspring(const ClassifierPtrSet<T, Action> & actionSet) const
     {
         double choicePoint;
         {
@@ -56,7 +56,7 @@ public:
     }
 
     // APPLY CROSSOVER
-    void crossover(Classifier<Symbol, Action> & cl1, Classifier<Symbol, Action> & cl2) const
+    void crossover(Classifier<T, Action> & cl1, Classifier<T, Action> & cl2) const
     {
         assert(cl1.condition.size() == cl2.condition.size());
 
@@ -75,7 +75,7 @@ public:
     }
 
     // APPLY MUTATION
-    void mutate(Classifier<Symbol, Action> & cl, const Condition<Symbol> & situation) const
+    void mutate(Classifier<T, Action> & cl, const Condition<T> & situation) const
     {
         assert(cl.condition.size() == situation.size());
 
@@ -112,15 +112,15 @@ public:
     }
 
     // RUN GA (refer to ActionSet::runGA() for the former part)
-    void run(ClassifierPtrSet<Symbol, Action> & actionSet, const Condition<Symbol> & situation, Population<Symbol, Action> & population) const
+    void run(ClassifierPtrSet<T, Action> & actionSet, const Condition<T> & situation, Population<T, Action> & population) const
     {
         auto parent1 = selectOffspring(actionSet);
         auto parent2 = selectOffspring(actionSet);
 
         assert(parent1->condition.size() == parent2->condition.size());
 
-        Classifier<Symbol, Action> child1(*parent1);
-        Classifier<Symbol, Action> child2(*parent2);
+        Classifier<T, Action> child1(*parent1);
+        Classifier<T, Action> child2(*parent2);
 
         child1.numerosity = child2.numerosity = 1;
         child1.experience = child2.experience = 0;

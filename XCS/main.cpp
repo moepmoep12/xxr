@@ -40,7 +40,7 @@ int main()
         constants.generalizeProbability = 0.75;
     }
 
-    XCS<MultiplexerEnvironment, Symbol<bool>, bool> xcs(MultiplexerEnvironment(multiplexerLength), constants);
+    XCS<MultiplexerEnvironment, bool, bool> xcs(MultiplexerEnvironment(multiplexerLength), constants);
     xcs.run(1000000);
     xcs.dumpPopulation();
 

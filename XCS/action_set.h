@@ -8,16 +8,16 @@
 #include "match_set.h"
 #include "ga.h"
 
-template <class Symbol, typename Action>
-class ActionSet : public ClassifierPtrSet<Symbol, Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
+class ActionSet : public ClassifierPtrSet<T, Action>
 {
 protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
-    using ClassifierPtrSet<Symbol, Action>::m_set;
-    using ClassifierPtrSet<Symbol, Action>::m_constants;
-    using ClassifierPtrSet<Symbol, Action>::m_actionChoices;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
+    using ClassifierPtrSet<T, Action>::m_set;
+    using ClassifierPtrSet<T, Action>::m_constants;
+    using ClassifierPtrSet<T, Action>::m_actionChoices;
 
-    GA<Symbol, Action> m_ga;
+    GA<T, Action> m_ga;
 
     // UPDATE FITNESS
     void updateFitness()
@@ -48,7 +48,7 @@ protected:
     }
 
     // DO ACTION SET SUBSUMPTION
-    void doSubsumption(Population<Symbol, Action> & population)
+    void doSubsumption(Population<T, Action> & population)
     {
         ClassifierPtr cl;
 
@@ -89,20 +89,20 @@ protected:
 
 public:
     ActionSet(const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
-        ClassifierPtrSet<Symbol, Action>(constants, actionChoices),
+        ClassifierPtrSet<T, Action>(constants, actionChoices),
         m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
     {
     }
 
-    ActionSet(const MatchSet<Symbol, Action> & matchSet, Action action, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
-        ClassifierPtrSet<Symbol, Action>(constants, actionChoices),
+    ActionSet(const MatchSet<T, Action> & matchSet, Action action, const XCSConstants & constants, const std::unordered_set<Action> & actionChoices) :
+        ClassifierPtrSet<T, Action>(constants, actionChoices),
         m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
     {
         regenerate(matchSet, action);
     }
 
     // GENERATE ACTION SET
-    void regenerate(const MatchSet<Symbol, Action> & matchSet, Action action)
+    void regenerate(const MatchSet<T, Action> & matchSet, Action action)
     {
         m_set.clear();
 
@@ -115,13 +115,13 @@ public:
         }
     }
 
-    void copyTo(ActionSet<Symbol, Action> & dest)
+    void copyTo(ActionSet<T, Action> & dest)
     {
         dest.m_set = m_set; // don't copy m_ga since it contains const parameters
     }
 
     // RUN GA (refer to GA::run() for the latter part)
-    void runGA(const Condition<Symbol> & situation, Population<Symbol, Action> & population, uint64_t timeStamp)
+    void runGA(const Condition<T> & situation, Population<T, Action> & population, uint64_t timeStamp)
     {
         uint64_t timeStampNumerositySum = 0;
         uint64_t numerositySum = 0;
@@ -146,7 +146,7 @@ public:
     }
 
     // UPDATE SET
-    void update(double p, Population<Symbol, Action> & population)
+    void update(double p, Population<T, Action> & population)
     {
         // Calculate numerosity sum used for updating action set size estimate
         uint64_t numerositySum = 0;

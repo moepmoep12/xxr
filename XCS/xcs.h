@@ -20,36 +20,36 @@
 #include "environment.h"
 #include "random.h"
 
-template <class Environment, class Symbol, typename Action>
+template <class Environment, typename T, typename Action, class Symbol = Symbol<T>>
 class XCS
 {
 protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<Symbol, Action>>;
+    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
     // [P]
     //   The population [P] consists of all classifier that exist in XCS at any time.
-    Population<Symbol, Action> m_population;
+    Population<T, Action> m_population;
 
     // [M]
     //   The match set [M] is formed out of the current [P].
     //   It includes all classifiers that match the current situation.
-    MatchSet<Symbol, Action> m_matchSet;
+    MatchSet<T, Action> m_matchSet;
 
     // [A]
     //   The action set [A] is formed out of the current [M].
     //   It includes all classifiers of [M] that propose the executed action.
-    ActionSet<Symbol, Action> m_actionSet;
+    ActionSet<T, Action> m_actionSet;
 
     // [A]_-1
     //   The previous action set [A]_-1 is the action set that was active in the last
     //   execution cycle.
-    ActionSet<Symbol, Action> m_prevActionSet;
+    ActionSet<T, Action> m_prevActionSet;
 
     uint64_t m_timeStamp;
 
     double m_prevReward;
 
-    Condition<Symbol> m_prevSituation;
+    Condition<T> m_prevSituation;
 
     const XCSConstants m_constants;
 
@@ -78,7 +78,7 @@ public:
 
             m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
-            EpsilonGreedyPredictionArray<Symbol, Action> predictionArray(m_matchSet, m_constants.exploreProbability);
+            EpsilonGreedyPredictionArray<T, Action> predictionArray(m_matchSet, m_constants.exploreProbability);
 
             Action action = predictionArray.selectAction();
 

@@ -8,7 +8,7 @@
 #include "condition.h"
 #include "xcs.h"
 
-template <class Symbol, typename Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
 class AbstractEnvironment
 {
 protected:
@@ -26,7 +26,7 @@ public:
     virtual ~AbstractEnvironment() = default;
 
     // Returns current situation
-    virtual Condition<Symbol> situation() const = 0;
+    virtual Condition<T> situation() const = 0;
 
     // Executes action (and update situation) and returns reward
     virtual double executeAction(Action action) = 0;
@@ -36,13 +36,13 @@ public:
     virtual bool isEndOfProblem() const = 0;
 };
 
-class MultiplexerEnvironment : public AbstractEnvironment<Symbol<bool>, bool>
+class MultiplexerEnvironment : public AbstractEnvironment<bool, bool>
 {
 private:
     const size_t m_totalLength;
     const size_t m_addressBitLength;
     const size_t m_registerBitLength;
-    Condition<Symbol<bool>> m_situation;
+    Condition<bool> m_situation;
     bool m_isEndOfProblem;
 
     // Get address bit length from total length
@@ -51,14 +51,14 @@ private:
         return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
     }
 
-    static Condition<Symbol<bool>> randomSituation(size_t totalLength)
+    static Condition<bool> randomSituation(size_t totalLength)
     {
         std::vector<Symbol<bool>> symbols;
         for (size_t i = 0; i < totalLength; ++i)
         {
             symbols.push_back(Symbol<bool>(Random::nextInt(0, 1)));
         }
-        return Condition<Symbol<bool>>(symbols);
+        return Condition<bool>(symbols);
     }
 
 public:
@@ -74,7 +74,7 @@ public:
         assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
     }
 
-    Condition<Symbol<bool>> situation() const override
+    Condition<bool> situation() const override
     {
         return m_situation;
     }
@@ -98,7 +98,7 @@ public:
     }
 
     // Returns answer to situation
-    bool getAnswer(const Condition<Symbol<bool>> & situation) const
+    bool getAnswer(const Condition<bool> & situation) const
     {
         size_t address = 0;
         for (size_t i = 0; i < m_addressBitLength; ++i)

@@ -7,42 +7,42 @@
 #include "condition.h"
 #include "xcs_constants.h"
 
-template <class Symbol, typename Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
 struct ConditionActionPair
 {
     // C
     //   The condition specifies the input states (sensory situations)
     //   in which the classifier can be applied (matches).
-    Condition<Symbol> condition;
+    Condition<T> condition;
 
     // A
     //   The action specifies the action (possibly a clasification)
     //   that the classifier proposes.
     Action action;
 
-    ConditionActionPair(Condition<Symbol> condition, Action action) : condition(condition), action(action) {}
+    ConditionActionPair(Condition<T> condition, Action action) : condition(condition), action(action) {}
 
     virtual ~ConditionActionPair() = default;
 
-    bool equals(const ConditionActionPair<Symbol, Action> & cl) const
+    bool equals(const ConditionActionPair<T, Action> & cl) const
     {
         return condition == cl.condition && action == cl.action;
     }
 
     // IS MORE GENERAL
-    bool isMoreGeneral(const ConditionActionPair<Symbol, Action> & cl) const
+    bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
     {
         return condition.contains(cl.condition) && condition != cl.condition;
     }
 
-    friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Symbol, Action> & obj)
+    friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action> & obj)
     {
         return os << obj.condition << ":" << obj.action;
     }
 };
 
-template <class Symbol, typename Action>
-struct Classifier : ConditionActionPair<Symbol, Action>
+template <typename T, typename Action, class Symbol = Symbol<T>>
+struct Classifier : ConditionActionPair<T, Action>
 {
     // p
     //   The prediction p estimates (keeps an average of) the payoff expected if the
@@ -78,7 +78,7 @@ struct Classifier : ConditionActionPair<Symbol, Action>
     //   classifier - represents.
     uint64_t numerosity;
 
-    using ConditionActionPair<Symbol, Action>::isMoreGeneral;
+    using ConditionActionPair<T, Action>::isMoreGeneral;
 
 private:
     // Constants
@@ -86,8 +86,8 @@ private:
     const double m_predictionErrorThreshold;
 
 public:
-    Classifier(const Classifier<Symbol, Action> & obj) :
-        ConditionActionPair<Symbol, Action>(obj.condition, obj.action),
+    Classifier(const Classifier<T, Action> & obj) :
+        ConditionActionPair<T, Action>(obj.condition, obj.action),
         prediction(obj.prediction),
         predictionError(obj.predictionError),
         fitness(obj.fitness),
@@ -100,8 +100,8 @@ public:
     {
     }
 
-    Classifier(const Condition<Symbol> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        ConditionActionPair<Symbol, Action>(condition, action),
+    Classifier(const Condition<T> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        ConditionActionPair<T, Action>(condition, action),
         prediction(constants.initialPrediction),
         predictionError(constants.initialPredictionError),
         fitness(constants.initialFitness),
@@ -115,7 +115,7 @@ public:
     }
 
     Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        Classifier(Condition<Symbol>(condition), action, timeStamp, constants)
+        Classifier(Condition<T>(condition), action, timeStamp, constants)
     {
     }
 
@@ -126,7 +126,7 @@ public:
     }
 
     // DOES SUBSUME
-    bool subsumes(const Classifier<Symbol, Action> & cl) const
+    bool subsumes(const Classifier<T, Action> & cl) const
     {
         return isSubsumer() && isMoreGeneral(cl);
     }
