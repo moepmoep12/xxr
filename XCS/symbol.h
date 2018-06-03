@@ -5,7 +5,7 @@
 #include <vector>
 #include <cstdint>
 
-template <class Derived>
+template <class T>
 class AbstractSymbol
 {
 public:
@@ -18,12 +18,12 @@ public:
         return os << obj.toString();
     }
 
-    virtual bool contains(const Derived & symbol) const = 0;
+    virtual bool contains(const T & symbol) const = 0;
 };
 
 // The standard symbol for XCS (with "don't care")
 template <typename T>
-class Symbol : public AbstractSymbol<Symbol<T>>
+class Symbol : public AbstractSymbol<T>
 {
 private:
     T m_value;
@@ -31,6 +31,8 @@ private:
 
 public:
     Symbol(const T & value) : m_value(value), m_isDontCare(false) {}
+
+    Symbol(char c);
 
     Symbol(const Symbol<T> & obj) : m_value(obj.m_value), m_isDontCare(obj.m_isDontCare) {}
 
@@ -56,7 +58,7 @@ public:
 
     friend bool operator!= (const Symbol<T> & lhs, const Symbol<T> & rhs)
     {
-        return lhs.isDontCare() != rhs.isDontCare() || lhs.m_value != rhs.m_value;
+        return lhs.m_value != rhs.m_value || lhs.isDontCare() != rhs.isDontCare();
     }
 
     Symbol<T> & operator= (const Symbol<T> & obj)
@@ -66,9 +68,9 @@ public:
         return *this;
     }
 
-    bool contains(const Symbol<T> & symbol) const override
+    bool contains(const T & value) const override
     {
-        return isDontCare() || (m_value == symbol.m_value && isDontCare() == symbol.isDontCare());
+        return isDontCare() || m_value == value;
     }
 
     bool equals(const T & value) const
@@ -81,3 +83,5 @@ public:
         m_isDontCare = true;
     }
 };
+
+Symbol<bool>::Symbol(char c) : m_value(c != '0'), m_isDontCare(c == '#') {}

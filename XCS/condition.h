@@ -21,6 +21,8 @@ public:
 
     Condition(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
 
+    Condition(const std::vector<T> & symbols) : m_symbols(symbols.begin(), symbols.end()) {}
+
     Condition(const std::string & symbols)
     {
         for (const char symbol : symbols)
@@ -65,13 +67,13 @@ public:
     }
 
     // DOES MATCH
-    bool contains(const Condition & state) const
+    bool contains(const std::vector<T> & situation) const
     {
-        assert(m_symbols.size() == state.m_symbols.size());
+        assert(m_symbols.size() == situation.size());
 
         for (size_t i = 0; i < m_symbols.size(); ++i)
         {
-            if (!m_symbols[i].contains(state.m_symbols[i]))
+            if (!m_symbols[i].contains(situation[i]))
             {
                 return false;
             }

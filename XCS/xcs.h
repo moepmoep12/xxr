@@ -49,7 +49,7 @@ protected:
 
     double m_prevReward;
 
-    Condition<T> m_prevSituation;
+    std::vector<T> m_prevSituation;
 
     const XCSConstants m_constants;
 

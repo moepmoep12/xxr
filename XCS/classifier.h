@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <string>
 #include <cstdint>
+#include <cassert>
 
 #include "condition.h"
 #include "xcs_constants.h"
@@ -32,7 +33,22 @@ struct ConditionActionPair
     // IS MORE GENERAL
     bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
     {
-        return condition.contains(cl.condition) && condition != cl.condition;
+        assert(condition.size() == cl.condition.size());
+
+        if (condition.dontCareCount() <= cl.condition.dontCareCount())
+        {
+            return false;
+        }
+
+        for (size_t i = 0; i < condition.size(); ++i)
+        {
+            if (!condition.at(i).isDontCare() && condition.at(i) != cl.condition.at(i))
+            {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action> & obj)
@@ -111,6 +127,11 @@ public:
         numerosity(1),
         m_thetaSub(constants.thetaSub),
         m_predictionErrorThreshold(constants.predictionErrorThreshold)
+    {
+    }
+
+    Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+        Classifier(Condition<T>(situation), action, timeStamp, constants)
     {
     }
 

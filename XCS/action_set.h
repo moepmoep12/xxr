@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <unordered_set>
 #include <unordered_map>
 #include <cstdint>
@@ -121,7 +122,7 @@ public:
     }
 
     // RUN GA (refer to GA::run() for the latter part)
-    void runGA(const Condition<T> & situation, Population<T, Action> & population, uint64_t timeStamp)
+    void runGA(const std::vector<T> & situation, Population<T, Action> & population, uint64_t timeStamp)
     {
         uint64_t timeStampNumerositySum = 0;
         uint64_t numerositySum = 0;

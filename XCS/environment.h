@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include <unordered_set>
 #include <cstddef>
 #include <cassert>
@@ -26,7 +27,7 @@ public:
     virtual ~AbstractEnvironment() = default;
 
     // Returns current situation
-    virtual Condition<T> situation() const = 0;
+    virtual std::vector<T> situation() const = 0;
 
     // Executes action (and update situation) and returns reward
     virtual double executeAction(Action action) = 0;
@@ -42,7 +43,7 @@ private:
     const size_t m_totalLength;
     const size_t m_addressBitLength;
     const size_t m_registerBitLength;
-    Condition<bool> m_situation;
+    std::vector<bool> m_situation;
     bool m_isEndOfProblem;
 
     // Get address bit length from total length
@@ -51,14 +52,14 @@ private:
         return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
     }
 
-    static Condition<bool> randomSituation(size_t totalLength)
+    static std::vector<bool> randomSituation(size_t totalLength)
     {
-        std::vector<Symbol<bool>> symbols;
+        std::vector<bool> situation;
         for (size_t i = 0; i < totalLength; ++i)
         {
-            symbols.push_back(Symbol<bool>(Random::nextInt(0, 1)));
+            situation.push_back(Random::nextInt(0, 1));
         }
-        return Condition<bool>(symbols);
+        return situation;
     }
 
 public:
@@ -74,7 +75,7 @@ public:
         assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
     }
 
-    Condition<bool> situation() const override
+    std::vector<bool> situation() const override
     {
         return m_situation;
     }
@@ -98,17 +99,17 @@ public:
     }
 
     // Returns answer to situation
-    bool getAnswer(const Condition<bool> & situation) const
+    bool getAnswer(const std::vector<bool> & situation) const
     {
         size_t address = 0;
         for (size_t i = 0; i < m_addressBitLength; ++i)
         {
-            if (situation.at(i).equals(true))
+            if (situation.at(i) == true)
             {
                 address += (size_t)1 << (m_addressBitLength - i - 1);
             }
         }
 
-        return situation.at(m_addressBitLength + address).equals(true);
+        return situation.at(m_addressBitLength + address) == true;
     }
 };

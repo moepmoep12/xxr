@@ -5,7 +5,7 @@
 
 // The standard symbol for XCSR (without "don't care")
 template <typename T>
-class CSSymbol : public AbstractSymbol<CSSymbol<T>>
+class CSSymbol : public AbstractSymbol<T>
 {
 private:
     T m_c;

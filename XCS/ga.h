@@ -75,7 +75,7 @@ public:
     }
 
     // APPLY MUTATION
-    void mutate(Classifier<T, Action> & cl, const Condition<T> & situation) const
+    void mutate(Classifier<T, Action> & cl, const std::vector<T> & situation) const
     {
         assert(cl.condition.size() == situation.size());
 
@@ -112,7 +112,7 @@ public:
     }
 
     // RUN GA (refer to ActionSet::runGA() for the former part)
-    void run(ClassifierPtrSet<T, Action> & actionSet, const Condition<T> & situation, Population<T, Action> & population) const
+    void run(ClassifierPtrSet<T, Action> & actionSet, const std::vector<T> & situation, Population<T, Action> & population) const
     {
         auto parent1 = selectOffspring(actionSet);
         auto parent2 = selectOffspring(actionSet);
