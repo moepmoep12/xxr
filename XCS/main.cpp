@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <cstddef>
 
 #include "condition.h"
 #include "classifier.h"
@@ -8,7 +9,7 @@
 
 int main()
 {
-    size_t multiplexerLength = 6;
+    std::size_t multiplexerLength = 6;
 
     XCSConstants constants;
 

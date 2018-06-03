@@ -60,15 +60,15 @@ public:
     {
         assert(cl1.condition.size() == cl2.condition.size());
 
-        size_t x = static_cast<size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
-        size_t y = static_cast<size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
+        std::size_t x = static_cast<std::size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
+        std::size_t y = static_cast<std::size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
 
         if (x > y)
         {
             std::swap(x, y);
         }
 
-        for (size_t i = x + 1; i < y; ++i)
+        for (std::size_t i = x + 1; i < y; ++i)
         {
             std::swap(cl1.condition[i], cl2.condition[i]);
         }
@@ -79,7 +79,7 @@ public:
     {
         assert(cl.condition.size() == situation.size());
 
-        for (size_t i = 0; i < cl.condition.size(); ++i)
+        for (std::size_t i = 0; i < cl.condition.size(); ++i)
         {
             if (Random::nextDouble() < m_mutationProbability)
             {

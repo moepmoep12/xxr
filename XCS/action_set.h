@@ -4,6 +4,7 @@
 #include <unordered_set>
 #include <unordered_map>
 #include <cstdint>
+#include <cstddef>
 
 #include "classifier_ptr_set.h"
 #include "match_set.h"
@@ -57,8 +58,8 @@ protected:
         {
             if (c->isSubsumer())
             {
-                size_t cDontCareCount;
-                size_t clDontCareCount;
+                std::size_t cDontCareCount;
+                std::size_t clDontCareCount;
                 if ((cl.get() == nullptr) ||
                     ((cDontCareCount = c->condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
                     ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))

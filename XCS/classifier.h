@@ -3,6 +3,7 @@
 #include <unordered_set>
 #include <string>
 #include <cstdint>
+#include <cstddef>
 #include <cassert>
 
 #include "condition.h"
@@ -40,7 +41,7 @@ struct ConditionActionPair
             return false;
         }
 
-        for (size_t i = 0; i < condition.size(); ++i)
+        for (std::size_t i = 0; i < condition.size(); ++i)
         {
             if (!condition.at(i).isDontCare() && condition.at(i) != cl.condition.at(i))
             {

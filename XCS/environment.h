@@ -40,22 +40,22 @@ public:
 class MultiplexerEnvironment : public AbstractEnvironment<bool, bool>
 {
 private:
-    const size_t m_totalLength;
-    const size_t m_addressBitLength;
-    const size_t m_registerBitLength;
+    const std::size_t m_totalLength;
+    const std::size_t m_addressBitLength;
+    const std::size_t m_registerBitLength;
     std::vector<bool> m_situation;
     bool m_isEndOfProblem;
 
     // Get address bit length from total length
-    static constexpr size_t addressBitLength(size_t l, size_t c)
+    static constexpr std::size_t addressBitLength(std::size_t l, std::size_t c)
     {
         return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
     }
 
-    static std::vector<bool> randomSituation(size_t totalLength)
+    static std::vector<bool> randomSituation(std::size_t totalLength)
     {
         std::vector<bool> situation;
-        for (size_t i = 0; i < totalLength; ++i)
+        for (std::size_t i = 0; i < totalLength; ++i)
         {
             situation.push_back(Random::nextInt(0, 1));
         }
@@ -63,7 +63,7 @@ private:
     }
 
 public:
-    explicit MultiplexerEnvironment(size_t length) :
+    explicit MultiplexerEnvironment(std::size_t length) :
         AbstractEnvironment({ 0, 1 }),
         m_totalLength(length),
         m_addressBitLength(addressBitLength(length, 0)),
@@ -72,7 +72,7 @@ public:
         m_isEndOfProblem(false)
     {
         // Total length must be n + 2^n (n > 0)
-        assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
+        assert(m_totalLength == (m_addressBitLength + ((std::size_t)1 << m_addressBitLength)));
     }
 
     virtual std::vector<bool> situation() const override
@@ -101,12 +101,12 @@ public:
     // Returns answer to situation
     virtual bool getAnswer(const std::vector<bool> & situation) const
     {
-        size_t address = 0;
-        for (size_t i = 0; i < m_addressBitLength; ++i)
+        std::size_t address = 0;
+        for (std::size_t i = 0; i < m_addressBitLength; ++i)
         {
             if (situation.at(i) == true)
             {
-                address += (size_t)1 << (m_addressBitLength - i - 1);
+                address += (std::size_t)1 << (m_addressBitLength - i - 1);
             }
         }
 

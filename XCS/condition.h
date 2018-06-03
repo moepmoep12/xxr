@@ -41,12 +41,12 @@ public:
         return str;
     }
 
-    virtual auto && operator[] (size_t idx)
+    virtual auto && operator[] (std::size_t idx)
     {
         return m_symbols[idx];
     }
 
-    virtual auto && at(size_t idx) const
+    virtual auto && at(std::size_t idx) const
     {
         return m_symbols.at(idx);
     }
@@ -71,7 +71,7 @@ public:
     {
         assert(m_symbols.size() == situation.size());
 
-        for (size_t i = 0; i < m_symbols.size(); ++i)
+        for (std::size_t i = 0; i < m_symbols.size(); ++i)
         {
             if (!m_symbols[i].matches(situation[i]))
             {
@@ -87,7 +87,7 @@ public:
         return m_symbols.empty();
     }
 
-    virtual size_t size() const
+    virtual std::size_t size() const
     {
         return m_symbols.size();
     }
@@ -103,9 +103,9 @@ public:
         }
     }
 
-    virtual size_t dontCareCount() const
+    virtual std::size_t dontCareCount() const
     {
-        size_t count = 0;
+        std::size_t count = 0;
         for (auto && symbol : m_symbols)
         {
             if (symbol.isDontCare())
