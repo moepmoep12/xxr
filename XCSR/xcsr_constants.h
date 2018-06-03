@@ -4,5 +4,11 @@
 
 struct XCSRConstants : XCSConstants
 {
+    // s_0
+    double maxSpread;
+
+    // m
+    double mutationMaxChange;
+
     bool XCSConstants::doActionSetSubsumption = false;
 };
