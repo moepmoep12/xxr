@@ -4,6 +4,7 @@
 #include <string>
 #include <vector>
 #include <cstdint>
+#include <cassert>
 
 template <class T>
 class AbstractSymbol
@@ -28,6 +29,11 @@ class Symbol : public AbstractSymbol<T>
 private:
     T m_value;
     bool m_isDontCare;
+    T value() const
+    {
+        assert(!m_isDontCare);
+        return m_value;
+    }
 
 public:
     Symbol(const T & value) : m_value(value), m_isDontCare(false) {}
@@ -48,17 +54,17 @@ public:
         if (isDontCare())
             return "#";
         else
-            return std::to_string(m_value);
+            return std::to_string(value());
     }
 
     friend bool operator== (const Symbol<T> & lhs, const Symbol<T> & rhs)
     {
-        return lhs.isDontCare() == rhs.isDontCare() && lhs.m_value == rhs.m_value;
+        return lhs.isDontCare() == rhs.isDontCare() && (lhs.isDontCare() || lhs.value() == rhs.value());
     }
 
     friend bool operator!= (const Symbol<T> & lhs, const Symbol<T> & rhs)
     {
-        return lhs.m_value != rhs.m_value || lhs.isDontCare() != rhs.isDontCare();
+        return !(lhs == rhs);
     }
 
     Symbol<T> & operator= (const Symbol<T> & obj)
@@ -70,12 +76,12 @@ public:
 
     bool contains(const T & value) const override
     {
-        return isDontCare() || m_value == value;
+        return isDontCare() || this->value() == value;
     }
 
     bool equals(const T & value) const
     {
-        return !isDontCare() && m_value == value;
+        return !isDontCare() && this->value() == value;
     }
 
     void generalize()
