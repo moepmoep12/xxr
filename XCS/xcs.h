@@ -49,7 +49,7 @@ protected:
 
     double m_prevReward;
 
-    Situation<Symbol> m_prevSituation;
+    Condition<Symbol> m_prevSituation;
 
     const XCSConstants m_constants;
 

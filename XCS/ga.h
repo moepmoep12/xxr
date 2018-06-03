@@ -75,7 +75,7 @@ public:
     }
 
     // APPLY MUTATION
-    void mutate(Classifier<Symbol, Action> & cl, const Situation<Symbol> & situation) const
+    void mutate(Classifier<Symbol, Action> & cl, const Condition<Symbol> & situation) const
     {
         assert(cl.condition.size() == situation.size());
 
@@ -112,7 +112,7 @@ public:
     }
 
     // RUN GA (refer to ActionSet::runGA() for the former part)
-    void run(ClassifierPtrSet<Symbol, Action> & actionSet, const Situation<Symbol> & situation, Population<Symbol, Action> & population) const
+    void run(ClassifierPtrSet<Symbol, Action> & actionSet, const Condition<Symbol> & situation, Population<Symbol, Action> & population) const
     {
         auto parent1 = selectOffspring(actionSet);
         auto parent2 = selectOffspring(actionSet);

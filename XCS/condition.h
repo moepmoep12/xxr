@@ -11,17 +11,17 @@
 #include "random.h"
 
 template <class Symbol>
-class Situation
+class Condition
 {
 private:
     std::vector<Symbol> m_symbols;
 
 public:
-    Situation() = default;
+    Condition() = default;
 
-    Situation(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
+    Condition(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
 
-    Situation(const std::string & symbols)
+    Condition(const std::string & symbols)
     {
         for (const char symbol : symbols)
         {
@@ -49,23 +49,23 @@ public:
         return m_symbols.at(idx);
     }
 
-    friend std::ostream & operator<< (std::ostream & os, const Situation & obj)
+    friend std::ostream & operator<< (std::ostream & os, const Condition & obj)
     {
         return os << obj.toString();
     }
 
-    friend bool operator== (const Situation & lhs, const Situation & rhs)
+    friend bool operator== (const Condition & lhs, const Condition & rhs)
     {
         return lhs.m_symbols == rhs.m_symbols;
     }
 
-    friend bool operator!= (const Situation & lhs, const Situation & rhs)
+    friend bool operator!= (const Condition & lhs, const Condition & rhs)
     {
         return lhs.m_symbols != rhs.m_symbols;
     }
 
     // DOES MATCH
-    bool contains(const Situation & state) const
+    bool contains(const Condition & state) const
     {
         assert(m_symbols.size() == state.m_symbols.size());
 

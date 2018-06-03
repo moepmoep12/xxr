@@ -2,7 +2,7 @@
 #include <memory>
 #include <string>
 
-#include "situation.h"
+#include "condition.h"
 #include "classifier.h"
 #include "xcs.h"
 

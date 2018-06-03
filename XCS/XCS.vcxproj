@@ -31,7 +31,7 @@
     <ClInclude Include="population.h" />
     <ClInclude Include="prediction_array.h" />
     <ClInclude Include="random.h" />
-    <ClInclude Include="situation.h" />
+    <ClInclude Include="condition.h" />
     <ClInclude Include="symbol.h" />
     <ClInclude Include="xcs.h" />
     <ClInclude Include="xcs_constants.h" />

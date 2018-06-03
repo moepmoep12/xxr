@@ -121,7 +121,7 @@ public:
     }
 
     // RUN GA (refer to GA::run() for the latter part)
-    void runGA(const Situation<Symbol> & situation, Population<Symbol, Action> & population, uint64_t timeStamp)
+    void runGA(const Condition<Symbol> & situation, Population<Symbol, Action> & population, uint64_t timeStamp)
     {
         uint64_t timeStampNumerositySum = 0;
         uint64_t numerositySum = 0;

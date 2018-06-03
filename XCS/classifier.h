@@ -4,7 +4,7 @@
 #include <string>
 #include <cstdint>
 
-#include "situation.h"
+#include "condition.h"
 #include "xcs_constants.h"
 
 template <class Symbol, typename Action>
@@ -13,14 +13,14 @@ struct ConditionActionPair
     // C
     //   The condition specifies the input states (sensory situations)
     //   in which the classifier can be applied (matches).
-    Situation<Symbol> condition;
+    Condition<Symbol> condition;
 
     // A
     //   The action specifies the action (possibly a clasification)
     //   that the classifier proposes.
     Action action;
 
-    ConditionActionPair(Situation<Symbol> condition, Action action) : condition(condition), action(action) {}
+    ConditionActionPair(Condition<Symbol> condition, Action action) : condition(condition), action(action) {}
 
     virtual ~ConditionActionPair() = default;
 
@@ -100,7 +100,7 @@ public:
     {
     }
 
-    Classifier(const Situation<Symbol> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+    Classifier(const Condition<Symbol> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
         ConditionActionPair<Symbol, Action>(condition, action),
         prediction(constants.initialPrediction),
         predictionError(constants.initialPredictionError),
@@ -115,7 +115,7 @@ public:
     }
 
     Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        Classifier(Situation<Symbol>(condition), action, timeStamp, constants)
+        Classifier(Condition<Symbol>(condition), action, timeStamp, constants)
     {
     }
 
