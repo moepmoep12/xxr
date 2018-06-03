@@ -31,7 +31,7 @@ public:
         }
     }
 
-    std::string toString() const
+    virtual std::string toString() const
     {
         std::string str;
         for (auto && symbol : m_symbols)
@@ -41,12 +41,12 @@ public:
         return str;
     }
 
-    auto && operator[] (size_t idx)
+    virtual auto && operator[] (size_t idx)
     {
         return m_symbols[idx];
     }
 
-    auto && at(size_t idx) const
+    virtual auto && at(size_t idx) const
     {
         return m_symbols.at(idx);
     }
@@ -67,7 +67,7 @@ public:
     }
 
     // DOES MATCH
-    bool matches(const std::vector<T> & situation) const
+    virtual bool matches(const std::vector<T> & situation) const
     {
         assert(m_symbols.size() == situation.size());
 
@@ -82,17 +82,17 @@ public:
         return true;
     }
 
-    bool empty() const
+    virtual bool empty() const
     {
         return m_symbols.empty();
     }
 
-    size_t size() const
+    virtual size_t size() const
     {
         return m_symbols.size();
     }
 
-    void randomGeneralize(double generalizeProbability)
+    virtual void randomGeneralize(double generalizeProbability)
     {
         for (auto && symbol : m_symbols)
         {
@@ -103,7 +103,7 @@ public:
         }
     }
 
-    size_t dontCareCount() const
+    virtual size_t dontCareCount() const
     {
         size_t count = 0;
         for (auto && symbol : m_symbols)

@@ -23,7 +23,7 @@ public:
     const std::unordered_set<Action> & m_actionChoices;
 
     // SELECT OFFSPRING
-    ClassifierPtr selectOffspring(const ClassifierPtrSet<T, Action> & actionSet) const
+    virtual ClassifierPtr selectOffspring(const ClassifierPtrSet<T, Action> & actionSet) const
     {
         double choicePoint;
         {
@@ -56,7 +56,7 @@ public:
     }
 
     // APPLY CROSSOVER
-    void crossover(Classifier<T, Action> & cl1, Classifier<T, Action> & cl2) const
+    virtual void crossover(Classifier<T, Action> & cl1, Classifier<T, Action> & cl2) const
     {
         assert(cl1.condition.size() == cl2.condition.size());
 
@@ -75,7 +75,7 @@ public:
     }
 
     // APPLY MUTATION
-    void mutate(Classifier<T, Action> & cl, const std::vector<T> & situation) const
+    virtual void mutate(Classifier<T, Action> & cl, const std::vector<T> & situation) const
     {
         assert(cl.condition.size() == situation.size());
 
@@ -112,7 +112,7 @@ public:
     }
 
     // RUN GA (refer to ActionSet::runGA() for the former part)
-    void run(ClassifierPtrSet<T, Action> & actionSet, const std::vector<T> & situation, Population<T, Action> & population) const
+    virtual void run(ClassifierPtrSet<T, Action> & actionSet, const std::vector<T> & situation, Population<T, Action> & population) const
     {
         auto parent1 = selectOffspring(actionSet);
         auto parent2 = selectOffspring(actionSet);

@@ -13,7 +13,7 @@ protected:
     using ClassifierPtrSet<T, Action>::m_actionChoices;
 
     // DELETION VOTE
-    double deletionVote(const Classifier<T, Action> & cl, double averageFitness) const
+    virtual double deletionVote(const Classifier<T, Action> & cl, double averageFitness) const
     {
         double vote = cl.actionSetSize * cl.numerosity;
 
@@ -30,7 +30,7 @@ public:
     using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
 
     // INSERT IN POPULATION
-    void insertOrIncrementNumerosity(const Classifier<T, Action> & cl)
+    virtual void insertOrIncrementNumerosity(const Classifier<T, Action> & cl)
     {
         for (auto && c : m_set)
         {
@@ -44,7 +44,7 @@ public:
     }
 
     // DELETE FROM POPULATION
-    void deleteExtraClassifiers()
+    virtual void deleteExtraClassifiers()
     {
         uint64_t numerositySum = 0;
         double fitnessSum = 0.0;

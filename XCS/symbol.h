@@ -49,7 +49,7 @@ public:
         return m_isDontCare;
     }
 
-    std::string toString() const override
+    virtual std::string toString() const override
     {
         if (isDontCare())
             return "#";
@@ -67,19 +67,19 @@ public:
         return !(lhs == rhs);
     }
 
-    Symbol<T> & operator= (const Symbol<T> & obj)
+    virtual Symbol<T> & operator= (const Symbol<T> & obj)
     {
         m_value = obj.m_value;
         m_isDontCare = obj.m_isDontCare;
         return *this;
     }
 
-    bool matches(const T & value) const override
+    virtual bool matches(const T & value) const override
     {
         return isDontCare() || this->value() == value;
     }
 
-    void generalize()
+    virtual void generalize()
     {
         m_isDontCare = true;
     }

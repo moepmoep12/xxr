@@ -69,7 +69,7 @@ public:
     }
 
     // RUN EXPERIMENT
-    void run(uint64_t loopCount)
+    virtual void run(uint64_t loopCount)
     {
         // Main loop
         for (uint64_t i = 0; i < loopCount; ++i)
@@ -109,7 +109,7 @@ public:
         }
     }
 
-    void dumpPopulation() const
+    virtual void dumpPopulation() const
     {
         std::cout << "C:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
         for (auto && cl : m_population)

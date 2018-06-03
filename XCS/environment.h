@@ -75,12 +75,12 @@ public:
         assert(m_totalLength == (m_addressBitLength + ((size_t)1 << m_addressBitLength)));
     }
 
-    std::vector<bool> situation() const override
+    virtual std::vector<bool> situation() const override
     {
         return m_situation;
     }
 
-    double executeAction(bool action) override
+    virtual double executeAction(bool action) override
     {
         double reward = (action == getAnswer(m_situation)) ? 1.0 : 0.0;
 
@@ -93,13 +93,13 @@ public:
         return reward;
     }
 
-    bool isEndOfProblem() const override
+    virtual bool isEndOfProblem() const override
     {
         return m_isEndOfProblem;
     }
 
     // Returns answer to situation
-    bool getAnswer(const std::vector<bool> & situation) const
+    virtual bool getAnswer(const std::vector<bool> & situation) const
     {
         size_t address = 0;
         for (size_t i = 0; i < m_addressBitLength; ++i)

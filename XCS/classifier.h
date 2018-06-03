@@ -31,7 +31,7 @@ struct ConditionActionPair
     }
 
     // IS MORE GENERAL
-    bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
+    virtual bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
     {
         assert(condition.size() == cl.condition.size());
 
@@ -141,13 +141,13 @@ public:
     }
 
     // COULD SUBSUME
-    bool isSubsumer() const
+    virtual bool isSubsumer() const
     {
         return experience > m_thetaSub && predictionError < m_predictionErrorThreshold;
     }
 
     // DOES SUBSUME
-    bool subsumes(const Classifier<T, Action> & cl) const
+    virtual bool subsumes(const Classifier<T, Action> & cl) const
     {
         return isSubsumer() && isMoreGeneral(cl);
     }

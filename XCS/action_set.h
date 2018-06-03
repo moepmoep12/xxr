@@ -21,7 +21,7 @@ protected:
     GA<T, Action> m_ga;
 
     // UPDATE FITNESS
-    void updateFitness()
+    virtual void updateFitness()
     {
         double accuracySum = 0.0;
 
@@ -49,7 +49,7 @@ protected:
     }
 
     // DO ACTION SET SUBSUMPTION
-    void doSubsumption(Population<T, Action> & population)
+    virtual void doSubsumption(Population<T, Action> & population)
     {
         ClassifierPtr cl;
 
@@ -103,7 +103,7 @@ public:
     }
 
     // GENERATE ACTION SET
-    void regenerate(const MatchSet<T, Action> & matchSet, Action action)
+    virtual void regenerate(const MatchSet<T, Action> & matchSet, Action action)
     {
         m_set.clear();
 
@@ -116,13 +116,13 @@ public:
         }
     }
 
-    void copyTo(ActionSet<T, Action> & dest)
+    virtual void copyTo(ActionSet<T, Action> & dest)
     {
         dest.m_set = m_set; // don't copy m_ga since it contains const parameters
     }
 
     // RUN GA (refer to GA::run() for the latter part)
-    void runGA(const std::vector<T> & situation, Population<T, Action> & population, uint64_t timeStamp)
+    virtual void runGA(const std::vector<T> & situation, Population<T, Action> & population, uint64_t timeStamp)
     {
         uint64_t timeStampNumerositySum = 0;
         uint64_t numerositySum = 0;
@@ -147,7 +147,7 @@ public:
     }
 
     // UPDATE SET
-    void update(double p, Population<T, Action> & population)
+    virtual void update(double p, Population<T, Action> & population)
     {
         // Calculate numerosity sum used for updating action set size estimate
         uint64_t numerositySum = 0;

@@ -70,7 +70,7 @@ public:
 
     virtual ~AbstractPredictionArray() = default;
 
-    double max() const
+    virtual double max() const
     {
         assert(m_maxPA == std::numeric_limits<double>::lowest());
         return m_maxPA;

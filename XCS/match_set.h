@@ -18,7 +18,7 @@ protected:
     using ClassifierPtrSet<T, Action>::m_actionChoices;
 
     // GENERATE COVERING CLASSIFIER
-    auto generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
+    virtual auto generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
     {
         auto cl = std::make_shared<Classifier<T, Action>>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
         cl->condition.randomGeneralize(m_constants.generalizeProbability);
@@ -36,7 +36,7 @@ public:
     }
 
     // GENERATE MATCH SET
-    void regenerate(Population<T, Action> & population, const std::vector<T> & situation, uint64_t timeStamp)
+    virtual void regenerate(Population<T, Action> & population, const std::vector<T> & situation, uint64_t timeStamp)
     {
         // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
         auto thetaMna = (m_constants.thetaMna == 0) ? m_actionChoices.size() : m_constants.thetaMna;
