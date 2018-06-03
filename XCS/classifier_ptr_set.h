@@ -4,95 +4,100 @@
 
 #include "classifier.h"
 
-template <typename T, typename Action, class Symbol = Symbol<T>>
-class ClassifierPtrSet
+namespace xcs
 {
-protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
-    const XCSConstants m_constants;
-    const std::unordered_set<Action> m_actionChoices;
-
-    std::unordered_set<ClassifierPtr> m_set;
-
-public:
-    ClassifierPtrSet(const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
-        m_constants(constants),
-        m_actionChoices(actionChoices)
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    class ClassifierPtrSet
     {
-    }
+    protected:
+        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
-    ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
-        m_set(set),
-        m_constants(constants),
-        m_actionChoices(actionChoices)
-    {
-    }
+        const XCSConstants m_constants;
+        const std::unordered_set<Action> m_actionChoices;
 
-    virtual ~ClassifierPtrSet() = default;
+        std::unordered_set<ClassifierPtr> m_set;
 
-    auto empty() const noexcept
-    {
-        return m_set.empty();
-    }
+    public:
+        ClassifierPtrSet(const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
+            m_constants(constants),
+            m_actionChoices(actionChoices)
+        {
+        }
 
-    auto size() const noexcept
-    {
-        return m_set.size();
-    }
+        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const XCSConstants & constants, const std::unordered_set<Action> actionChoices) :
+            m_set(set),
+            m_constants(constants),
+            m_actionChoices(actionChoices)
+        {
+        }
 
-    auto begin() const noexcept
-    {
-        return m_set.begin();
-    }
+        virtual ~ClassifierPtrSet() = default;
 
-    auto end() const noexcept
-    {
-        return m_set.end();
-    }
+        auto empty() const noexcept
+        {
+            return m_set.empty();
+        }
 
-    auto cbegin() const noexcept
-    {
-        return m_set.cbegin();
-    }
+        auto size() const noexcept
+        {
+            return m_set.size();
+        }
 
-    auto cend() const noexcept
-    {
-        return m_set.cend();
-    }
+        auto begin() const noexcept
+        {
+            return m_set.begin();
+        }
 
-    template <class... Args>
-    auto insert(Args... args)
-    {
-        return m_set.insert(args...);
-    }
+        auto end() const noexcept
+        {
+            return m_set.end();
+        }
 
-    template <class... Args>
-    auto erase(Args... args)
-    {
-        return m_set.erase(args...);
-    }
+        auto cbegin() const noexcept
+        {
+            return m_set.cbegin();
+        }
 
-    void clear() noexcept
-    {
-        m_set.clear();
-    }
+        auto cend() const noexcept
+        {
+            return m_set.cend();
+        }
 
-    template <class... Args>
-    void swap(Args... args)
-    {
-        m_set.swap(args...);
-    }
+        template <class... Args>
+        auto insert(Args... args)
+        {
+            return m_set.insert(args...);
+        }
 
-    template <class... Args>
-    auto find(Args... args) const
-    {
-        return m_set.find(args...);
-    }
+        template <class... Args>
+        auto erase(Args... args)
+        {
+            return m_set.erase(args...);
+        }
 
-    template <class... Args>
-    auto count(Args... args) const
-    {
-        return m_set.count(args...);
-    }
-};
+        void clear() noexcept
+        {
+            m_set.clear();
+        }
+
+        template <class... Args>
+        void swap(Args... args)
+        {
+            m_set.swap(args...);
+        }
+
+        template <class... Args>
+        auto find(Args... args) const
+        {
+            return m_set.find(args...);
+        }
+
+        template <class... Args>
+        auto count(Args... args) const
+        {
+            return m_set.count(args...);
+        }
+    };
+
+}

@@ -3,8 +3,13 @@
 #include "../XCS/xcs.h"
 #include "cs_symbol.h"
 
-template <typename T, typename Action, class Symbol = CSSymbol<T>>
-class XCSR : public XCS<T, Action, Symbol>
+namespace xcsr
 {
-public:
-};
+
+    template <typename T, typename Action, class Symbol = CSSymbol<T>>
+    class XCSR : public xcs::XCS<T, Action, Symbol>
+    {
+    public:
+    };
+
+}

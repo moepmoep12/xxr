@@ -7,6 +7,8 @@
 #include "classifier.h"
 #include "xcs.h"
 
+using namespace xcs;
+
 int main()
 {
     std::size_t multiplexerLength = 6;

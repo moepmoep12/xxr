@@ -3,89 +3,94 @@
 #include "symbol.h"
 #include "classifier_ptr_set.h"
 
-template <typename T, typename Action, class Symbol = Symbol<T>>
-class Population : public ClassifierPtrSet<T, Action>
+namespace xcs
 {
-protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
-    using ClassifierPtrSet<T, Action>::m_set;
-    using ClassifierPtrSet<T, Action>::m_constants;
-    using ClassifierPtrSet<T, Action>::m_actionChoices;
 
-    // DELETION VOTE
-    virtual double deletionVote(const Classifier<T, Action> & cl, double averageFitness) const
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    class Population : public ClassifierPtrSet<T, Action>
     {
-        double vote = cl.actionSetSize * cl.numerosity;
+    protected:
+        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
+        using ClassifierPtrSet<T, Action>::m_set;
+        using ClassifierPtrSet<T, Action>::m_constants;
+        using ClassifierPtrSet<T, Action>::m_actionChoices;
 
-        // Consider fitness for deletion vote
-        if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
+        // DELETION VOTE
+        virtual double deletionVote(const Classifier<T, Action> & cl, double averageFitness) const
         {
-            vote *= averageFitness / (cl.fitness / cl.numerosity);
+            double vote = cl.actionSetSize * cl.numerosity;
+
+            // Consider fitness for deletion vote
+            if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
+            {
+                vote *= averageFitness / (cl.fitness / cl.numerosity);
+            }
+
+            return vote;
         }
 
-        return vote;
-    }
+    public:
+        using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
 
-public:
-    using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
-
-    // INSERT IN POPULATION
-    virtual void insertOrIncrementNumerosity(const Classifier<T, Action> & cl)
-    {
-        for (auto && c : m_set)
+        // INSERT IN POPULATION
+        virtual void insertOrIncrementNumerosity(const Classifier<T, Action> & cl)
         {
-            if (static_cast<ConditionActionPair<T, Action>>(*c).equals(cl))
+            for (auto && c : m_set)
             {
-                ++c->numerosity;
+                if (static_cast<ConditionActionPair<T, Action>>(*c).equals(cl))
+                {
+                    ++c->numerosity;
+                    return;
+                }
+            }
+            m_set.insert(std::make_shared<Classifier<T, Action>>(cl));
+        }
+
+        // DELETE FROM POPULATION
+        virtual void deleteExtraClassifiers()
+        {
+            uint64_t numerositySum = 0;
+            double fitnessSum = 0.0;
+            for (auto && c : m_set)
+            {
+                numerositySum += c->numerosity;
+                fitnessSum += c->fitness;
+            }
+
+            // Return if the sum of numerosity has not met its maximum limit
+            if (numerositySum < m_constants.maxPopulationClassifierCount)
+            {
                 return;
             }
-        }
-        m_set.insert(std::make_shared<Classifier<T, Action>>(cl));
-    }
 
-    // DELETE FROM POPULATION
-    virtual void deleteExtraClassifiers()
-    {
-        uint64_t numerositySum = 0;
-        double fitnessSum = 0.0;
-        for (auto && c : m_set)
-        {
-            numerositySum += c->numerosity;
-            fitnessSum += c->fitness;
-        }
+            // The average fitness in the population
+            double averageFitness = fitnessSum / numerositySum;
 
-        // Return if the sum of numerosity has not met its maximum limit
-        if (numerositySum < m_constants.maxPopulationClassifierCount)
-        {
-            return;
-        }
+            // Prepare a roulette wheel by the weights
+            double voteSum = 0.0;
+            std::vector<double> rouletteWheel(m_set.size());
+            std::vector<const ClassifierPtr *> rouletteWheelTarget(m_set.size());
+            for (auto && c : m_set)
+            {
+                voteSum += deletionVote(*c, averageFitness);
+                rouletteWheel.push_back(voteSum);
+                rouletteWheelTarget.push_back(&c);
+            }
 
-        // The average fitness in the population
-        double averageFitness = fitnessSum / numerositySum;
+            // Spin the roulette wheel
+            auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0.0, voteSum));
+            auto rouletteIdx = std::distance(std::begin(rouletteWheel), rouletteIterator);
 
-        // Prepare a roulette wheel by the weights
-        double voteSum = 0.0;
-        std::vector<double> rouletteWheel(m_set.size());
-        std::vector<const ClassifierPtr *> rouletteWheelTarget(m_set.size());
-        for (auto && c : m_set)
-        {
-            voteSum += deletionVote(*c, averageFitness);
-            rouletteWheel.push_back(voteSum);
-            rouletteWheelTarget.push_back(&c);
+            // Distrust the selected classifier
+            if ((*rouletteWheelTarget[rouletteIdx])->numerosity > 1)
+            {
+                (*rouletteWheelTarget[rouletteIdx])->numerosity--;
+            }
+            else
+            {
+                m_set.erase(*rouletteWheelTarget[rouletteIdx]);
+            }
         }
+    };
 
-        // Spin the roulette wheel
-        auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0.0, voteSum));
-        auto rouletteIdx = std::distance(std::begin(rouletteWheel), rouletteIterator);
-
-        // Distrust the selected classifier
-        if ((*rouletteWheelTarget[rouletteIdx])->numerosity > 1)
-        {
-            (*rouletteWheelTarget[rouletteIdx])->numerosity--;
-        }
-        else
-        {
-            m_set.erase(*rouletteWheelTarget[rouletteIdx]);
-        }
-    }
-};
+}

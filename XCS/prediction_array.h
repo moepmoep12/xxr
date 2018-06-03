@@ -11,115 +11,120 @@
 #include "classifier_ptr_set.h"
 #include "random.h"
 
-template <typename T, typename Action, class Symbol = Symbol<T>>
-class AbstractPredictionArray
+namespace xcs
 {
-protected:
-    using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
-    // PA (Prediction Array)
-    std::unordered_map<Action, double> m_pa;
-
-    // Array of PA keys (for random action selection)
-    std::vector<Action> m_paActions;
-
-    // The maximum value of PA
-    double m_maxPA;
-
-    // The best actions of PA
-    std::vector<Action> m_maxPAActions;
-
-public:
-    // GENERATE PREDICTION ARRAY
-    explicit AbstractPredictionArray(const MatchSet<T, Action> & matchSet)
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    class AbstractPredictionArray
     {
-        // FSA (Fitness Sum Array)
-        std::unordered_map<Action, double> fsa;
+    protected:
+        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
 
-        for (auto && cl : matchSet)
+        // PA (Prediction Array)
+        std::unordered_map<Action, double> m_pa;
+
+        // Array of PA keys (for random action selection)
+        std::vector<Action> m_paActions;
+
+        // The maximum value of PA
+        double m_maxPA;
+
+        // The best actions of PA
+        std::vector<Action> m_maxPAActions;
+
+    public:
+        // GENERATE PREDICTION ARRAY
+        explicit AbstractPredictionArray(const MatchSet<T, Action> & matchSet)
         {
-            if (m_pa.count(cl->action) == 0) {
-                m_paActions.push_back(cl->action);
+            // FSA (Fitness Sum Array)
+            std::unordered_map<Action, double> fsa;
+
+            for (auto && cl : matchSet)
+            {
+                if (m_pa.count(cl->action) == 0) {
+                    m_paActions.push_back(cl->action);
+                }
+                m_pa[cl->action] += cl->prediction * cl->fitness;
+                fsa[cl->action] += cl->fitness;
             }
-            m_pa[cl->action] += cl->prediction * cl->fitness;
-            fsa[cl->action] += cl->fitness;
+
+            m_maxPA = std::numeric_limits<double>::lowest();
+
+            for (auto && pair : m_pa)
+            {
+                if (fabs(fsa[pair.first]) > 0.0)
+                {
+                    pair.second /= fsa[pair.first];
+                }
+
+                // Update the best actions
+                if (fabs(m_maxPA - pair.second) < DBL_EPSILON) // m_maxPA == pair.second
+                {
+                    m_maxPAActions.push_back(pair.first);
+                }
+                else if (m_maxPA < pair.second)
+                {
+                    m_maxPAActions.clear();
+                    m_maxPAActions.push_back(pair.first);
+                    m_maxPA = pair.second;
+                }
+            }
         }
 
-        m_maxPA = std::numeric_limits<double>::lowest();
+        virtual ~AbstractPredictionArray() = default;
 
-        for (auto && pair : m_pa)
+        virtual double max() const
         {
-            if (fabs(fsa[pair.first]) > 0.0)
-            {
-                pair.second /= fsa[pair.first];
-            }
-
-            // Update the best actions
-            if (fabs(m_maxPA - pair.second) < DBL_EPSILON) // m_maxPA == pair.second
-            {
-                m_maxPAActions.push_back(pair.first);
-            }
-            else if (m_maxPA < pair.second)
-            {
-                m_maxPAActions.clear();
-                m_maxPAActions.push_back(pair.first);
-                m_maxPA = pair.second;
-            }
+            assert(m_maxPA == std::numeric_limits<double>::lowest());
+            return m_maxPA;
         }
-    }
 
-    virtual ~AbstractPredictionArray() = default;
+        // SELECT ACTION
+        virtual Action selectAction() const = 0;
+    };
 
-    virtual double max() const
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    class GreedyPredictionArray : public AbstractPredictionArray<T, Action>
     {
-        assert(m_maxPA == std::numeric_limits<double>::lowest());
-        return m_maxPA;
-    }
+    private:
+        using AbstractPredictionArray<T, Action>::m_maxPAActions;
 
-    // SELECT ACTION
-    virtual Action selectAction() const = 0;
-};
+    public:
+        using AbstractPredictionArray<T, Action>::AbstractPredictionArray;
 
-template <typename T, typename Action, class Symbol = Symbol<T>>
-class GreedyPredictionArray : public AbstractPredictionArray<T, Action>
-{
-private:
-    using AbstractPredictionArray<T, Action>::m_maxPAActions;
-
-public:
-    using AbstractPredictionArray<T, Action>::AbstractPredictionArray;
-
-    Action selectAction() const override
-    {
-        // Choose best action
-        assert(!m_maxPAActions.empty());
-        return Random::chooseFrom(m_maxPAActions);
-    }
-};
-
-template <typename T, typename Action, class Symbol = Symbol<T>>
-class EpsilonGreedyPredictionArray : public AbstractPredictionArray<T, Action>
-{
-private:
-    double m_epsilon;
-    using AbstractPredictionArray<T, Action>::m_paActions;
-    using AbstractPredictionArray<T, Action>::m_maxPAActions;
-
-public:
-    EpsilonGreedyPredictionArray(const MatchSet<T, Action> & matchSet, double epsilon)
-        : AbstractPredictionArray<T, Action>(matchSet), m_epsilon(epsilon) {}
-
-    Action selectAction() const override
-    {
-        if (Random::nextDouble() < m_epsilon)
+        Action selectAction() const override
         {
-            assert(!m_paActions.empty());
-            return Random::chooseFrom(m_paActions); // Choose random action
-        }
-        else
-        {
+            // Choose best action
             assert(!m_maxPAActions.empty());
-            return Random::chooseFrom(m_maxPAActions); // Choose best action
+            return Random::chooseFrom(m_maxPAActions);
         }
-    }
-};
+    };
+
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    class EpsilonGreedyPredictionArray : public AbstractPredictionArray<T, Action>
+    {
+    private:
+        double m_epsilon;
+        using AbstractPredictionArray<T, Action>::m_paActions;
+        using AbstractPredictionArray<T, Action>::m_maxPAActions;
+
+    public:
+        EpsilonGreedyPredictionArray(const MatchSet<T, Action> & matchSet, double epsilon)
+            : AbstractPredictionArray<T, Action>(matchSet), m_epsilon(epsilon) {}
+
+        Action selectAction() const override
+        {
+            if (Random::nextDouble() < m_epsilon)
+            {
+                assert(!m_paActions.empty());
+                return Random::chooseFrom(m_paActions); // Choose random action
+            }
+            else
+            {
+                assert(!m_maxPAActions.empty());
+                return Random::chooseFrom(m_maxPAActions); // Choose best action
+            }
+        }
+    };
+
+}

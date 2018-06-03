@@ -9,147 +9,152 @@
 #include "condition.h"
 #include "xcs_constants.h"
 
-template <typename T, typename Action, class Symbol = Symbol<T>>
-struct ConditionActionPair
+namespace xcs
 {
-    // C
-    //   The condition specifies the input states (sensory situations)
-    //   in which the classifier can be applied (matches).
-    Condition<T> condition;
 
-    // A
-    //   The action specifies the action (possibly a clasification)
-    //   that the classifier proposes.
-    Action action;
-
-    ConditionActionPair(Condition<T> condition, Action action) : condition(condition), action(action) {}
-
-    virtual ~ConditionActionPair() = default;
-
-    bool equals(const ConditionActionPair<T, Action> & cl) const
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    struct ConditionActionPair
     {
-        return condition == cl.condition && action == cl.action;
-    }
+        // C
+        //   The condition specifies the input states (sensory situations)
+        //   in which the classifier can be applied (matches).
+        Condition<T> condition;
 
-    // IS MORE GENERAL
-    virtual bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
-    {
-        assert(condition.size() == cl.condition.size());
+        // A
+        //   The action specifies the action (possibly a clasification)
+        //   that the classifier proposes.
+        Action action;
 
-        if (condition.dontCareCount() <= cl.condition.dontCareCount())
+        ConditionActionPair(Condition<T> condition, Action action) : condition(condition), action(action) {}
+
+        virtual ~ConditionActionPair() = default;
+
+        bool equals(const ConditionActionPair<T, Action> & cl) const
         {
-            return false;
+            return condition == cl.condition && action == cl.action;
         }
 
-        for (std::size_t i = 0; i < condition.size(); ++i)
+        // IS MORE GENERAL
+        virtual bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
         {
-            if (!condition.at(i).isDontCare() && condition.at(i) != cl.condition.at(i))
+            assert(condition.size() == cl.condition.size());
+
+            if (condition.dontCareCount() <= cl.condition.dontCareCount())
             {
                 return false;
             }
+
+            for (std::size_t i = 0; i < condition.size(); ++i)
+            {
+                if (!condition.at(i).isDontCare() && condition.at(i) != cl.condition.at(i))
+                {
+                    return false;
+                }
+            }
+
+            return true;
         }
 
-        return true;
-    }
+        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action> & obj)
+        {
+            return os << obj.condition << ":" << obj.action;
+        }
+    };
 
-    friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action> & obj)
+    template <typename T, typename Action, class Symbol = Symbol<T>>
+    struct Classifier : ConditionActionPair<T, Action>
     {
-        return os << obj.condition << ":" << obj.action;
-    }
-};
+        // p
+        //   The prediction p estimates (keeps an average of) the payoff expected if the
+        //   classifier matches and its action is taken by the system.
+        double prediction;
 
-template <typename T, typename Action, class Symbol = Symbol<T>>
-struct Classifier : ConditionActionPair<T, Action>
-{
-    // p
-    //   The prediction p estimates (keeps an average of) the payoff expected if the
-    //   classifier matches and its action is taken by the system.
-    double prediction;
+        // epsilon
+        //   The prediction error epsilon estimates the errors made in the predictions.
+        double predictionError;
 
-    // epsilon
-    //   The prediction error epsilon estimates the errors made in the predictions.
-    double predictionError;
+        // F
+        //   The fitness F denotes the classifier's fitness.
+        double fitness;
 
-    // F
-    //   The fitness F denotes the classifier's fitness.
-    double fitness;
+        // exp
+        //   The experience exp counts the number of times since its creation that the
+        //   classifier has belonged to an action set.
+        double experience;
 
-    // exp
-    //   The experience exp counts the number of times since its creation that the
-    //   classifier has belonged to an action set.
-    double experience;
+        // ts
+        //   The time stamp ts denotes the time-step of the last occurrence of a GA in
+        //   an action set to which this classifier belonged.
+        uint64_t timeStamp;
 
-    // ts
-    //   The time stamp ts denotes the time-step of the last occurrence of a GA in
-    //   an action set to which this classifier belonged.
-    uint64_t timeStamp;
+        // as
+        //   The action set size as estimates the average size of the action sets this
+        //   classifier has belonged to.
+        double actionSetSize;
 
-    // as
-    //   The action set size as estimates the average size of the action sets this
-    //   classifier has belonged to.
-    double actionSetSize;
+        // n
+        //   The numerosity n reflects the number of micro-classifiers (ordinary
+        //   classifiers) this classifier - which is technically called a macro-
+        //   classifier - represents.
+        uint64_t numerosity;
 
-    // n
-    //   The numerosity n reflects the number of micro-classifiers (ordinary
-    //   classifiers) this classifier - which is technically called a macro-
-    //   classifier - represents.
-    uint64_t numerosity;
+        using ConditionActionPair<T, Action>::isMoreGeneral;
 
-    using ConditionActionPair<T, Action>::isMoreGeneral;
+    private:
+        // Constants
+        const double m_thetaSub;
+        const double m_predictionErrorThreshold;
 
-private:
-    // Constants
-    const double m_thetaSub;
-    const double m_predictionErrorThreshold;
+    public:
+        Classifier(const Classifier<T, Action> & obj) :
+            ConditionActionPair<T, Action>(obj.condition, obj.action),
+            prediction(obj.prediction),
+            predictionError(obj.predictionError),
+            fitness(obj.fitness),
+            experience(obj.experience),
+            timeStamp(obj.timeStamp),
+            actionSetSize(obj.actionSetSize),
+            numerosity(obj.numerosity),
+            m_thetaSub(obj.m_thetaSub),
+            m_predictionErrorThreshold(obj.m_predictionErrorThreshold)
+        {
+        }
 
-public:
-    Classifier(const Classifier<T, Action> & obj) :
-        ConditionActionPair<T, Action>(obj.condition, obj.action),
-        prediction(obj.prediction),
-        predictionError(obj.predictionError),
-        fitness(obj.fitness),
-        experience(obj.experience),
-        timeStamp(obj.timeStamp),
-        actionSetSize(obj.actionSetSize),
-        numerosity(obj.numerosity),
-        m_thetaSub(obj.m_thetaSub),
-        m_predictionErrorThreshold(obj.m_predictionErrorThreshold)
-    {
-    }
+        Classifier(const Condition<T> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+            ConditionActionPair<T, Action>(condition, action),
+            prediction(constants.initialPrediction),
+            predictionError(constants.initialPredictionError),
+            fitness(constants.initialFitness),
+            experience(0),
+            timeStamp(timeStamp),
+            actionSetSize(1),
+            numerosity(1),
+            m_thetaSub(constants.thetaSub),
+            m_predictionErrorThreshold(constants.predictionErrorThreshold)
+        {
+        }
 
-    Classifier(const Condition<T> & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        ConditionActionPair<T, Action>(condition, action),
-        prediction(constants.initialPrediction),
-        predictionError(constants.initialPredictionError),
-        fitness(constants.initialFitness),
-        experience(0),
-        timeStamp(timeStamp),
-        actionSetSize(1),
-        numerosity(1),
-        m_thetaSub(constants.thetaSub),
-        m_predictionErrorThreshold(constants.predictionErrorThreshold)
-    {
-    }
+        Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+            Classifier(Condition<T>(situation), action, timeStamp, constants)
+        {
+        }
 
-    Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        Classifier(Condition<T>(situation), action, timeStamp, constants)
-    {
-    }
+        Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
+            Classifier(Condition<T>(condition), action, timeStamp, constants)
+        {
+        }
 
-    Classifier(const std::string & condition, Action action, uint64_t timeStamp, const XCSConstants & constants) :
-        Classifier(Condition<T>(condition), action, timeStamp, constants)
-    {
-    }
+        // COULD SUBSUME
+        virtual bool isSubsumer() const
+        {
+            return experience > m_thetaSub && predictionError < m_predictionErrorThreshold;
+        }
 
-    // COULD SUBSUME
-    virtual bool isSubsumer() const
-    {
-        return experience > m_thetaSub && predictionError < m_predictionErrorThreshold;
-    }
+        // DOES SUBSUME
+        virtual bool subsumes(const Classifier<T, Action> & cl) const
+        {
+            return isSubsumer() && isMoreGeneral(cl);
+        }
+    };
 
-    // DOES SUBSUME
-    virtual bool subsumes(const Classifier<T, Action> & cl) const
-    {
-        return isSubsumer() && isMoreGeneral(cl);
-    }
-};
+}

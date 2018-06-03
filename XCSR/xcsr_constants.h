@@ -2,13 +2,18 @@
 
 #include "../XCS/xcs_constants.h"
 
-struct XCSRConstants : XCSConstants
+namespace xcsr
 {
-    // s_0
-    double maxSpread;
 
-    // m
-    double mutationMaxChange;
+    struct XCSRConstants : xcs::XCSConstants
+    {
+        // s_0
+        double maxSpread;
 
-    bool XCSConstants::doActionSetSubsumption = false;
-};
+        // m
+        double mutationMaxChange;
+
+        bool xcs::XCSConstants::doActionSetSubsumption = false;
+    };
+
+}

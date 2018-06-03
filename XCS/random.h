@@ -5,50 +5,55 @@
 #include <unordered_set>
 #include <cassert>
 
-class Random
+namespace xcs
 {
-private:
-    static std::random_device m_device;
 
-    static auto && engine()
+    class Random
     {
-        static std::mt19937 engine(m_device());
-        return engine;
-    }
+    private:
+        static std::random_device m_device;
 
-public:
-    template <typename T = double>
-    static T nextDouble(T min = 0.0, T max = 1.0)
-    {
-        std::uniform_real_distribution<T> dist(min, max);
-        return dist(engine());
-    }
+        static auto && engine()
+        {
+            static std::mt19937 engine(m_device());
+            return engine;
+        }
 
-    template <typename T = int>
-    static T nextInt(T min, T max)
-    {
-        std::uniform_int_distribution<T> dist(min, max);
-        return dist(engine());
-    }
+    public:
+        template <typename T = double>
+        static T nextDouble(T min = 0.0, T max = 1.0)
+        {
+            std::uniform_real_distribution<T> dist(min, max);
+            return dist(engine());
+        }
 
-    template <typename T>
-    static auto chooseFrom(const std::vector<T> & container)
-    {
-        auto size = container.size();
+        template <typename T = int>
+        static T nextInt(T min, T max)
+        {
+            std::uniform_int_distribution<T> dist(min, max);
+            return dist(engine());
+        }
 
-        assert(size > 0);
+        template <typename T>
+        static auto chooseFrom(const std::vector<T> & container)
+        {
+            auto size = container.size();
 
-        std::uniform_int_distribution<decltype(size)> dist(0, size - 1);
-        return *(std::begin(container) + dist(engine()));
-    }
+            assert(size > 0);
 
-    template <typename T>
-    static auto chooseFrom(const std::unordered_set<T> & container)
-    {
-        std::vector<T> vec(container.size());
-        vec.insert(vec.end(), container.begin(), container.end());
-        return chooseFrom(vec);
-    }
-};
+            std::uniform_int_distribution<decltype(size)> dist(0, size - 1);
+            return *(std::begin(container) + dist(engine()));
+        }
 
-std::random_device Random::m_device;
+        template <typename T>
+        static auto chooseFrom(const std::unordered_set<T> & container)
+        {
+            std::vector<T> vec(container.size());
+            vec.insert(vec.end(), container.begin(), container.end());
+            return chooseFrom(vec);
+        }
+    };
+
+    std::random_device Random::m_device;
+
+}
