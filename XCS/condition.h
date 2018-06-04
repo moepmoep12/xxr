@@ -85,14 +85,34 @@ namespace XCS
             return true;
         }
 
-        virtual bool empty() const
+        auto empty() const noexcept
         {
             return m_symbols.empty();
         }
 
-        virtual std::size_t size() const
+        auto size() const noexcept
         {
             return m_symbols.size();
+        }
+
+        auto begin() const noexcept
+        {
+            return m_symbols.begin();
+        }
+
+        auto end() const noexcept
+        {
+            return m_symbols.end();
+        }
+
+        auto cbegin() const noexcept
+        {
+            return m_symbols.cbegin();
+        }
+
+        auto cend() const noexcept
+        {
+            return m_symbols.cend();
         }
 
         virtual void randomGeneralize(double generalizeProbability)

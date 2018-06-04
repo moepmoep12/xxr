@@ -15,7 +15,7 @@ namespace XCSR
         T m_spread;
 
     public:
-        Symbol(T c, T s) : m_center(c), m_spread(s) {}
+        Symbol(T c, T s = 0.0) : m_center(c), m_spread(s) {}
 
         virtual std::string toString() const override
         {
@@ -39,7 +39,8 @@ namespace XCSR
             return *this;
         }
 
-        virtual bool matches(const T & value) const override
+        // DOES MATCH
+        virtual bool matches(T value) const override
         {
             return (m_center - m_spread) <= value && value < (m_center + m_spread);
         }

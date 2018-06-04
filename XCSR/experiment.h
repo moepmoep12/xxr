@@ -2,6 +2,8 @@
 
 #include "../XCS/experiment.h"
 #include "symbol.h"
+#include "condition.h"
+#include "match_set.h"
 #include "constants.h"
 
 namespace XCSR
@@ -11,11 +13,11 @@ namespace XCSR
         typename T,
         typename Action,
         class Symbol = Symbol<T>,
-        class Condition = XCS::Condition<T, Symbol>,
+        class Condition = Condition<T, Symbol>,
         class Classifier = XCS::Classifier<T, Action, Symbol, Condition>,
         class GA = XCS::GA<T, Action, Symbol, Condition, Classifier>,
         class Population = XCS::Population<T, Action, Symbol, Condition, Classifier>,
-        class MatchSet = XCS::MatchSet<T, Action, Symbol, Condition, Classifier, Population>,
+        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Population>,
         class PredictionArray = XCS::EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
         class ActionSet = XCS::ActionSet<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet>,
         class Constants = Constants

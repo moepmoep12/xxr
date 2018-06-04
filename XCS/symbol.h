@@ -22,7 +22,7 @@ namespace XCS
             return os << obj.toString();
         }
 
-        virtual bool matches(const T & symbol) const = 0;
+        virtual bool matches(T symbol) const = 0;
     };
 
     // The standard symbol for XCS (with "don't care")
@@ -39,7 +39,7 @@ namespace XCS
         }
 
     public:
-        Symbol(const T & value) : m_value(value), m_isDontCare(false) {}
+        Symbol(T value) : m_value(value), m_isDontCare(false) {}
 
         Symbol(char c);
 
@@ -77,7 +77,8 @@ namespace XCS
             return *this;
         }
 
-        virtual bool matches(const T & value) const override
+        // DOES MATCH
+        virtual bool matches(T value) const override
         {
             return isDontCare() || this->value() == value;
         }

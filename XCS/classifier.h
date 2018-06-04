@@ -144,6 +144,8 @@ namespace XCS
         {
         }
 
+        virtual ~Classifier() = default;
+
         // COULD SUBSUME
         virtual bool isSubsumer() const
         {
