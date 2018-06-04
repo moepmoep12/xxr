@@ -2,7 +2,7 @@
 
 #include <cstdint>
 
-namespace xcs
+namespace XCS
 {
 
     struct Constants

@@ -2,10 +2,10 @@
 
 #include "../XCS/constants.h"
 
-namespace xcsr
+namespace XCSR
 {
 
-    struct Constants : xcs::Constants
+    struct Constants : XCS::Constants
     {
         // s_0
         double maxSpread;
@@ -13,7 +13,7 @@ namespace xcsr
         // m
         double mutationMaxChange;
 
-        bool xcs::Constants::doActionSetSubsumption = false;
+        bool XCS::Constants::doActionSetSubsumption = false;
     };
 
 }

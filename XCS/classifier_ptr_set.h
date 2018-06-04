@@ -4,7 +4,7 @@
 
 #include "classifier.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename Action, class Classifier>

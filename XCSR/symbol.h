@@ -3,12 +3,12 @@
 #include "../XCS/symbol.h"
 #include <string>
 
-namespace xcsr
+namespace XCSR
 {
 
     // The standard symbol for XCSR (without "don't care")
     template <typename T>
-    class Symbol : public xcs::AbstractSymbol<T>
+    class Symbol : public XCS::AbstractSymbol<T>
     {
     private:
         T m_center;

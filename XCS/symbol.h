@@ -6,7 +6,7 @@
 #include <cstdint>
 #include <cassert>
 
-namespace xcs
+namespace XCS
 {
 
     template <class T>

@@ -10,7 +10,7 @@
 #include "symbol.h"
 #include "random.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, class Symbol>

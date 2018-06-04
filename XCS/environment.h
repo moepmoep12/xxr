@@ -7,7 +7,7 @@
 
 #include "symbol.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, typename Action, class Symbol>

@@ -5,7 +5,7 @@
 #include <unordered_set>
 #include <cassert>
 
-namespace xcs
+namespace XCS
 {
 
     class Random

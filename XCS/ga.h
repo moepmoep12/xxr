@@ -10,7 +10,7 @@
 #include "population.h"
 #include "random.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier>

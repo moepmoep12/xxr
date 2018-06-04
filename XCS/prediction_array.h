@@ -11,7 +11,7 @@
 #include "classifier_ptr_set.h"
 #include "random.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class MatchSet>

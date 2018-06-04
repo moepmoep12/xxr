@@ -20,7 +20,7 @@
 #include "environment.h"
 #include "random.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <

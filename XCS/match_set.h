@@ -8,7 +8,7 @@
 #include "classifier_ptr_set.h"
 #include "population.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population>

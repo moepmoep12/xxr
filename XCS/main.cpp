@@ -7,7 +7,7 @@
 #include "classifier.h"
 #include "experiment.h"
 
-using namespace xcs;
+using namespace XCS;
 
 int main()
 {

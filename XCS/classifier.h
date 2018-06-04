@@ -9,7 +9,7 @@
 #include "condition.h"
 #include "constants.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, typename Action, class Symbol, class Condition>

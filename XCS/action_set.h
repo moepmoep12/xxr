@@ -10,7 +10,7 @@
 #include "match_set.h"
 #include "ga.h"
 
-namespace xcs
+namespace XCS
 {
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class GA, class Population, class MatchSet>
