@@ -7,10 +7,13 @@
 namespace XCSR
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class ClassifierPtrSet>
-    class GA : public XCS::GA<T, Action, Symbol, Condition, Classifier, Population, ClassifierPtrSet>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
+    class GA : public XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>
     {
     protected:
+        using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_constants;
+        using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_actionChoices;
+
         // APPLY MUTATION
         virtual void mutate(Classifier & cl, const std::vector<T> & situation) override const
         {
@@ -19,19 +22,19 @@ namespace XCSR
             // Mutate center and spread individually
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
-                if (XCS::Random::nextDouble() < m_mutationProbability)
+                if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].center += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
                     cl.condition[i].center = std::min(std::max(m_constants.minValue, cl.condition[i].center), m_constants.maxValue);
                 }
 
-                if (XCS::Random::nextDouble() < m_mutationProbability)
+                if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].spread += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
                 }
             }
 
-            if ((XCS::Random::nextDouble() < m_mutationProbability) && (m_actionChoices.size() >= 2))
+            if ((XCS::Random::nextDouble() < m_constants.mutationProbability) && (m_actionChoices.size() >= 2))
             {
                 std::unordered_set<Action> otherPossibleActions(m_actionChoices);
                 otherPossibleActions.erase(cl.action);

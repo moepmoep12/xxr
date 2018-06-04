@@ -34,7 +34,7 @@ namespace XCS
         class Population = Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
         class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
         class PredictionArray = EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
-        class GA = GA<T, Action, Symbol, Condition, Classifier, Population, ClassifierPtrSet>,
+        class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
         class ActionSet = ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
     class Experiment

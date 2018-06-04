@@ -13,16 +13,13 @@
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class ClassifierPtrSet>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
     class GA
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
-        const double m_crossoverProbability;
-        const double m_mutationProbability;
-        const bool m_doGASubsumption;
-
+        const Constants m_constants;
         const std::unordered_set<Action> & m_actionChoices;
 
         // SELECT OFFSPRING
@@ -84,7 +81,7 @@ namespace XCS
 
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
-                if (Random::nextDouble() < m_mutationProbability)
+                if (Random::nextDouble() < m_constants.mutationProbability)
                 {
                     if (cl.condition[i].isDontCare())
                     {
@@ -97,7 +94,7 @@ namespace XCS
                 }
             }
 
-            if ((Random::nextDouble() < m_mutationProbability) && (m_actionChoices.size() >= 2))
+            if ((Random::nextDouble() < m_constants.mutationProbability) && (m_actionChoices.size() >= 2))
             {
                 std::unordered_set<Action> otherPossibleActions(m_actionChoices);
                 otherPossibleActions.erase(cl.action);
@@ -107,10 +104,8 @@ namespace XCS
 
     public:
         // Constructor
-        GA(double crossoverProbability, double mutationProbability, bool doGASubsumption, const std::unordered_set<Action> & actionChoices) :
-            m_crossoverProbability(crossoverProbability),
-            m_mutationProbability(mutationProbability),
-            m_doGASubsumption(doGASubsumption),
+        GA(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
+            m_constants(constants),
             m_actionChoices(actionChoices)
         {
         }
@@ -132,7 +127,7 @@ namespace XCS
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;
 
-            if (Random::nextDouble() < m_crossoverProbability)
+            if (Random::nextDouble() < m_constants.crossoverProbability)
             {
                 crossover(child1, child2);
 
@@ -153,7 +148,7 @@ namespace XCS
             {
                 mutate(*child, situation);
 
-                if (m_doGASubsumption)
+                if (m_constants.doGASubsumption)
                 {
                     if (parent1->subsumes(*child))
                     {

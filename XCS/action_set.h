@@ -96,13 +96,13 @@ namespace XCS
         // Constructor
         ActionSet(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
             ClassifierPtrSet(constants, actionChoices),
-            m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
+            m_ga(constants, actionChoices)
         {
         }
 
         ActionSet(const MatchSet & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
             ClassifierPtrSet(constants, actionChoices),
-            m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
+            m_ga(constants, actionChoices)
         {
             regenerate(matchSet, action);
         }
