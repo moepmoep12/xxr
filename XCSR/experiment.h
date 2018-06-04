@@ -5,6 +5,7 @@
 #include "condition.h"
 #include "match_set.h"
 #include "constants.h"
+#include "ga.h"
 
 namespace XCSR
 {
@@ -20,7 +21,7 @@ namespace XCSR
         class Population = XCS::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
         class MatchSet = XCS::MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
         class PredictionArray = XCS::EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
-        class GA = XCS::GA<T, Action, Symbol, Condition, Classifier, Population, ClassifierPtrSet>,
+        class GA = GA<T, Action, Symbol, Condition, Classifier, Population, ClassifierPtrSet>,
         class ActionSet = XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
     class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet, PredictionArray, ActionSet, Constants>

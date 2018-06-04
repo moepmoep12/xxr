@@ -7,6 +7,10 @@ namespace XCSR
 
     struct Constants : XCS::Constants
     {
+        double minValue = 0.0;
+
+        double maxValue = 1.0;
+
         // s_0
         double maxSpread;
 
