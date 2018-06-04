@@ -38,7 +38,7 @@ namespace XCS
         virtual bool isEndOfProblem() const = 0;
     };
 
-    class MultiplexerEnvironment : public AbstractEnvironment<bool, bool, Symbol<bool>>
+    class MultiplexerEnvironment final : public AbstractEnvironment<bool, bool, Symbol<bool>>
     {
     private:
         const std::size_t m_totalLength;
@@ -64,6 +64,7 @@ namespace XCS
         }
 
     public:
+        // Constructor
         explicit MultiplexerEnvironment(std::size_t length) :
             AbstractEnvironment<bool, bool, Symbol<bool>>({ false, true }),
             m_totalLength(length),
@@ -76,12 +77,12 @@ namespace XCS
             assert(m_totalLength == (m_addressBitLength + ((std::size_t)1 << m_addressBitLength)));
         }
 
-        virtual std::vector<bool> situation() const override
+        std::vector<bool> situation() const override
         {
             return m_situation;
         }
 
-        virtual double executeAction(bool action) override
+        double executeAction(bool action) override
         {
             double reward = (action == getAnswer(m_situation)) ? 1.0 : 0.0;
 
@@ -94,13 +95,13 @@ namespace XCS
             return reward;
         }
 
-        virtual bool isEndOfProblem() const override
+        bool isEndOfProblem() const override
         {
             return m_isEndOfProblem;
         }
 
         // Returns answer to situation
-        virtual bool getAnswer(const std::vector<bool> & situation) const
+        bool getAnswer(const std::vector<bool> & situation) const
         {
             std::size_t address = 0;
             for (std::size_t i = 0; i < m_addressBitLength; ++i)

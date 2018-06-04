@@ -25,8 +25,10 @@ namespace XCS
         //   that the classifier proposes.
         Action action;
 
+        // Constructor
         ConditionActionPair(Condition condition, Action action) : condition(condition), action(action) {}
 
+        // Destructor
         virtual ~ConditionActionPair() = default;
 
         bool equals(const ConditionActionPair<T, Action, Symbol, Condition> & cl) const
@@ -106,6 +108,7 @@ namespace XCS
         const double m_predictionErrorThreshold;
 
     public:
+        // Constructor
         Classifier(const Classifier & obj) :
             ConditionActionPair<T, Action, Symbol, Condition>(obj.condition, obj.action),
             prediction(obj.prediction),
@@ -144,6 +147,7 @@ namespace XCS
         {
         }
 
+        // Destructor
         virtual ~Classifier() = default;
 
         // COULD SUBSUME

@@ -72,6 +72,7 @@ namespace XCS
         std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> m_environment;
 
     public:
+        // Constructor
         Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, const Constants & constants)
             : m_environment(environment),
             m_population(constants, environment->actionChoices),
@@ -83,6 +84,9 @@ namespace XCS
             m_prevReward(0.0)
         {
         }
+
+        // Destructor
+        virtual ~Experiment() = default;
 
         // RUN EXPERIMENT
         virtual void run(uint64_t loopCount)

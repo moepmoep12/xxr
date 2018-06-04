@@ -11,6 +11,9 @@ protected:
     using ClassifierPtrSet<Action, Classifier>::m_constants;
     using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
 
+    // Destructor
+    virtual ~MatchSet() = default;
+
     // GENERATE COVERING CLASSIFIER
     virtual ClassifierPtr generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
     {

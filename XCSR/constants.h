@@ -14,6 +14,9 @@ namespace XCSR
         double mutationMaxChange;
 
         bool XCS::Constants::doActionSetSubsumption = false;
+
+        // Destructor
+        virtual ~Constants() = default;
     };
 
 }

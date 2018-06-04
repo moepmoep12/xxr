@@ -25,6 +25,8 @@ namespace XCSR
     class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet, PredictionArray, ActionSet, Constants>
     {
     public:
+        // Destructor
+        virtual ~Experiment() = default;
     };
 
 }

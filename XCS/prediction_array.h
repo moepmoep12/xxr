@@ -71,6 +71,7 @@ namespace XCS
             }
         }
 
+        // Destructor
         virtual ~AbstractPredictionArray() = default;
 
         virtual double max() const
@@ -84,12 +85,13 @@ namespace XCS
     };
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
-    class GreedyPredictionArray : public AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>
+    class GreedyPredictionArray final : public AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>
     {
     private:
         using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
 
     public:
+        // Constructor
         using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::AbstractPredictionArray;
 
         Action selectAction() const override
@@ -101,7 +103,7 @@ namespace XCS
     };
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
-    class EpsilonGreedyPredictionArray : public AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>
+    class EpsilonGreedyPredictionArray final : public AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>
     {
     private:
         double m_epsilon;
@@ -109,6 +111,7 @@ namespace XCS
         using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
 
     public:
+        // Constructor
         EpsilonGreedyPredictionArray(const MatchSet & matchSet, double epsilon)
             : AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>(matchSet), m_epsilon(epsilon) {}
 

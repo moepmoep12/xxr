@@ -39,6 +39,9 @@ namespace XCS
             regenerate(population, situation, timeStamp);
         }
 
+        // Destructor
+        virtual ~MatchSet() = default;
+
         // GENERATE MATCH SET
         virtual void regenerate(Population & population, const std::vector<T> & situation, uint64_t timeStamp)
         {

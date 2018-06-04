@@ -8,8 +8,11 @@ namespace XCSR
     template <typename T, class Symbol>
     class Condition : public XCS::Condition<T, Symbol>
     {
-    public
+    public:
         void randomGeneralize() override = delete;
         std::size_t dontCareCount() const = delete;
+
+        // Destructor
+        virtual ~Condition() = default;
     };
 }

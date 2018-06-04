@@ -93,6 +93,7 @@ namespace XCS
         }
 
     public:
+        // Constructor
         ActionSet(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
             ClassifierPtrSet(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
@@ -105,6 +106,9 @@ namespace XCS
         {
             regenerate(matchSet, action);
         }
+
+        // Destructor
+        virtual ~ActionSet() = default;
 
         // GENERATE ACTION SET
         virtual void regenerate(const MatchSet & matchSet, Action action)

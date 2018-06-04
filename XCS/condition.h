@@ -20,6 +20,7 @@ namespace XCS
         std::vector<Symbol> m_symbols;
 
     public:
+        // Constructor
         Condition() = default;
 
         Condition(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
@@ -33,6 +34,9 @@ namespace XCS
                 m_symbols.push_back(symbol);
             }
         }
+
+        // Destructor
+        virtual ~Condition() = default;
 
         virtual std::string toString() const
         {

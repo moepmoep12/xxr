@@ -39,12 +39,14 @@ namespace XCS
         }
 
     public:
+        // Constructor
         Symbol(T value) : m_value(value), m_isDontCare(false) {}
 
         Symbol(char c);
 
         Symbol(const Symbol<T> & obj) : m_value(obj.m_value), m_isDontCare(obj.m_isDontCare) {}
 
+        // Destructor
         virtual ~Symbol() = default;
 
         virtual bool isDontCare() const

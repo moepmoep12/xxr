@@ -19,6 +19,7 @@ namespace XCS
         std::unordered_set<ClassifierPtr> m_set;
 
     public:
+        // Constructor
         ClassifierPtrSet(const Constants & constants, const std::unordered_set<Action> actionChoices) :
             m_constants(constants),
             m_actionChoices(actionChoices)
@@ -32,6 +33,7 @@ namespace XCS
         {
         }
 
+        // Destructor
         virtual ~ClassifierPtrSet() = default;
 
         auto empty() const noexcept

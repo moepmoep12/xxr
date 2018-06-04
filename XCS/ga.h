@@ -106,6 +106,7 @@ namespace XCS
         }
 
     public:
+        // Constructor
         GA(double crossoverProbability, double mutationProbability, bool doGASubsumption, const std::unordered_set<Action> & actionChoices) :
             m_crossoverProbability(crossoverProbability),
             m_mutationProbability(mutationProbability),
@@ -113,6 +114,9 @@ namespace XCS
             m_actionChoices(actionChoices)
         {
         }
+
+        // Destructor
+        virtual ~GA() = default;
 
         // RUN GA (refer to ActionSet::runGA() for the former part)
         virtual void run(ClassifierPtrSet & actionSet, const std::vector<T> & situation, Population & population) const

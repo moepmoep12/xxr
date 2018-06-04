@@ -33,6 +33,9 @@ namespace XCS
         // Constructor
         using ClassifierPtrSet::ClassifierPtrSet;
 
+        // Destructor
+        virtual ~Population() = default;
+
         // INSERT IN POPULATION
         virtual void insertOrIncrementNumerosity(const Classifier & cl)
         {

@@ -15,7 +15,11 @@ namespace XCSR
         T m_spread;
 
     public:
+        // Constructor
         Symbol(T c, T s = 0.0) : m_center(c), m_spread(s) {}
+
+        // Destructor
+        virtual ~Symbol() = default;
 
         virtual std::string toString() const override
         {
