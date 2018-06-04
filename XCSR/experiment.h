@@ -15,12 +15,13 @@ namespace XCSR
         class Symbol = Symbol<T>,
         class Condition = Condition<T, Symbol>,
         class Classifier = XCS::Classifier<T, Action, Symbol, Condition>,
-        class GA = XCS::GA<T, Action, Symbol, Condition, Classifier>,
-        class Population = XCS::Population<T, Action, Symbol, Condition, Classifier>,
-        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Population>,
+        class Constants = Constants,
+        class ClassifierPtrSet = XCS::ClassifierPtrSet<Action, Classifier, Constants>,
+        class Population = XCS::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
+        class MatchSet = XCS::MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
         class PredictionArray = XCS::EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
-        class ActionSet = XCS::ActionSet<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet>,
-        class Constants = Constants
+        class GA = XCS::GA<T, Action, Symbol, Condition, Classifier, Population, ClassifierPtrSet>,
+        class ActionSet = XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
     class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet, PredictionArray, ActionSet, Constants>
     {
