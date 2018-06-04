@@ -16,7 +16,7 @@ namespace XCS
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class ClassifierPtrSet>
     class GA
     {
-    public:
+    protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
         const double m_crossoverProbability;
