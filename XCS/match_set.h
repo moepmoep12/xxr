@@ -11,35 +11,35 @@
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
-    class MatchSet : public ClassifierPtrSet<T, Action>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population>
+    class MatchSet : public ClassifierPtrSet<Action, Classifier>
     {
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
-        using ClassifierPtrSet<T, Action>::m_set;
-        using ClassifierPtrSet<T, Action>::m_constants;
-        using ClassifierPtrSet<T, Action>::m_actionChoices;
+        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtrSet<Action, Classifier>::m_set;
+        using ClassifierPtrSet<Action, Classifier>::m_constants;
+        using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
 
         // GENERATE COVERING CLASSIFIER
         virtual ClassifierPtr generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
         {
-            auto cl = std::make_shared<Classifier<T, Action>>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+            auto cl = std::make_shared<Classifier>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
             cl->condition.randomGeneralize(m_constants.generalizeProbability);
 
             return cl;
         }
 
     public:
-        using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
+        using ClassifierPtrSet<Action, Classifier>::ClassifierPtrSet;
 
-        MatchSet(Population<T, Action> & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet<T, Action>(constants, actionChoices)
+        MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
+            ClassifierPtrSet<Action, Classifier>(constants, actionChoices)
         {
             regenerate(population, situation, timeStamp);
         }
 
         // GENERATE MATCH SET
-        virtual void regenerate(Population<T, Action> & population, const std::vector<T> & situation, uint64_t timeStamp)
+        virtual void regenerate(Population & population, const std::vector<T> & situation, uint64_t timeStamp)
         {
             // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
             auto thetaMna = (m_constants.thetaMna == 0) ? m_actionChoices.size() : m_constants.thetaMna;

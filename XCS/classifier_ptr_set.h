@@ -7,11 +7,11 @@
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
+    template <typename Action, class Classifier>
     class ClassifierPtrSet
     {
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
+        using ClassifierPtr = std::shared_ptr<Classifier>;
 
         const Constants m_constants;
         const std::unordered_set<Action> m_actionChoices;

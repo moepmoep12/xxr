@@ -13,11 +13,11 @@
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier>
     class GA
     {
     public:
-        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
+        using ClassifierPtr = std::shared_ptr<Classifier>;
 
         const double m_crossoverProbability;
         const double m_mutationProbability;
@@ -26,7 +26,7 @@ namespace xcs
         const std::unordered_set<Action> & m_actionChoices;
 
         // SELECT OFFSPRING
-        virtual ClassifierPtr selectOffspring(const ClassifierPtrSet<T, Action> & actionSet) const
+        virtual ClassifierPtr selectOffspring(const ClassifierPtrSet<Action, Classifier> & actionSet) const
         {
             double choicePoint;
             {
@@ -59,7 +59,7 @@ namespace xcs
         }
 
         // APPLY CROSSOVER
-        virtual void crossover(Classifier<T, Action> & cl1, Classifier<T, Action> & cl2) const
+        virtual void crossover(Classifier & cl1, Classifier & cl2) const
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
@@ -78,7 +78,7 @@ namespace xcs
         }
 
         // APPLY MUTATION
-        virtual void mutate(Classifier<T, Action> & cl, const std::vector<T> & situation) const
+        virtual void mutate(Classifier & cl, const std::vector<T> & situation) const
         {
             assert(cl.condition.size() == situation.size());
 
@@ -115,15 +115,15 @@ namespace xcs
         }
 
         // RUN GA (refer to ActionSet::runGA() for the former part)
-        virtual void run(ClassifierPtrSet<T, Action> & actionSet, const std::vector<T> & situation, Population<T, Action> & population) const
+        virtual void run(ClassifierPtrSet<Action, Classifier> & actionSet, const std::vector<T> & situation, Population<T, Action, Symbol, Condition, Classifier> & population) const
         {
             auto parent1 = selectOffspring(actionSet);
             auto parent2 = selectOffspring(actionSet);
 
             assert(parent1->condition.size() == parent2->condition.size());
 
-            Classifier<T, Action> child1(*parent1);
-            Classifier<T, Action> child2(*parent2);
+            Classifier child1(*parent1);
+            Classifier child2(*parent2);
 
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;

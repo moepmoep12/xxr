@@ -6,12 +6,11 @@
 #include <cassert>
 
 #include "symbol.h"
-#include "condition.h"
 
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
+    template <typename T, typename Action, class Symbol>
     class AbstractEnvironment
     {
     protected:
@@ -39,7 +38,7 @@ namespace xcs
         virtual bool isEndOfProblem() const = 0;
     };
 
-    class MultiplexerEnvironment : public AbstractEnvironment<bool, bool>
+    class MultiplexerEnvironment : public AbstractEnvironment<bool, bool, Symbol<bool>>
     {
     private:
         const std::size_t m_totalLength;
@@ -66,7 +65,7 @@ namespace xcs
 
     public:
         explicit MultiplexerEnvironment(std::size_t length) :
-            AbstractEnvironment({ false, true }),
+            AbstractEnvironment<bool, bool, Symbol<bool>>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
             m_registerBitLength(length - m_addressBitLength),

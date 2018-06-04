@@ -6,17 +6,17 @@
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
-    class Population : public ClassifierPtrSet<T, Action>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier>
+    class Population : public ClassifierPtrSet<Action, Classifier>
     {
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
-        using ClassifierPtrSet<T, Action>::m_set;
-        using ClassifierPtrSet<T, Action>::m_constants;
-        using ClassifierPtrSet<T, Action>::m_actionChoices;
+        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtrSet<Action, Classifier>::m_set;
+        using ClassifierPtrSet<Action, Classifier>::m_constants;
+        using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
 
         // DELETION VOTE
-        virtual double deletionVote(const Classifier<T, Action> & cl, double averageFitness) const
+        virtual double deletionVote(const Classifier & cl, double averageFitness) const
         {
             double vote = cl.actionSetSize * cl.numerosity;
 
@@ -30,20 +30,20 @@ namespace xcs
         }
 
     public:
-        using ClassifierPtrSet<T, Action>::ClassifierPtrSet;
+        using ClassifierPtrSet<Action, Classifier>::ClassifierPtrSet;
 
         // INSERT IN POPULATION
-        virtual void insertOrIncrementNumerosity(const Classifier<T, Action> & cl)
+        virtual void insertOrIncrementNumerosity(const Classifier & cl)
         {
             for (auto && c : m_set)
             {
-                if (static_cast<ConditionActionPair<T, Action>>(*c).equals(cl))
+                if (static_cast<ConditionActionPair<T, Action, Symbol, Condition>>(*c).equals(cl))
                 {
                     ++c->numerosity;
                     return;
                 }
             }
-            m_set.insert(std::make_shared<Classifier<T, Action>>(cl));
+            m_set.insert(std::make_shared<Classifier>(cl));
         }
 
         // DELETE FROM POPULATION

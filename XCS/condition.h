@@ -13,7 +13,7 @@
 namespace xcs
 {
 
-    template <typename T, class Symbol = Symbol<T>>
+    template <typename T, class Symbol>
     class Condition
     {
     private:

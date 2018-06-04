@@ -13,16 +13,16 @@
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
-    class ActionSet : public ClassifierPtrSet<T, Action>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class GA, class Population, class MatchSet>
+    class ActionSet : public ClassifierPtrSet<Action, Classifier>
     {
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier<T, Action>>;
-        using ClassifierPtrSet<T, Action>::m_set;
-        using ClassifierPtrSet<T, Action>::m_constants;
-        using ClassifierPtrSet<T, Action>::m_actionChoices;
+        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtrSet<Action, Classifier>::m_set;
+        using ClassifierPtrSet<Action, Classifier>::m_constants;
+        using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
 
-        GA<T, Action> m_ga;
+        GA m_ga;
 
         // UPDATE FITNESS
         virtual void updateFitness()
@@ -53,7 +53,7 @@ namespace xcs
         }
 
         // DO ACTION SET SUBSUMPTION
-        virtual void doSubsumption(Population<T, Action> & population)
+        virtual void doSubsumption(Population & population)
         {
             ClassifierPtr cl;
 
@@ -94,20 +94,20 @@ namespace xcs
 
     public:
         ActionSet(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet<T, Action>(constants, actionChoices),
+            ClassifierPtrSet<Action, Classifier>(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
         {
         }
 
-        ActionSet(const MatchSet<T, Action> & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet<T, Action>(constants, actionChoices),
+        ActionSet(const MatchSet & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
+            ClassifierPtrSet<Action, Classifier>(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
         {
             regenerate(matchSet, action);
         }
 
         // GENERATE ACTION SET
-        virtual void regenerate(const MatchSet<T, Action> & matchSet, Action action)
+        virtual void regenerate(const MatchSet & matchSet, Action action)
         {
             m_set.clear();
 
@@ -120,13 +120,13 @@ namespace xcs
             }
         }
 
-        virtual void copyTo(ActionSet<T, Action> & dest)
+        virtual void copyTo(ActionSet<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet> & dest)
         {
             dest.m_set = m_set; // don't copy m_ga since it contains const parameters
         }
 
         // RUN GA (refer to GA::run() for the latter part)
-        virtual void runGA(const std::vector<T> & situation, Population<T, Action> & population, uint64_t timeStamp)
+        virtual void runGA(const std::vector<T> & situation, Population & population, uint64_t timeStamp)
         {
             uint64_t timeStampNumerositySum = 0;
             uint64_t numerositySum = 0;
@@ -151,7 +151,7 @@ namespace xcs
         }
 
         // UPDATE SET
-        virtual void update(double p, Population<T, Action> & population)
+        virtual void update(double p, Population & population)
         {
             // Calculate numerosity sum used for updating action set size estimate
             uint64_t numerositySum = 0;

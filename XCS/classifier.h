@@ -12,30 +12,30 @@
 namespace xcs
 {
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
+    template <typename T, typename Action, class Symbol, class Condition>
     struct ConditionActionPair
     {
         // C
         //   The condition specifies the input states (sensory situations)
         //   in which the classifier can be applied (matches).
-        Condition<T> condition;
+        Condition condition;
 
         // A
         //   The action specifies the action (possibly a clasification)
         //   that the classifier proposes.
         Action action;
 
-        ConditionActionPair(Condition<T> condition, Action action) : condition(condition), action(action) {}
+        ConditionActionPair(Condition condition, Action action) : condition(condition), action(action) {}
 
         virtual ~ConditionActionPair() = default;
 
-        bool equals(const ConditionActionPair<T, Action> & cl) const
+        bool equals(const ConditionActionPair<T, Action, Symbol, Condition> & cl) const
         {
             return condition == cl.condition && action == cl.action;
         }
 
         // IS MORE GENERAL
-        virtual bool isMoreGeneral(const ConditionActionPair<T, Action> & cl) const
+        virtual bool isMoreGeneral(const ConditionActionPair<T, Action, Symbol, Condition> & cl) const
         {
             assert(condition.size() == cl.condition.size());
 
@@ -55,14 +55,14 @@ namespace xcs
             return true;
         }
 
-        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action> & obj)
+        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action, Symbol, Condition> & obj)
         {
             return os << obj.condition << ":" << obj.action;
         }
     };
 
-    template <typename T, typename Action, class Symbol = Symbol<T>>
-    struct Classifier : ConditionActionPair<T, Action>
+    template <typename T, typename Action, class Symbol, class Condition>
+    struct Classifier : ConditionActionPair<T, Action, Symbol, Condition>
     {
         // p
         //   The prediction p estimates (keeps an average of) the payoff expected if the
@@ -98,7 +98,7 @@ namespace xcs
         //   classifier - represents.
         uint64_t numerosity;
 
-        using ConditionActionPair<T, Action>::isMoreGeneral;
+        using ConditionActionPair<T, Action, Symbol, Condition>::isMoreGeneral;
 
     private:
         // Constants
@@ -106,8 +106,8 @@ namespace xcs
         const double m_predictionErrorThreshold;
 
     public:
-        Classifier(const Classifier<T, Action> & obj) :
-            ConditionActionPair<T, Action>(obj.condition, obj.action),
+        Classifier(const Classifier & obj) :
+            ConditionActionPair<T, Action, Symbol, Condition>(obj.condition, obj.action),
             prediction(obj.prediction),
             predictionError(obj.predictionError),
             fitness(obj.fitness),
@@ -120,8 +120,8 @@ namespace xcs
         {
         }
 
-        Classifier(const Condition<T> & condition, Action action, uint64_t timeStamp, const Constants & constants) :
-            ConditionActionPair<T, Action>(condition, action),
+        Classifier(const Condition & condition, Action action, uint64_t timeStamp, const Constants & constants) :
+            ConditionActionPair<T, Action, Symbol, Condition>(condition, action),
             prediction(constants.initialPrediction),
             predictionError(constants.initialPredictionError),
             fitness(constants.initialFitness),
@@ -135,12 +135,12 @@ namespace xcs
         }
 
         Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const Constants & constants) :
-            Classifier(Condition<T>(situation), action, timeStamp, constants)
+            Classifier(Condition(situation), action, timeStamp, constants)
         {
         }
 
         Classifier(const std::string & condition, Action action, uint64_t timeStamp, const Constants & constants) :
-            Classifier(Condition<T>(condition), action, timeStamp, constants)
+            Classifier(Condition(condition), action, timeStamp, constants)
         {
         }
 
@@ -151,7 +151,7 @@ namespace xcs
         }
 
         // DOES SUBSUME
-        virtual bool subsumes(const Classifier<T, Action> & cl) const
+        virtual bool subsumes(const Classifier<T, Action, Symbol, Condition> & cl) const
         {
             return isSubsumer() && isMoreGeneral(cl);
         }
