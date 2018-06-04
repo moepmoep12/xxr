@@ -13,14 +13,14 @@
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class GA, class Population, class MatchSet>
-    class ActionSet : public ClassifierPtrSet<Action, Classifier>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
+    class ActionSet : public ClassifierPtrSet
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
-        using ClassifierPtrSet<Action, Classifier>::m_set;
-        using ClassifierPtrSet<Action, Classifier>::m_constants;
-        using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
+        using ClassifierPtrSet::m_set;
+        using ClassifierPtrSet::m_constants;
+        using ClassifierPtrSet::m_actionChoices;
 
         GA m_ga;
 
@@ -94,13 +94,13 @@ namespace XCS
 
     public:
         ActionSet(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet<Action, Classifier>(constants, actionChoices),
+            ClassifierPtrSet(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
         {
         }
 
         ActionSet(const MatchSet & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet<Action, Classifier>(constants, actionChoices),
+            ClassifierPtrSet(constants, actionChoices),
             m_ga(constants.crossoverProbability, constants.mutationProbability, constants.doGASubsumption, actionChoices)
         {
             regenerate(matchSet, action);
@@ -120,7 +120,7 @@ namespace XCS
             }
         }
 
-        virtual void copyTo(ActionSet<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet> & dest)
+        virtual void copyTo(ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA> & dest)
         {
             dest.m_set = m_set; // don't copy m_ga since it contains const parameters
         }

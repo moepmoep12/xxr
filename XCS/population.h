@@ -6,14 +6,14 @@
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier>
-    class Population : public ClassifierPtrSet<Action, Classifier>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet>
+    class Population : public ClassifierPtrSet
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
-        using ClassifierPtrSet<Action, Classifier>::m_set;
-        using ClassifierPtrSet<Action, Classifier>::m_constants;
-        using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
+        using ClassifierPtrSet::m_set;
+        using ClassifierPtrSet::m_constants;
+        using ClassifierPtrSet::m_actionChoices;
 
         // DELETION VOTE
         virtual double deletionVote(const Classifier & cl, double averageFitness) const
@@ -30,7 +30,8 @@ namespace XCS
         }
 
     public:
-        using ClassifierPtrSet<Action, Classifier>::ClassifierPtrSet;
+        // Constructor
+        using ClassifierPtrSet::ClassifierPtrSet;
 
         // INSERT IN POPULATION
         virtual void insertOrIncrementNumerosity(const Classifier & cl)

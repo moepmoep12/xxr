@@ -13,7 +13,7 @@
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class ClassifierPtrSet>
     class GA
     {
     public:
@@ -26,7 +26,7 @@ namespace XCS
         const std::unordered_set<Action> & m_actionChoices;
 
         // SELECT OFFSPRING
-        virtual ClassifierPtr selectOffspring(const ClassifierPtrSet<Action, Classifier> & actionSet) const
+        virtual ClassifierPtr selectOffspring(const ClassifierPtrSet & actionSet) const
         {
             double choicePoint;
             {
@@ -115,7 +115,7 @@ namespace XCS
         }
 
         // RUN GA (refer to ActionSet::runGA() for the former part)
-        virtual void run(ClassifierPtrSet<Action, Classifier> & actionSet, const std::vector<T> & situation, Population<T, Action, Symbol, Condition, Classifier> & population) const
+        virtual void run(ClassifierPtrSet & actionSet, const std::vector<T> & situation, Population & population) const
         {
             auto parent1 = selectOffspring(actionSet);
             auto parent2 = selectOffspring(actionSet);

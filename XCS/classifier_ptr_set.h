@@ -7,7 +7,7 @@
 namespace XCS
 {
 
-    template <typename Action, class Classifier>
+    template <typename Action, class Classifier, class Constants>
     class ClassifierPtrSet
     {
     protected:

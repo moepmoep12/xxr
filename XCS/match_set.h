@@ -11,14 +11,14 @@
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population>
-    class MatchSet : public ClassifierPtrSet<Action, Classifier>
+    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
+    class MatchSet : public ClassifierPtrSet
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
-        using ClassifierPtrSet<Action, Classifier>::m_set;
-        using ClassifierPtrSet<Action, Classifier>::m_constants;
-        using ClassifierPtrSet<Action, Classifier>::m_actionChoices;
+        using ClassifierPtrSet::m_set;
+        using ClassifierPtrSet::m_constants;
+        using ClassifierPtrSet::m_actionChoices;
 
         // GENERATE COVERING CLASSIFIER
         virtual ClassifierPtr generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
@@ -30,10 +30,11 @@ namespace XCS
         }
 
     public:
-        using ClassifierPtrSet<Action, Classifier>::ClassifierPtrSet;
+        // Constructor
+        using ClassifierPtrSet::ClassifierPtrSet;
 
         MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet<Action, Classifier>(constants, actionChoices)
+            ClassifierPtrSet(constants, actionChoices)
         {
             regenerate(population, situation, timeStamp);
         }

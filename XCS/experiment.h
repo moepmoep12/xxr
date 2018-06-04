@@ -29,12 +29,13 @@ namespace XCS
         class Symbol = Symbol<T>,
         class Condition = Condition<T, Symbol>,
         class Classifier = Classifier<T, Action, Symbol, Condition>,
-        class GA = GA<T, Action, Symbol, Condition, Classifier>,
-        class Population = Population<T, Action, Symbol, Condition, Classifier>,
-        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Population>,
+        class Constants = Constants,
+        class ClassifierPtrSet = ClassifierPtrSet<Action, Classifier, Constants>,
+        class Population = Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
+        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
         class PredictionArray = EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
-        class ActionSet = ActionSet<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet>,
-        class Constants = Constants
+        class GA = GA<T, Action, Symbol, Condition, Classifier, Population, ClassifierPtrSet>,
+        class ActionSet = ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
     class Experiment
     {
