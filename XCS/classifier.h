@@ -31,11 +31,6 @@ namespace XCS
         // Destructor
         virtual ~ConditionActionPair() = default;
 
-        bool equals(const ConditionActionPair<T, Action, Symbol, Condition> & cl) const
-        {
-            return condition == cl.condition && action == cl.action;
-        }
-
         // IS MORE GENERAL
         virtual bool isMoreGeneral(const ConditionActionPair<T, Action, Symbol, Condition> & cl) const
         {

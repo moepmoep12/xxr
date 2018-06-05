@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.27703.2000
+VisualStudioVersion = 15.0.26430.13
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XCS", "XCS\XCS.vcxproj", "{8D8E28A7-AC38-4F95-B5A5-E92C38CA69F3}"
 EndProject
@@ -29,6 +29,7 @@ Global
 		{08D6F09B-9186-4E76-B86F-6059B976CDA4}.Debug|x86.Build.0 = Debug|Win32
 		{08D6F09B-9186-4E76-B86F-6059B976CDA4}.Release|x64.ActiveCfg = Release|x64
 		{08D6F09B-9186-4E76-B86F-6059B976CDA4}.Release|x64.Build.0 = Release|x64
+		{08D6F09B-9186-4E76-B86F-6059B976CDA4}.Release|x64.Deploy.0 = Release|x64
 		{08D6F09B-9186-4E76-B86F-6059B976CDA4}.Release|x86.ActiveCfg = Release|Win32
 		{08D6F09B-9186-4E76-B86F-6059B976CDA4}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection

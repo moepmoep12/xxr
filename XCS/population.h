@@ -41,7 +41,7 @@ namespace XCS
         {
             for (auto && c : m_set)
             {
-                if (static_cast<ConditionActionPair<T, Action, Symbol, Condition>>(*c).equals(cl))
+                if (c->condition == cl.condition && c->action == cl.action)
                 {
                     ++c->numerosity;
                     return;

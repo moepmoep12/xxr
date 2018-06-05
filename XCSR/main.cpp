@@ -42,7 +42,7 @@ int main()
     }
 
     Experiment<double, bool> xcsr(std::make_shared<RealMultiplexerEnvironment>(multiplexerLength), constants);
-    xcsr.run(1000000);
+    xcsr.run(100000);
     xcsr.dumpPopulation();
 
     return 0;

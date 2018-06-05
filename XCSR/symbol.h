@@ -44,7 +44,6 @@ namespace XCSR
 
         virtual bool isDontCare() const override
         {
-
             assert(false);
 
             return false;

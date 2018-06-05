@@ -2,8 +2,9 @@
 
 #include "../XCS/experiment.h"
 #include "symbol.h"
-#include "match_set.h"
+#include "classifier.h"
 #include "constants.h"
+#include "match_set.h"
 #include "ga.h"
 #include "environment.h"
 
@@ -15,7 +16,7 @@ namespace XCSR
         typename Action,
         class Symbol = Symbol<T>,
         class Condition = XCS::Condition<T, Symbol>,
-        class ConditionActionPair = XCS::ConditionActionPair<T, Action, Symbol, Condition>,
+        class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
         class Classifier = XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair>,
         class Constants = Constants,
         class ClassifierPtrSet = XCS::ClassifierPtrSet<Action, Classifier, Constants>,
