@@ -2,10 +2,10 @@
 
 #include "../XCS/experiment.h"
 #include "symbol.h"
-#include "condition.h"
 #include "match_set.h"
 #include "constants.h"
 #include "ga.h"
+#include "environment.h"
 
 namespace XCSR
 {
@@ -14,19 +14,22 @@ namespace XCSR
         typename T,
         typename Action,
         class Symbol = Symbol<T>,
-        class Condition = Condition<T, Symbol>,
+        class Condition = XCS::Condition<T, Symbol>,
         class Classifier = XCS::Classifier<T, Action, Symbol, Condition>,
         class Constants = Constants,
         class ClassifierPtrSet = XCS::ClassifierPtrSet<Action, Classifier, Constants>,
         class Population = XCS::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
-        class MatchSet = XCS::MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
+        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
         class PredictionArray = XCS::EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
         class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
         class ActionSet = XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
-    class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, Classifier, GA, Population, MatchSet, PredictionArray, ActionSet, Constants>
+    class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
     {
     public:
+        // Constructor
+        using XCS::Experiment<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
+
         // Destructor
         virtual ~Experiment() = default;
     };

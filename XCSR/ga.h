@@ -6,7 +6,7 @@
 
 namespace XCSR
 {
-
+    
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
     class GA : public XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>
     {
@@ -15,7 +15,7 @@ namespace XCSR
         using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_actionChoices;
 
         // APPLY MUTATION
-        virtual void mutate(Classifier & cl, const std::vector<T> & situation) override const
+        virtual void mutate(Classifier & cl, const std::vector<T> & situation) const override
         {
             assert(cl.condition.size() == situation.size());
 
@@ -43,6 +43,9 @@ namespace XCSR
         }
 
     public:
+        // Constructor
+        using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::GA;
+
         // Destructor
         virtual ~GA() = default;
     };

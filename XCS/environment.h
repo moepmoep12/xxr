@@ -77,6 +77,8 @@ namespace XCS
             assert(m_totalLength == (m_addressBitLength + ((std::size_t)1 << m_addressBitLength)));
         }
 
+        ~MultiplexerEnvironment() = default;
+
         std::vector<bool> situation() const override
         {
             return m_situation;

@@ -9,7 +9,7 @@
 namespace XCSR
 {
 
-    class RealMultiplexerEnvironment : public XCS::AbstractEnvironment<double, bool, Symbol<double>>
+    class RealMultiplexerEnvironment final : public XCS::AbstractEnvironment<double, bool, Symbol<double>>
     {
     private:
         const std::size_t m_totalLength;
@@ -48,6 +48,8 @@ namespace XCSR
             // Total length must be n + 2^n (n > 0)
             assert(m_totalLength == (m_addressBitLength + ((std::size_t)1 << m_addressBitLength)));
         }
+
+        ~RealMultiplexerEnvironment() = default;
 
         virtual std::vector<double> situation() const override
         {

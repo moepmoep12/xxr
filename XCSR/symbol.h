@@ -42,10 +42,23 @@ namespace XCSR
             return *this;
         }
 
+        virtual bool isDontCare() const override
+        {
+
+            assert(false);
+
+            return false;
+        }
+
         // DOES MATCH
         virtual bool matches(T value) const override
         {
             return (center - spread) <= value && value < (center + spread);
+        }
+
+        virtual void generalize() override
+        {
+            assert(false);
         }
     };
 

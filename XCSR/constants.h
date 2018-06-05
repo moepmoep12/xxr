@@ -12,12 +12,10 @@ namespace XCSR
         double maxValue = 1.0;
 
         // s_0
-        double maxSpread;
+        double maxSpread = 1.0;
 
         // m
-        double mutationMaxChange;
-
-        bool XCS::Constants::doActionSetSubsumption = false;
+        double mutationMaxChange = 0.1;
 
         // Destructor
         virtual ~Constants() = default;

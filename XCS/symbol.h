@@ -22,7 +22,11 @@ namespace XCS
             return os << obj.toString();
         }
 
+        virtual bool isDontCare() const = 0;
+
         virtual bool matches(T symbol) const = 0;
+
+        virtual void generalize() = 0;
     };
 
     // The standard symbol for XCS (with "don't care")
@@ -49,7 +53,7 @@ namespace XCS
         // Destructor
         virtual ~Symbol() = default;
 
-        virtual bool isDontCare() const
+        virtual bool isDontCare() const override
         {
             return m_isDontCare;
         }
@@ -85,12 +89,13 @@ namespace XCS
             return isDontCare() || this->value() == value;
         }
 
-        virtual void generalize()
+        virtual void generalize() override
         {
             m_isDontCare = true;
         }
     };
 
+    template <>
     Symbol<bool>::Symbol(char c) : m_value(c != '0'), m_isDontCare(c == '#') {}
 
 }
