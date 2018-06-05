@@ -63,8 +63,8 @@ namespace XCS
         }
     };
 
-    template <typename T, typename Action, class Symbol, class Condition>
-    struct Classifier : ConditionActionPair<T, Action, Symbol, Condition>
+    template <typename T, typename Action, class Symbol, class Condition, class ConditionActionPair>
+    struct Classifier : ConditionActionPair
     {
         // p
         //   The prediction p estimates (keeps an average of) the payoff expected if the
@@ -100,7 +100,7 @@ namespace XCS
         //   classifier - represents.
         uint64_t numerosity;
 
-        using ConditionActionPair<T, Action, Symbol, Condition>::isMoreGeneral;
+        using ConditionActionPair::isMoreGeneral;
 
     private:
         // Constants
@@ -110,7 +110,7 @@ namespace XCS
     public:
         // Constructor
         Classifier(const Classifier & obj) :
-            ConditionActionPair<T, Action, Symbol, Condition>(obj.condition, obj.action),
+            ConditionActionPair(obj.condition, obj.action),
             prediction(obj.prediction),
             predictionError(obj.predictionError),
             fitness(obj.fitness),
@@ -124,7 +124,7 @@ namespace XCS
         }
 
         Classifier(const Condition & condition, Action action, uint64_t timeStamp, const Constants & constants) :
-            ConditionActionPair<T, Action, Symbol, Condition>(condition, action),
+            ConditionActionPair(condition, action),
             prediction(constants.initialPrediction),
             predictionError(constants.initialPredictionError),
             fitness(constants.initialFitness),
@@ -157,7 +157,7 @@ namespace XCS
         }
 
         // DOES SUBSUME
-        virtual bool subsumes(const Classifier<T, Action, Symbol, Condition> & cl) const
+        virtual bool subsumes(const Classifier<T, Action, Symbol, Condition, ConditionActionPair> & cl) const
         {
             return isSubsumer() && isMoreGeneral(cl);
         }

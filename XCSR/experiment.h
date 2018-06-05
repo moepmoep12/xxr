@@ -15,7 +15,8 @@ namespace XCSR
         typename Action,
         class Symbol = Symbol<T>,
         class Condition = XCS::Condition<T, Symbol>,
-        class Classifier = XCS::Classifier<T, Action, Symbol, Condition>,
+        class ConditionActionPair = XCS::ConditionActionPair<T, Action, Symbol, Condition>,
+        class Classifier = XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair>,
         class Constants = Constants,
         class ClassifierPtrSet = XCS::ClassifierPtrSet<Action, Classifier, Constants>,
         class Population = XCS::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
@@ -24,11 +25,11 @@ namespace XCSR
         class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
         class ActionSet = XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
-    class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
+    class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
     {
     public:
         // Constructor
-        using XCS::Experiment<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
+        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
 
         // Destructor
         virtual ~Experiment() = default;
