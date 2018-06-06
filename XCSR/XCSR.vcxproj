@@ -19,6 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="action_set.h" />
     <ClInclude Include="classifier.h" />
     <ClInclude Include="environment.h" />
     <ClInclude Include="ga.h" />
