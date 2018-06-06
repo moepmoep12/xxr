@@ -15,6 +15,7 @@ namespace XCSR
         const std::size_t m_totalLength;
         const std::size_t m_addressBitLength;
         const std::size_t m_registerBitLength;
+        const bool m_spreadsBinary;
         const double m_binaryThreshold;
         std::vector<double> m_situation;
         bool m_isEndOfProblem;
@@ -25,24 +26,25 @@ namespace XCSR
             return (l == 0) ? c - 1 : addressBitLength(l >> 1, c + 1);
         }
 
-        static std::vector<double> randomSituation(std::size_t totalLength)
+        static std::vector<double> randomSituation(std::size_t totalLength, bool spreadsBinary)
         {
             std::vector<double> situation;
             for (std::size_t i = 0; i < totalLength; ++i)
             {
-                situation.push_back(XCS::Random::nextDouble());
+                situation.push_back(spreadsBinary ? XCS::Random::nextDouble() : XCS::Random::nextInt(0, 1));
             }
             return situation;
         }
 
     public:
-        explicit RealMultiplexerEnvironment(std::size_t length, double binaryThreshold = 0.5) :
+        explicit RealMultiplexerEnvironment(std::size_t length, bool spreadsBinary, double binaryThreshold = 0.5) :
             AbstractEnvironment<double, bool, Symbol<double>>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
             m_registerBitLength(length - m_addressBitLength),
+            m_spreadsBinary(spreadsBinary),
             m_binaryThreshold(binaryThreshold),
-            m_situation(randomSituation(length)),
+            m_situation(randomSituation(length, spreadsBinary)),
             m_isEndOfProblem(false)
         {
             // Total length must be n + 2^n (n > 0)
@@ -61,7 +63,7 @@ namespace XCSR
             double reward = (action == getAnswer(m_situation)) ? 1.0 : 0.0;
 
             // Update situation
-            m_situation = randomSituation(m_totalLength);
+            m_situation = randomSituation(m_totalLength, m_spreadsBinary);
 
             // Single-step problem
             m_isEndOfProblem = true;

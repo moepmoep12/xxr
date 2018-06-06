@@ -13,6 +13,8 @@ int main()
 
     Constants constants;
 
+    constants.thetaGA = 12;
+
     if (multiplexerLength == 3)
     {
         constants.maxPopulationClassifierCount = 200;
@@ -41,7 +43,7 @@ int main()
         constants.generalizeProbability = 0.75;
     }
 
-    Experiment<double, bool> xcsr(std::make_shared<RealMultiplexerEnvironment>(multiplexerLength), constants);
+    Experiment<double, bool> xcsr(std::make_shared<RealMultiplexerEnvironment>(multiplexerLength, false), constants);
     xcsr.run(100000);
     xcsr.dumpPopulation();
 
