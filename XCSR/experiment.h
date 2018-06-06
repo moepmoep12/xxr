@@ -29,9 +29,43 @@ namespace XCSR
     >
     class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
     {
+    private:
+        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::m_constants;
+
     public:
         // Constructor
         using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
+
+        virtual void dumpPopulation(double dontCareSpread = 0.03) const
+        {
+            std::cout << "C[c(s)]:A,C[c/#]:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+            for (auto && cl : this->m_population)
+            {
+                std::cout << *cl << ",";
+
+                for (auto && symbol : cl->condition)
+                {
+                    if (symbol.center - symbol.spread <= m_constants.minValue + dontCareSpread && m_constants.maxValue - dontCareSpread <= symbol.center + symbol.spread)
+                    {
+                        std::cout << "# ";
+                    }
+                    else
+                    {
+                        std::cout << symbol.center << " ";
+                    }
+                }
+
+                std::cout
+                    << ":" << cl->action << ","
+                    << cl->prediction << ","
+                    << cl->predictionError << ","
+                    << cl->fitness << ","
+                    << cl->experience << ","
+                    << cl->timeStamp << ","
+                    << cl->actionSetSize << ","
+                    << cl->numerosity << std::endl;
+            }
+        }
 
         // Destructor
         virtual ~Experiment() = default;
