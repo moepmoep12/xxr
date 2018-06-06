@@ -1,6 +1,8 @@
 #pragma once
 
 #include "../XCS/symbol.h"
+#include <sstream>
+#include <iomanip>
 #include <string>
 
 namespace XCSR
@@ -22,7 +24,9 @@ namespace XCSR
 
         virtual std::string toString() const override
         {
-            return std::to_string(center) + "(" + std::to_string(spread) + ") ";
+            std::ostringstream stream;
+            stream << std::setprecision(3) << center << "(" << spread << ") ";
+            return stream.str();
         }
 
         friend bool operator== (const Symbol & lhs, const Symbol & rhs)
