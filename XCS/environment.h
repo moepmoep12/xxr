@@ -1,5 +1,6 @@
 #pragma once
 
+#include <iostream>
 #include <vector>
 #include <unordered_set>
 #include <cstddef>
@@ -15,7 +16,9 @@ namespace XCS
     {
     protected:
         // Constructor with available action choices
-        AbstractEnvironment(const std::unordered_set<Action> & actionChoices) : actionChoices(actionChoices) {}
+        AbstractEnvironment(const std::unordered_set<Action> & actionChoices) : actionChoices(actionChoices)
+        {
+        }
 
     public:
         // Available action choices

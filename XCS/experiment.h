@@ -70,12 +70,15 @@ namespace XCS
 
         const Constants m_constants;
 
+        // Environment(s)
         std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> m_environment;
+        std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> m_evaluationEnvironment;
 
     public:
         // Constructor
-        Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, const Constants & constants)
-            : m_environment(environment),
+        Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, const Constants & constants) :
+            m_environment(environment),
+            m_evaluationEnvironment(environment),
             m_population(constants, environment->actionChoices),
             m_matchSet(constants, environment->actionChoices),
             m_actionSet(constants, environment->actionChoices),
@@ -86,20 +89,35 @@ namespace XCS
         {
         }
 
+        // Use this if the environment situation can be changed by the action execution history
+        Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> evaluationEnvironment, const Constants & constants) :
+            m_environment(environment),
+            m_evaluationEnvironment(evaluationEnvironment),
+            m_population(constants, environment->actionChoices),
+            m_matchSet(constants, environment->actionChoices),
+            m_actionSet(constants, environment->actionChoices),
+            m_prevActionSet(constants, environment->actionChoices),
+            m_constants(constants),
+            m_timeStamp(0),
+            m_prevReward(0.0)
+        {
+            assert(environment->actionChoices == evaluationEnvironment->actionChoices);
+        }
+
         // Destructor
         virtual ~Experiment() = default;
 
         // RUN EXPERIMENT
-        virtual void run(uint64_t loopCount)
+        virtual void run(std::size_t loopCount)
         {
             // Main loop
-            for (uint64_t i = 0; i < loopCount; ++i)
+            for (std::size_t i = 0; i < loopCount; ++i)
             {
                 auto situation = m_environment->situation();
 
                 m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
-                PredictionArray predictionArray(m_matchSet, m_constants.exploreProbability /* FIXME: for other prediction array than epsilon greedy */ );
+                PredictionArray predictionArray(m_matchSet, m_constants.exploreProbability);
 
                 Action action = predictionArray.selectAction();
 
@@ -128,6 +146,40 @@ namespace XCS
                 }
                 ++m_timeStamp;
             }
+        }
+
+        // Runs experiment without exploration and returns reward average
+        virtual double evaluate(std::size_t loopCount) const
+        {
+            double rewardSum = 0.0;
+            for (std::size_t i = 0; i < loopCount; ++i)
+            {
+                auto situation = m_evaluationEnvironment->situation();
+
+                MatchSet matchSet(m_constants, m_environment->actionChoices);
+                for (auto && cl : m_population)
+                {
+                    if (cl->condition.matches(situation))
+                    {
+                        matchSet.insert(cl);
+                    }
+                }
+                
+                Action action;
+                if (!matchSet.empty())
+                {
+                    auto predictionArray = GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>(matchSet);
+                    action = predictionArray.selectAction();
+                }
+                else
+                {
+                    action = Random::chooseFrom(m_environment->actionChoices);
+                }
+
+                rewardSum += m_environment->executeAction(action);
+            }
+
+            return rewardSum / loopCount;
         }
 
         virtual void dumpPopulation() const

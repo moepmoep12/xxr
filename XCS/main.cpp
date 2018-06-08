@@ -11,7 +11,7 @@ using namespace XCS;
 
 int main()
 {
-    std::size_t multiplexerLength = 6;
+    std::size_t multiplexerLength = 11;
 
     Constants constants;
 
@@ -44,7 +44,13 @@ int main()
     }
 
     Experiment<bool, bool> xcs(std::make_shared<MultiplexerEnvironment>(multiplexerLength), constants);
-    xcs.run(1000000);
+    for (std::size_t i = 0; i < 500; ++i)
+    {
+        xcs.run(100);
+        std::cout << xcs.evaluate(1000) << std::endl;
+    }
+    std::cout << std::endl;
+
     xcs.dumpPopulation();
 
     return 0;

@@ -40,9 +40,15 @@ int main()
         constants.maxPopulationClassifierCount = 50000;
     }
 
-    Experiment<double, bool> xcsr(std::make_shared<RealMultiplexerEnvironment>(multiplexerLength, false), constants);
-    xcsr.run(1000000);
-    xcsr.dumpPopulation(0.001);
+    Experiment<double, bool> xcsr(std::make_shared<RealMultiplexerEnvironment>(multiplexerLength, true), constants);
+    for (std::size_t i = 0; i < 500; ++i)
+    {
+        xcsr.run(100);
+        std::cout << xcsr.evaluate(1000) << std::endl;
+    }
+    std::cout << std::endl;
+
+    xcsr.dumpPopulation();
 
     return 0;
 }
