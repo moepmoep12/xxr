@@ -60,7 +60,7 @@ namespace XCSR
 
         virtual double executeAction(bool action) override
         {
-            double reward = (action == getAnswer(m_situation)) ? 1.0 : 0.0;
+            double reward = (action == getAnswer(m_situation)) ? 1000.0 : 0.0;
 
             // Update situation
             m_situation = randomSituation(m_totalLength, m_spreadsBinary);

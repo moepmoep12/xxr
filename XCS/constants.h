@@ -27,7 +27,7 @@ namespace XCS
         // epsilon_0
         //   The error threshold under which the accuracy of a classifier is set to one
         //   Recommended: 1% of the maximum reward
-        double predictionErrorThreshold = 0.01;
+        double predictionErrorThreshold = 10;
 
         // nu
         //   The exponent in the power function for the fitness evaluation
