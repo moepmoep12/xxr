@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include <memory>
 #include <unordered_map>
@@ -64,7 +64,7 @@ namespace XCS
                 }
 
                 // Generate classifiers covering the unselected actions
-                if ((m_actionChoices.size() - unselectedActions.size() < thetaMna))
+                if (m_actionChoices.size() - unselectedActions.size() < thetaMna)
                 {
                     population.insert(generateCoveringClassifier(situation, unselectedActions, timeStamp));
                     population.deleteExtraClassifiers();
