@@ -16,7 +16,7 @@ namespace XCS
     template <typename T, class Symbol>
     class Condition
     {
-    private:
+    protected:
         std::vector<Symbol> m_symbols;
 
     public:

@@ -33,7 +33,7 @@ namespace XCS
     template <typename T>
     class Symbol : public AbstractSymbol<T>
     {
-    private:
+    protected:
         T m_value;
         bool m_isDontCare;
         T value() const
