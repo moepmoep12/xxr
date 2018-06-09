@@ -91,7 +91,30 @@ namespace XCS
                 }
             }
 
+            assert(maxValueIdxs.size() > 0);
+
             return chooseFrom(maxValueIdxs);
+        }
+
+        template <typename T>
+        static std::size_t epsilonGreedySelection(const std::vector<T> & container, double epsilon)
+        {
+            std::size_t selectedIdx;
+
+            if (nextDouble() < epsilon)
+            {
+                // Random selection
+                std::size_t size = container.size();
+                assert(size > 0);
+                selectedIdx = nextInt<std::size_t>(0, size - 1);
+            }
+            else
+            {
+                // Greedy selection
+                selectedIdx = greedySelection(container);
+            }
+
+            return selectedIdx;
         }
     };
 
