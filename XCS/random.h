@@ -5,6 +5,7 @@
 #include <unordered_set>
 #include <cassert>
 #include <cstddef>
+#include <algorithm>
 
 namespace XCS
 {
@@ -55,7 +56,7 @@ namespace XCS
         }
 
         template <typename T>
-        static std::size_t spinRouletteWheel(const std::vector<T> & container)
+        static std::size_t rouletteWheelSelection(const std::vector<T> & container)
         {
             // Prepare a roulette wheel by the weights
             T sum = 0;
@@ -74,6 +75,23 @@ namespace XCS
 
             // Returns index of selected item
             return std::distance(std::begin(rouletteWheel), it);
+        }
+
+        template <typename T>
+        static std::size_t greedySelection(const std::vector<T> & container)
+        {
+            T maxValue = *std::max_element(std::begin(container), std::end(container));
+            std::vector<std::size_t> maxValueIdxs;
+
+            for (std::size_t i = 0; i < container.size(); ++i)
+            {
+                if (container[i] == maxValue)
+                {
+                    maxValueIdxs.push_back(i);
+                }
+            }
+
+            return chooseFrom(maxValueIdxs);
         }
     };
 

@@ -78,7 +78,7 @@ namespace XCS
             }
 
             // Roulette-wheel selection
-            std::size_t rouletteIdx = Random::spinRouletteWheel(votes);
+            std::size_t rouletteIdx = Random::rouletteWheelSelection(votes);
 
             // Distrust the selected classifier
             if ((*targets[rouletteIdx])->numerosity > 1)
