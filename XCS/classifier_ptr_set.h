@@ -12,22 +12,22 @@ namespace XCS
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
         const Constants m_constants;
-        const std::unordered_set<Action> m_actionChoices;
+        const std::unordered_set<Action> m_availableActions;
 
         std::unordered_set<ClassifierPtr> m_set;
 
     public:
         // Constructor
-        ClassifierPtrSet(const Constants & constants, const std::unordered_set<Action> actionChoices) :
+        ClassifierPtrSet(const Constants & constants, const std::unordered_set<Action> availableActions) :
             m_constants(constants),
-            m_actionChoices(actionChoices)
+            m_availableActions(availableActions)
         {
         }
 
-        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const Constants & constants, const std::unordered_set<Action> actionChoices) :
+        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const Constants & constants, const std::unordered_set<Action> availableActions) :
             m_set(set),
             m_constants(constants),
-            m_actionChoices(actionChoices)
+            m_availableActions(availableActions)
         {
         }
 

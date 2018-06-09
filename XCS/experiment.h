@@ -79,10 +79,10 @@ namespace XCS
         Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, const Constants & constants) :
             m_environment(environment),
             m_evaluationEnvironment(environment),
-            m_population(constants, environment->actionChoices),
-            m_matchSet(constants, environment->actionChoices),
-            m_actionSet(constants, environment->actionChoices),
-            m_prevActionSet(constants, environment->actionChoices),
+            m_population(constants, environment->availableActions),
+            m_matchSet(constants, environment->availableActions),
+            m_actionSet(constants, environment->availableActions),
+            m_prevActionSet(constants, environment->availableActions),
             m_constants(constants),
             m_timeStamp(0),
             m_prevReward(0.0)
@@ -93,15 +93,15 @@ namespace XCS
         Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> evaluationEnvironment, const Constants & constants) :
             m_environment(environment),
             m_evaluationEnvironment(evaluationEnvironment),
-            m_population(constants, environment->actionChoices),
-            m_matchSet(constants, environment->actionChoices),
-            m_actionSet(constants, environment->actionChoices),
-            m_prevActionSet(constants, environment->actionChoices),
+            m_population(constants, environment->availableActions),
+            m_matchSet(constants, environment->availableActions),
+            m_actionSet(constants, environment->availableActions),
+            m_prevActionSet(constants, environment->availableActions),
             m_constants(constants),
             m_timeStamp(0),
             m_prevReward(0.0)
         {
-            assert(environment->actionChoices == evaluationEnvironment->actionChoices);
+            assert(environment->availableActions == evaluationEnvironment->availableActions);
         }
 
         // Destructor
@@ -156,7 +156,7 @@ namespace XCS
             {
                 auto situation = m_evaluationEnvironment->situation();
 
-                MatchSet matchSet(m_constants, m_environment->actionChoices);
+                MatchSet matchSet(m_constants, m_environment->availableActions);
                 for (auto && cl : m_population)
                 {
                     if (cl->condition.matches(situation))
@@ -173,7 +173,7 @@ namespace XCS
                 }
                 else
                 {
-                    action = Random::chooseFrom(m_environment->actionChoices);
+                    action = Random::chooseFrom(m_environment->availableActions);
                 }
 
                 rewardSum += m_environment->executeAction(action);

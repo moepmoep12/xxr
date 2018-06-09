@@ -12,7 +12,7 @@ namespace XCSR
         using ClassifierPtr = std::shared_ptr<Classifier>;
         using XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_set;
         using XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_constants;
-        using XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_actionChoices;
+        using XCS::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_availableActions;
 
         // DO ACTION SET SUBSUMPTION
         virtual void doSubsumption(Population & population) override

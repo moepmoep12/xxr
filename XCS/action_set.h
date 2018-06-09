@@ -16,7 +16,7 @@ namespace XCS
         using ClassifierPtr = std::shared_ptr<Classifier>;
         using ClassifierPtrSet::m_set;
         using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_actionChoices;
+        using ClassifierPtrSet::m_availableActions;
 
         GA m_ga;
 
@@ -90,15 +90,15 @@ namespace XCS
 
     public:
         // Constructor
-        ActionSet(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet(constants, actionChoices),
-            m_ga(constants, actionChoices)
+        ActionSet(const Constants & constants, const std::unordered_set<Action> & availableActions) :
+            ClassifierPtrSet(constants, availableActions),
+            m_ga(constants, availableActions)
         {
         }
 
-        ActionSet(const MatchSet & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet(constants, actionChoices),
-            m_ga(constants, actionChoices)
+        ActionSet(const MatchSet & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & availableActions) :
+            ClassifierPtrSet(constants, availableActions),
+            m_ga(constants, availableActions)
         {
             regenerate(matchSet, action);
         }

@@ -13,7 +13,7 @@ namespace XCS
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
         using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_actionChoices;
+        using ClassifierPtrSet::m_availableActions;
         using ClassifierPtrSet::m_set;
 
         // GENERATE COVERING CLASSIFIER
@@ -29,8 +29,8 @@ namespace XCS
         // Constructor
         using ClassifierPtrSet::ClassifierPtrSet;
 
-        MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & actionChoices) :
-            ClassifierPtrSet(constants, actionChoices)
+        MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & availableActions) :
+            ClassifierPtrSet(constants, availableActions)
         {
             regenerate(population, situation, timeStamp);
         }
@@ -42,9 +42,9 @@ namespace XCS
         virtual void regenerate(Population & population, const std::vector<T> & situation, uint64_t timeStamp)
         {
             // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
-            auto thetaMna = (m_constants.thetaMna == 0) ? m_actionChoices.size() : m_constants.thetaMna;
+            auto thetaMna = (m_constants.thetaMna == 0) ? m_availableActions.size() : m_constants.thetaMna;
 
-            auto unselectedActions = m_actionChoices;
+            auto unselectedActions = m_availableActions;
 
             m_set.clear();
 
@@ -60,7 +60,7 @@ namespace XCS
                 }
 
                 // Generate classifiers covering the unselected actions
-                if (m_actionChoices.size() - unselectedActions.size() < thetaMna)
+                if (m_availableActions.size() - unselectedActions.size() < thetaMna)
                 {
                     population.insert(generateCoveringClassifier(situation, unselectedActions, timeStamp));
                     population.deleteExtraClassifiers();

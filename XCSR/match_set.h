@@ -12,7 +12,7 @@ namespace XCSR
         using ClassifierPtr = std::shared_ptr<Classifier>;
         using ClassifierPtrSet::m_set;
         using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_actionChoices;
+        using ClassifierPtrSet::m_availableActions;
 
         // GENERATE COVERING CLASSIFIER
         virtual ClassifierPtr generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const override

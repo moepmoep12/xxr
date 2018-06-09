@@ -17,13 +17,13 @@ namespace XCS
     {
     protected:
         // Constructor with available action choices
-        AbstractEnvironment(const std::unordered_set<Action> & actionChoices) : actionChoices(actionChoices)
+        AbstractEnvironment(const std::unordered_set<Action> & availableActions) : availableActions(availableActions)
         {
         }
 
     public:
         // Available action choices
-        const std::unordered_set<Action> actionChoices;
+        const std::unordered_set<Action> availableActions;
 
         // Disable default constructor to force derived classes to set available action choices
         AbstractEnvironment() = delete;

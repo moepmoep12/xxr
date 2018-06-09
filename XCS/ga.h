@@ -15,7 +15,7 @@ namespace XCS
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
         const Constants m_constants;
-        const std::unordered_set<Action> & m_actionChoices;
+        const std::unordered_set<Action> & m_availableActions;
 
         // SELECT OFFSPRING
         virtual ClassifierPtr selectOffspring(const ClassifierPtrSet & actionSet) const
@@ -89,9 +89,9 @@ namespace XCS
                 }
             }
 
-            if ((Random::nextDouble() < m_constants.mutationProbability) && (m_actionChoices.size() >= 2))
+            if ((Random::nextDouble() < m_constants.mutationProbability) && (m_availableActions.size() >= 2))
             {
-                std::unordered_set<Action> otherPossibleActions(m_actionChoices);
+                std::unordered_set<Action> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);
                 cl.action = Random::chooseFrom(otherPossibleActions);
             }
@@ -99,9 +99,9 @@ namespace XCS
 
     public:
         // Constructor
-        GA(const Constants & constants, const std::unordered_set<Action> & actionChoices) :
+        GA(const Constants & constants, const std::unordered_set<Action> & availableActions) :
             m_constants(constants),
-            m_actionChoices(actionChoices)
+            m_availableActions(availableActions)
         {
         }
 

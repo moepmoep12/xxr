@@ -12,7 +12,7 @@ namespace XCSR
     {
     protected:
         using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_constants;
-        using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_actionChoices;
+        using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_availableActions;
 
         // APPLY MUTATION
         virtual void mutate(Classifier & cl, const std::vector<T> & situation) const override
@@ -35,9 +35,9 @@ namespace XCSR
                 }
             }
 
-            if ((XCS::Random::nextDouble() < m_constants.mutationProbability) && (m_actionChoices.size() >= 2))
+            if ((XCS::Random::nextDouble() < m_constants.mutationProbability) && (m_availableActions.size() >= 2))
             {
-                std::unordered_set<Action> otherPossibleActions(m_actionChoices);
+                std::unordered_set<Action> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);
                 cl.action = XCS::Random::chooseFrom(otherPossibleActions);
             }

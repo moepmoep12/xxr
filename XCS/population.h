@@ -10,7 +10,7 @@ namespace XCS
         using ClassifierPtr = std::shared_ptr<Classifier>;
         using ClassifierPtrSet::m_set;
         using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_actionChoices;
+        using ClassifierPtrSet::m_availableActions;
 
         // DELETION VOTE
         virtual double deletionVote(const Classifier & cl, double averageFitness) const
