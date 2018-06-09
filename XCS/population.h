@@ -67,29 +67,27 @@ namespace XCS
             // The average fitness in the population
             double averageFitness = fitnessSum / numerositySum;
 
-            // Prepare a roulette wheel by the weights
-            double voteSum = 0.0;
-            std::vector<double> rouletteWheel(m_set.size());
-            std::vector<const ClassifierPtr *> rouletteWheelTarget(m_set.size());
+            // Prepare weights for roulette-wheel selection
+            std::vector<double> votes;
+            votes.reserve(m_set.size());
+            std::vector<const ClassifierPtr *> targets;
             for (auto && c : m_set)
             {
-                voteSum += deletionVote(*c, averageFitness);
-                rouletteWheel.push_back(voteSum);
-                rouletteWheelTarget.push_back(&c);
+                votes.push_back(deletionVote(*c, averageFitness));
+                targets.push_back(&c);
             }
 
-            // Spin the roulette wheel
-            auto rouletteIterator = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), Random::nextDouble(0.0, voteSum));
-            auto rouletteIdx = std::distance(std::begin(rouletteWheel), rouletteIterator);
+            // Roulette-wheel selection
+            std::size_t rouletteIdx = Random::spinRouletteWheel(votes);
 
             // Distrust the selected classifier
-            if ((*rouletteWheelTarget[rouletteIdx])->numerosity > 1)
+            if ((*targets[rouletteIdx])->numerosity > 1)
             {
-                (*rouletteWheelTarget[rouletteIdx])->numerosity--;
+                (*targets[rouletteIdx])->numerosity--;
             }
             else
             {
-                m_set.erase(*rouletteWheelTarget[rouletteIdx]);
+                m_set.erase(*targets[rouletteIdx]);
             }
         }
     };

@@ -4,6 +4,7 @@
 #include <vector>
 #include <unordered_set>
 #include <cassert>
+#include <cstddef>
 
 namespace XCS
 {
@@ -51,6 +52,28 @@ namespace XCS
             std::vector<T> vec(container.size());
             vec.insert(vec.end(), container.begin(), container.end());
             return chooseFrom(vec);
+        }
+
+        template <typename T>
+        static std::size_t spinRouletteWheel(const std::vector<T> & container)
+        {
+            // Prepare a roulette wheel by the weights
+            T sum = 0;
+            std::vector<T> rouletteWheel;
+            rouletteWheel.reserve(container.size());
+            for (auto && value : container)
+            {
+                sum += value;
+                rouletteWheel.push_back(sum);
+            }
+
+            assert(sum > 0);
+
+            // Spin the roulette wheel
+            auto it = std::lower_bound(std::begin(rouletteWheel), std::end(rouletteWheel), nextDouble<T>(0, sum));
+
+            // Returns index of selected item
+            return std::distance(std::begin(rouletteWheel), it);
         }
     };
 
