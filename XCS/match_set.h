@@ -4,10 +4,6 @@
 #include <unordered_map>
 #include <cstdint>
 
-#include "constants.h"
-#include "classifier_ptr_set.h"
-#include "population.h"
-
 namespace XCS
 {
 

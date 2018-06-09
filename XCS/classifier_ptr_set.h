@@ -2,8 +2,6 @@
 
 #include <unordered_set>
 
-#include "classifier.h"
-
 namespace XCS
 {
 

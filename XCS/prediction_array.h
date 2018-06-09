@@ -7,10 +7,6 @@
 #include <cfloat>
 #include <cmath>
 
-#include "classifier.h"
-#include "classifier_ptr_set.h"
-#include "random.h"
-
 namespace XCS
 {
 

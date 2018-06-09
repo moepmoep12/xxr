@@ -6,10 +6,6 @@
 #include <cstdint>
 #include <cstddef>
 
-#include "classifier_ptr_set.h"
-#include "match_set.h"
-#include "ga.h"
-
 namespace XCS
 {
 

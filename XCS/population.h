@@ -1,8 +1,5 @@
 #pragma once
 
-#include "symbol.h"
-#include "classifier_ptr_set.h"
-
 namespace XCS
 {
 

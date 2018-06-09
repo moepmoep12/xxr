@@ -6,9 +6,6 @@
 #include <cstddef>
 #include <cassert>
 
-#include "condition.h"
-#include "constants.h"
-
 namespace XCS
 {
 
@@ -58,7 +55,7 @@ namespace XCS
         }
     };
 
-    template <typename T, typename Action, class Symbol, class Condition, class ConditionActionPair>
+    template <typename T, typename Action, class Symbol, class Condition, class ConditionActionPair, class Constants>
     struct Classifier : ConditionActionPair
     {
         // p
@@ -152,7 +149,7 @@ namespace XCS
         }
 
         // DOES SUBSUME
-        virtual bool subsumes(const Classifier<T, Action, Symbol, Condition, ConditionActionPair> & cl) const
+        virtual bool subsumes(const Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants> & cl) const
         {
             return isSubsumer() && isMoreGeneral(cl);
         }

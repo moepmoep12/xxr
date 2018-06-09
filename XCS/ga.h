@@ -5,11 +5,6 @@
 #include <cassert>
 #include <cstddef>
 
-#include "classifier.h"
-#include "classifier_ptr_set.h"
-#include "population.h"
-#include "random.h"
-
 namespace XCS
 {
 

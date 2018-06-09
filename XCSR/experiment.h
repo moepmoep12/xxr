@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../XCS/experiment.h"
+#include "../XCS/condition.h"
 #include "symbol.h"
 #include "classifier.h"
 #include "constants.h"
@@ -18,8 +19,8 @@ namespace XCSR
         class Symbol = Symbol<T>,
         class Condition = XCS::Condition<T, Symbol>,
         class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
-        class Classifier = XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair>,
         class Constants = Constants,
+        class Classifier = XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
         class ClassifierPtrSet = XCS::ClassifierPtrSet<Action, Classifier, Constants>,
         class Population = XCS::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
         class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
@@ -27,14 +28,14 @@ namespace XCSR
         class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
         class ActionSet = ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
-    class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
+    class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
     {
     private:
-        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::m_constants;
+        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::m_constants;
 
     public:
         // Constructor
-        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
+        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
 
         virtual void dumpPopulation(double dontCareSpread = 0.03) const
         {

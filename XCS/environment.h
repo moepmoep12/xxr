@@ -6,6 +6,7 @@
 #include <cstddef>
 #include <cassert>
 
+#include "random.h"
 #include "symbol.h"
 
 namespace XCS
