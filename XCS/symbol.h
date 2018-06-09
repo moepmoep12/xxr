@@ -36,11 +36,6 @@ namespace XCS
     protected:
         T m_value;
         bool m_isDontCare;
-        T value() const
-        {
-            assert(!m_isDontCare);
-            return m_value;
-        }
 
     public:
         // Constructor
@@ -52,6 +47,12 @@ namespace XCS
 
         // Destructor
         virtual ~Symbol() = default;
+
+        virtual T value() const
+        {
+            assert(!m_isDontCare);
+            return m_value;
+        }
 
         virtual bool isDontCare() const override
         {
