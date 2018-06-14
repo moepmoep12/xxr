@@ -94,7 +94,7 @@ namespace XCS
 
         using ConditionActionPair::isMoreGeneral;
 
-    private:
+    protected:
         // Constants
         const double m_thetaSub;
         const double m_predictionErrorThreshold;
