@@ -78,15 +78,15 @@ namespace XCS
     public:
         // Constructor
         Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, const Constants & constants) :
-            m_environment(environment),
-            m_evaluationEnvironment(environment),
             m_population(constants, environment->availableActions),
             m_matchSet(constants, environment->availableActions),
             m_actionSet(constants, environment->availableActions),
             m_prevActionSet(constants, environment->availableActions),
-            m_constants(constants),
             m_timeStamp(0),
-            m_prevReward(0.0)
+            m_prevReward(0.0),
+            m_constants(constants),
+            m_environment(environment),
+            m_evaluationEnvironment(environment)
         {
         }
 
