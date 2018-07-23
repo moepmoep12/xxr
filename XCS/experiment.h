@@ -10,6 +10,7 @@
 
 #include "constants.h"
 #include "symbol.h"
+#include "condition.h"
 #include "classifier.h"
 #include "classifier_ptr_set.h"
 #include "population.h"

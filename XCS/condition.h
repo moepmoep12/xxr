@@ -7,6 +7,8 @@
 #include <cassert>
 #include <iterator>
 
+#include "random.h"
+
 namespace XCS
 {
 
