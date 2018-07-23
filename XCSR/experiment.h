@@ -37,27 +37,43 @@ namespace XCSR
         // Constructor
         using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
 
-        virtual void dumpPopulation(double dontCareSpread = 0.03) const
+        virtual void dumpPopulation() const
         {
-            std::cout << "C[c(s)]:A,C[c/#]:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+            std::cout
+                << "C[" << m_constants.minValue << "-" << m_constants.maxValue << "]:A,"
+                << "C[c(s)]:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+
             for (auto && cl : this->m_population)
             {
-                std::cout << *cl << ",";
-
                 for (auto && symbol : cl->condition)
                 {
-                    if (symbol.center - symbol.spread <= m_constants.minValue + dontCareSpread && m_constants.maxValue - dontCareSpread <= symbol.center + symbol.spread)
+                    std::cout << "|";
+
+                    auto normalizedLowerLimit = (symbol.center - symbol.spread - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+                    auto normalizedUpperLimit = (symbol.center + symbol.spread - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+
+                    for (int i = 0; i < 10; ++i)
                     {
-                        std::cout << "# ";
-                    }
-                    else
-                    {
-                        std::cout << symbol.center << " ";
+                        if (normalizedLowerLimit < i / 10.0 && (i + 1) / 10.0 < normalizedUpperLimit)
+                        {
+                            std::cout << "O";
+                        }
+                        else if ((i / 10.0 <= normalizedLowerLimit && normalizedLowerLimit <= (i + 1) / 10.0)
+                            || (i / 10.0 <= normalizedUpperLimit && normalizedUpperLimit <= (i + 1) / 10.0))
+                        {
+                            std::cout << "o";
+                        }
+                        else
+                        {
+                            std::cout << ".";
+                        }
                     }
                 }
+                std::cout << "|" << ":" << cl->action << ",";
+
+                std::cout << *cl << ",";
 
                 std::cout
-                    << ":" << cl->action << ","
                     << cl->prediction << ","
                     << cl->predictionError << ","
                     << cl->fitness << ","
