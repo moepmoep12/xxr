@@ -40,11 +40,34 @@ int main()
         constants.maxPopulationClassifierCount = 50000;
     }
 
-    Experiment<double, bool> xcsr(std::make_shared<RealMultiplexerEnvironment>(multiplexerLength, true), constants);
+    RealMultiplexerEnvironment environment(multiplexerLength, true);
+    Experiment<double, bool> xcsr(environment.availableActions, constants);
     for (std::size_t i = 0; i < 500; ++i)
     {
-        xcsr.run(100);
-        std::cout << xcsr.evaluate(1000) << std::endl;
+        // Exploration
+        for (std::size_t j = 0; j < 100; ++j)
+        {
+            // Choose action
+            bool action = xcsr.explore(environment.situation());
+
+            // Get reward
+            double reward = environment.executeAction(action);
+            xcsr.reward(reward);
+        }
+
+        // Exploitation
+        double rewardSum = 0;
+        for (std::size_t j = 0; j < 1000; ++j)
+        {
+            // Choose action
+            bool action = xcsr.exploit(environment.situation());
+
+            // Get reward
+            double reward = environment.executeAction(action);
+            rewardSum += reward;
+        }
+
+        std::cout << (rewardSum / 1000) << std::endl;
     }
     std::cout << std::endl;
 

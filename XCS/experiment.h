@@ -63,124 +63,105 @@ namespace XCS
         //   execution cycle.
         ActionSet m_prevActionSet;
 
+        // Available action choices
+        std::unordered_set<Action> m_availableActions;
+
         uint64_t m_timeStamp;
 
+        bool m_expectsReward;
         double m_prevReward;
 
         std::vector<T> m_prevSituation;
 
         const Constants m_constants;
 
-        // Environment(s)
-        std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> m_environment;
-        std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> m_evaluationEnvironment;
-
     public:
         // Constructor
-        Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, const Constants & constants) :
-            m_population(constants, environment->availableActions),
-            m_matchSet(constants, environment->availableActions),
-            m_actionSet(constants, environment->availableActions),
-            m_prevActionSet(constants, environment->availableActions),
+        Experiment(const std::unordered_set<Action> & availableActions, const Constants & constants) :
+            m_population(constants, availableActions),
+            m_matchSet(constants, availableActions),
+            m_actionSet(constants, availableActions),
+            m_prevActionSet(constants, availableActions),
+            m_availableActions(availableActions),
             m_timeStamp(0),
             m_prevReward(0.0),
-            m_constants(constants),
-            m_environment(environment),
-            m_evaluationEnvironment(environment)
+            m_expectsReward(false),
+            m_constants(constants)
         {
-        }
-
-        // Use this if the environment situation can be changed by the action execution history
-        Experiment(std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> environment, std::shared_ptr<AbstractEnvironment<T, Action, Symbol>> evaluationEnvironment, const Constants & constants) :
-            m_environment(environment),
-            m_evaluationEnvironment(evaluationEnvironment),
-            m_population(constants, environment->availableActions),
-            m_matchSet(constants, environment->availableActions),
-            m_actionSet(constants, environment->availableActions),
-            m_prevActionSet(constants, environment->availableActions),
-            m_constants(constants),
-            m_timeStamp(0),
-            m_prevReward(0.0)
-        {
-            assert(environment->availableActions == evaluationEnvironment->availableActions);
         }
 
         // Destructor
         virtual ~Experiment() = default;
 
-        // RUN EXPERIMENT
-        virtual void run(std::size_t loopCount)
+        // Run with exploration
+        virtual Action explore(const std::vector<T> & situation)
         {
-            // Main loop
-            for (std::size_t i = 0; i < loopCount; ++i)
+            assert(!m_expectsReward);
+
+            m_matchSet.regenerate(m_population, situation, m_timeStamp);
+
+            PredictionArray predictionArray(m_matchSet, m_constants.exploreProbability);
+
+            Action action = predictionArray.selectAction();
+
+            m_actionSet.regenerate(m_matchSet, action);
+
+            m_expectsReward = true;
+
+            if (!m_prevActionSet.empty())
             {
-                auto situation = m_environment->situation();
-
-                m_matchSet.regenerate(m_population, situation, m_timeStamp);
-
-                PredictionArray predictionArray(m_matchSet, m_constants.exploreProbability);
-
-                Action action = predictionArray.selectAction();
-
-                m_actionSet.regenerate(m_matchSet, action);
-
-                double reward = m_environment->executeAction(action);
-
-                if (!m_prevActionSet.empty())
-                {
-                    double p = m_prevReward + m_constants.gamma * predictionArray.max();
-                    m_prevActionSet.update(p, m_population);
-                    m_prevActionSet.runGA(m_prevSituation, m_population, m_timeStamp);
-                }
-
-                if (m_environment->isEndOfProblem())
-                {
-                    m_actionSet.update(reward, m_population);
-                    m_actionSet.runGA(situation, m_population, m_timeStamp);
-                    m_prevActionSet.clear();
-                }
-                else
-                {
-                    m_actionSet.copyTo(m_prevActionSet);
-                    m_prevReward = reward;
-                    m_prevSituation = situation;
-                }
-                ++m_timeStamp;
+                double p = m_prevReward + m_constants.gamma * predictionArray.max();
+                m_prevActionSet.update(p, m_population);
+                m_prevActionSet.runGA(m_prevSituation, m_population, m_timeStamp);
             }
+
+            m_prevSituation = situation;
+
+            return action;
         }
 
-        // Runs experiment without exploration and returns reward average
-        virtual double evaluate(std::size_t loopCount) const
+        virtual void reward(double value, bool isEndOfProblem = true)
         {
-            double rewardSum = 0.0;
-            for (std::size_t i = 0; i < loopCount; ++i)
+            assert(m_expectsReward);
+
+            if (isEndOfProblem)
             {
-                auto situation = m_evaluationEnvironment->situation();
+                m_actionSet.update(value, m_population);
+                m_actionSet.runGA(m_prevSituation, m_population, m_timeStamp);
+                m_prevActionSet.clear();
+            }
+            else
+            {
+                m_actionSet.copyTo(m_prevActionSet);
+                m_prevReward = value;
+            }
+            ++m_timeStamp;
 
-                MatchSet matchSet(m_constants, m_environment->availableActions);
-                for (auto && cl : m_population)
-                {
-                    if (cl->condition.matches(situation))
-                    {
-                        matchSet.insert(cl);
-                    }
-                }
-                
-                Action action;
-                if (!matchSet.empty())
-                {
-                    auto predictionArray = GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>(matchSet);
-                    action = predictionArray.selectAction();
-                }
-                else
-                {
-                    action = Random::chooseFrom(m_environment->availableActions);
-                }
+            m_expectsReward = false;
+        }
 
-                rewardSum += m_environment->executeAction(action);
+        // Run without exploration
+        virtual Action exploit(const std::vector<T> & situation) const
+        {
+            // Create new match set as sandbox
+            MatchSet matchSet(m_constants, m_availableActions);
+            for (auto && cl : m_population)
+            {
+                if (cl->condition.matches(situation))
+                {
+                    matchSet.insert(cl);
+                }
             }
 
-            return rewardSum / loopCount;
+            if (!matchSet.empty())
+            {
+                auto predictionArray = GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>(matchSet);
+                return predictionArray.selectAction();
+            }
+            else
+            {
+                return Random::chooseFrom(m_availableActions);
+            }
         }
 
         virtual void dumpPopulation() const
