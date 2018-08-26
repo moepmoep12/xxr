@@ -40,8 +40,8 @@ namespace XCSR
         virtual void dumpPopulation() const
         {
             std::cout
-                << "C[" << m_constants.minValue << "-" << m_constants.maxValue << "]:A,"
-                << "C[c(s)]:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+                << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
+                << "Condition[c(s)],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
 
             for (auto && cl : this->m_population)
             {
@@ -69,11 +69,11 @@ namespace XCSR
                         }
                     }
                 }
-                std::cout << "|" << ":" << cl->action << ",";
-
-                std::cout << *cl << ",";
+                std::cout << "|" << ",";
 
                 std::cout
+                    << cl->condition << ","
+                    << cl->action << ","
                     << cl->prediction << ","
                     << cl->predictionError << ","
                     << cl->fitness << ","
