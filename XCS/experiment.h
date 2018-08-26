@@ -166,11 +166,12 @@ namespace XCS
 
         virtual void dumpPopulation() const
         {
-            std::cout << "C:A,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+            std::cout << "Condition,Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
             for (auto && cl : m_population)
             {
                 std::cout
-                    << *cl << ","
+                    << cl->condition << ","
+                    << cl->action << ","
                     << cl->prediction << ","
                     << cl->predictionError << ","
                     << cl->fitness << ","
