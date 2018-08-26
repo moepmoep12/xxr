@@ -25,6 +25,9 @@ int main(int argc, char *argv[])
         .add_options()
         ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
+        ("i,iteration", "Iteration count for mux", cxxopts::value<int>()->default_value("100000"), "COUNT")
+        ("explore", "Exploration count for each iteration", cxxopts::value<int>()->default_value("1"), "COUNT")
+        ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<int>()->default_value("1"), "COUNT")
         ("r,repeat", "Repeat input count for csv", cxxopts::value<int>()->default_value("1"), "COUNT")
         ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
@@ -144,10 +147,13 @@ int main(int argc, char *argv[])
 
         MultiplexerEnvironment environment(multiplexerLength);
         Experiment<bool, bool> xcs(environment.availableActions, constants);
-        for (std::size_t i = 0; i < 500; ++i)
+        int iterationCount = result["iteration"].as<int>();
+        int explorationCount = result["explore"].as<int>();
+        int exploitationCount = result["exploit"].as<int>();
+        for (std::size_t i = 0; i < iterationCount; ++i)
         {
             // Exploration
-            for (std::size_t j = 0; j < 100; ++j)
+            for (std::size_t j = 0; j < explorationCount; ++j)
             {
                 // Choose action
                 bool action = xcs.explore(environment.situation());
@@ -158,18 +164,21 @@ int main(int argc, char *argv[])
             }
 
             // Exploitation
-            double rewardSum = 0;
-            for (std::size_t j = 0; j < 1000; ++j)
+            if (exploitationCount > 0)
             {
-                // Choose action
-                bool action = xcs.exploit(environment.situation());
+                double rewardSum = 0;
+                for (std::size_t j = 0; j < exploitationCount; ++j)
+                {
+                    // Choose action
+                    bool action = xcs.exploit(environment.situation());
 
-                // Get reward
-                double reward = environment.executeAction(action);
-                rewardSum += reward;
+                    // Get reward
+                    double reward = environment.executeAction(action);
+                    rewardSum += reward;
+                }
+
+                std::cout << (rewardSum / exploitationCount) << std::endl;
             }
-
-            std::cout << (rewardSum / 1000) << std::endl;
         }
         std::cout << std::endl;
 
