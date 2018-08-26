@@ -18,7 +18,7 @@ namespace XCS
         Condition condition;
 
         // A
-        //   The action specifies the action (possibly a clasification)
+        //   The action specifies the action (possibly a classification)
         //   that the classifier proposes.
         Action action;
 
