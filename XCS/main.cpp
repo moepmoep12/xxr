@@ -3,78 +3,101 @@
 #include <string>
 #include <cstddef>
 
+#include <cxxopts.hpp>
+
 #include "condition.h"
 #include "classifier.h"
 #include "experiment.h"
 
 using namespace XCS;
 
-int main()
+int main(int argc, char *argv[])
 {
-    std::size_t multiplexerLength = 11;
+    // Parse command line arguments
+    cxxopts::Options options(argv[0], "XCS Classifier System");
+    options
+        .allow_unrecognised_options()
+        .add_options()
+        ("h,help", "Show help")
+        ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "length");
 
-    Constants constants;
+    auto result = options.parse(argc, argv);
 
-    if (multiplexerLength == 3)
+    // Show help
+    if (result.count("help") || (!result.count("mux") && !result.count("csv")))
     {
-        constants.maxPopulationClassifierCount = 200;
-    }
-    else if (multiplexerLength == 6)
-    {
-        constants.maxPopulationClassifierCount = 400;
-    }
-    else if (multiplexerLength == 11)
-    {
-        constants.maxPopulationClassifierCount = 800;
-    }
-    else if (multiplexerLength == 20)
-    {
-        constants.maxPopulationClassifierCount = 2000;
-        constants.generalizeProbability = 0.5;
-    }
-    else if (multiplexerLength == 37)
-    {
-        constants.maxPopulationClassifierCount = 5000;
-        constants.generalizeProbability = 0.65;
-    }
-    else
-    {
-        constants.maxPopulationClassifierCount = 50000;
-        constants.generalizeProbability = 0.75;
+        std::cout << options.help({"", "Group"}) << std::endl;
+        exit(0);
     }
 
-    MultiplexerEnvironment environment(multiplexerLength);
-    Experiment<bool, bool> xcs(environment.availableActions, constants);
-    for (std::size_t i = 0; i < 500; ++i)
+    // Use multiplexer problem
+    if (result.count("mux"))
     {
-        // Exploration
-        for (std::size_t j = 0; j < 100; ++j)
+        std::size_t multiplexerLength = result["mux"].as<int>();
+
+        Constants constants;
+
+        if (multiplexerLength == 3)
         {
-            // Choose action
-            bool action = xcs.explore(environment.situation());
-
-            // Get reward
-            double reward = environment.executeAction(action);
-            xcs.reward(reward);
+            constants.maxPopulationClassifierCount = 200;
+        }
+        else if (multiplexerLength == 6)
+        {
+            constants.maxPopulationClassifierCount = 400;
+        }
+        else if (multiplexerLength == 11)
+        {
+            constants.maxPopulationClassifierCount = 800;
+        }
+        else if (multiplexerLength == 20)
+        {
+            constants.maxPopulationClassifierCount = 2000;
+            constants.generalizeProbability = 0.5;
+        }
+        else if (multiplexerLength == 37)
+        {
+            constants.maxPopulationClassifierCount = 5000;
+            constants.generalizeProbability = 0.65;
+        }
+        else
+        {
+            constants.maxPopulationClassifierCount = 50000;
+            constants.generalizeProbability = 0.75;
         }
 
-        // Exploitation
-        double rewardSum = 0;
-        for (std::size_t j = 0; j < 1000; ++j)
+        MultiplexerEnvironment environment(multiplexerLength);
+        Experiment<bool, bool> xcs(environment.availableActions, constants);
+        for (std::size_t i = 0; i < 500; ++i)
         {
-            // Choose action
-            bool action = xcs.exploit(environment.situation());
+            // Exploration
+            for (std::size_t j = 0; j < 100; ++j)
+            {
+                // Choose action
+                bool action = xcs.explore(environment.situation());
 
-            // Get reward
-            double reward = environment.executeAction(action);
-            rewardSum += reward;
+                // Get reward
+                double reward = environment.executeAction(action);
+                xcs.reward(reward);
+            }
+
+            // Exploitation
+            double rewardSum = 0;
+            for (std::size_t j = 0; j < 1000; ++j)
+            {
+                // Choose action
+                bool action = xcs.exploit(environment.situation());
+
+                // Get reward
+                double reward = environment.executeAction(action);
+                rewardSum += reward;
+            }
+
+            std::cout << (rewardSum / 1000) << std::endl;
         }
+        std::cout << std::endl;
 
-        std::cout << (rewardSum / 1000) << std::endl;
+        xcs.dumpPopulation();
     }
-    std::cout << std::endl;
-
-    xcs.dumpPopulation();
 
     return 0;
 }
