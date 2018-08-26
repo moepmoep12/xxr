@@ -1,6 +1,9 @@
 #include <iostream>
+#include <sstream>
+#include <istream>
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <cstddef>
 
 #include <cxxopts.hpp>
@@ -18,8 +21,11 @@ int main(int argc, char *argv[])
     options
         .allow_unrecognised_options()
         .add_options()
-        ("h,help", "Show help")
-        ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "length");
+        ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
+        ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
+        ("r,repeat", "Repeat input count for csv", cxxopts::value<int>()->default_value("1"), "COUNT")
+        ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
+        ("h,help", "Show help");
 
     auto result = options.parse(argc, argv);
 
@@ -97,7 +103,69 @@ int main(int argc, char *argv[])
         std::cout << std::endl;
 
         xcs.dumpPopulation();
+        exit(0);
     }
 
-    return 0;
+    // Use csv file
+    if (result.count("csv"))
+    {
+        Constants constants;
+
+        std::string filename = result["csv"].as<std::string>();
+
+        // Get available action choices
+        if (!result.count("action"))
+        {
+            std::cout << "Error: Available action list (--action) is not specified." << std::endl;
+            exit(1);
+        }
+        std::string availableActionsStr = result["action"].as<std::string>();
+        std::string availableActionStr;
+        std::stringstream ss(availableActionsStr);
+        std::unordered_set<int> availableActions;
+        while (std::getline(ss, availableActionStr, ','))
+        {
+            try
+            {
+                availableActions.insert(std::stoi(availableActionStr));
+            }
+            catch (std::exception & e)
+            {
+                std::cout << "Error: Action must be an integer." << std::endl;
+                exit(1);
+            }
+        }
+
+        Experiment<int, int> xcs(availableActions, constants);
+
+        int repeatInputCount = result["repeat"].as<int>();
+        for (int i = 0; i < repeatInputCount; ++i)
+        {
+            CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions);
+            while (true)
+            {
+                // Get situation from environment
+                auto situation = environment.situation();
+
+                if (situation.size() == 0)
+                {
+                    break;
+                }
+
+                // Choose action
+                bool action = xcs.explore(situation);
+
+                // Get reward
+                double reward = environment.executeAction(action);
+                xcs.reward(reward);
+            }
+        }
+
+        xcs.dumpPopulation();
+        exit(0);
+    }
+
+    // No target environment (show help)
+    std::cout << options.help({"", "Group"}) << std::endl;
+    return 1;
 }
