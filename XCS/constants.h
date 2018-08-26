@@ -58,7 +58,7 @@ namespace XCS
         //   The experience threshold over which the fitness of a classifier may be
         //   considered in its deletion probability
         //   Recommended: 20
-        double thetaDel = 20;
+        uint64_t thetaDel = 20;
 
         // delta
         //   The fraction of the mean fitness of the population below which the fitness
@@ -69,7 +69,7 @@ namespace XCS
         // theta_sub
         //   The experience of a classifier required to be a subsumer
         //   Recommended: 20
-        double thetaSub = 20;
+        uint64_t thetaSub = 20;
 
         // P_sharp
         //   The probability of using a don't care symbol in an allele when covering

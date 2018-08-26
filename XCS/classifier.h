@@ -74,7 +74,7 @@ namespace XCS
         // exp
         //   The experience exp counts the number of times since its creation that the
         //   classifier has belonged to an action set.
-        double experience;
+        uint64_t experience;
 
         // ts
         //   The time stamp ts denotes the time-step of the last occurrence of a GA in
@@ -96,7 +96,7 @@ namespace XCS
 
     protected:
         // Constants
-        const double m_thetaSub;
+        const uint64_t m_thetaSub;
         const double m_predictionErrorThreshold;
 
     public:
