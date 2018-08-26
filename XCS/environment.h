@@ -2,6 +2,9 @@
 
 #include <iostream>
 #include <vector>
+#include <string>
+#include <fstream>
+#include <sstream>
 #include <unordered_set>
 #include <cstddef>
 #include <cassert>
@@ -119,6 +122,84 @@ namespace XCS
             }
 
             return situation.at(m_addressBitLength + address) == true;
+        }
+    };
+
+    template <typename T, typename Action, class Symbol>
+    class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action, Symbol>
+    {
+    private:
+        std::ifstream m_ifs;
+        std::vector<T> m_situation;
+        Action m_answer;
+        bool m_isEndOfProblem;
+
+        void loadNext()
+        {
+            // Get next line
+            std::string line;
+            if (std::getline(m_ifs, line) && !line.empty())
+            {
+                // Split comma-separated string
+                std::istringstream iss(line);
+                std::string field;
+                double fieldValue;
+                std::vector<T> situation;
+                while (std::getline(iss, field, ','))
+                {
+                    fieldValue = std::stof(field);
+                    situation.push_back(static_cast<T>(fieldValue));
+                }
+
+                // Last field is action
+                m_answer = static_cast<Action>(fieldValue);
+                situation.pop_back();
+
+                m_situation = situation;
+            }
+            else
+            {
+                m_situation = std::vector<T>();
+            }
+        }
+
+    public:
+        explicit CSVEnvironment(std::string filename, const std::unordered_set<Action> & availableActions) :
+            AbstractEnvironment<T, Action, Symbol>(availableActions),
+            m_ifs(filename),
+            m_isEndOfProblem(false)
+        {
+            loadNext();
+        }
+
+        ~CSVEnvironment() = default;
+
+        virtual std::vector<T> situation() const override
+        {
+            return m_situation;
+        }
+
+        virtual double executeAction(Action action) override
+        {
+            double reward = (action == m_answer) ? 1000.0 : 0.0;
+
+            // Single-step problem
+            m_isEndOfProblem = true;
+
+            loadNext();
+
+            return reward;
+        }
+
+        virtual bool isEndOfProblem() const override
+        {
+            return m_isEndOfProblem;
+        }
+
+        // Returns the answer
+        virtual Action getAnswer(const std::vector<T> & situation) const
+        {
+            return m_answer;
         }
     };
 
