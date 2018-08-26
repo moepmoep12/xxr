@@ -25,10 +25,10 @@ int main(int argc, char *argv[])
         .add_options()
         ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
-        ("i,iteration", "Iteration count for mux", cxxopts::value<int>()->default_value("100000"), "COUNT")
-        ("explore", "Exploration count for each iteration", cxxopts::value<int>()->default_value("1"), "COUNT")
-        ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<int>()->default_value("1"), "COUNT")
-        ("r,repeat", "Repeat input count for csv", cxxopts::value<int>()->default_value("1"), "COUNT")
+        ("i,iteration", "Iteration count for mux", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
+        ("explore", "Exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("r,repeat", "Repeat input count for csv", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
@@ -147,9 +147,9 @@ int main(int argc, char *argv[])
 
         MultiplexerEnvironment environment(multiplexerLength);
         Experiment<bool, bool> xcs(environment.availableActions, constants);
-        int iterationCount = result["iteration"].as<int>();
-        int explorationCount = result["explore"].as<int>();
-        int exploitationCount = result["exploit"].as<int>();
+        uint64_t iterationCount = result["iteration"].as<uint64_t>();
+        uint64_t explorationCount = result["explore"].as<uint64_t>();
+        uint64_t exploitationCount = result["exploit"].as<uint64_t>();
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
             // Exploration
@@ -216,8 +216,8 @@ int main(int argc, char *argv[])
 
         Experiment<int, int> xcs(availableActions, constants);
 
-        int repeatInputCount = result["repeat"].as<int>();
-        for (int i = 0; i < repeatInputCount; ++i)
+        uint64_t repeatInputCount = result["repeat"].as<uint64_t>();
+        for (std::size_t i = 0; i < repeatInputCount; ++i)
         {
             CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions);
             while (true)

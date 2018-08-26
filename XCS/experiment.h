@@ -84,8 +84,8 @@ namespace XCS
             m_prevActionSet(constants, availableActions),
             m_availableActions(availableActions),
             m_timeStamp(0),
-            m_prevReward(0.0),
             m_expectsReward(false),
+            m_prevReward(0.0),
             m_constants(constants)
         {
         }

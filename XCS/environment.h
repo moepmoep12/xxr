@@ -143,13 +143,14 @@ namespace XCS
                 // Split comma-separated string
                 std::istringstream iss(line);
                 std::string field;
-                double fieldValue;
+                double fieldValue = NAN;
                 std::vector<T> situation;
                 while (std::getline(iss, field, ','))
                 {
                     fieldValue = std::stof(field);
                     situation.push_back(static_cast<T>(fieldValue));
                 }
+                assert(!std::isnan(fieldValue));
 
                 // Last field is action
                 m_answer = static_cast<Action>(fieldValue);
