@@ -29,7 +29,6 @@ int main(int argc, char *argv[])
         ("i,iteration", "Iteration count for mux", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
         ("explore", "Exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
-        ("r,repeat", "Repeat input count for csv", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
@@ -104,6 +103,10 @@ int main(int argc, char *argv[])
         exit(0);
     }
 
+    uint64_t iterationCount = result["iteration"].as<uint64_t>();
+    uint64_t explorationCount = result["explore"].as<uint64_t>();
+    uint64_t exploitationCount = result["exploit"].as<uint64_t>();
+
     // Use multiplexer problem
     if (result.count("mux"))
     {
@@ -148,9 +151,6 @@ int main(int argc, char *argv[])
 
         MultiplexerEnvironment environment(multiplexerLength);
         Experiment<bool, bool> xcs(environment.availableActions, constants);
-        uint64_t iterationCount = result["iteration"].as<uint64_t>();
-        uint64_t explorationCount = result["explore"].as<uint64_t>();
-        uint64_t exploitationCount = result["exploit"].as<uint64_t>();
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
             // Exploration
@@ -190,7 +190,6 @@ int main(int argc, char *argv[])
     // Use csv file
     if (result.count("csv"))
     {
-        std::string filename = result["csv"].as<std::string>();
 
         // Get available action choices
         if (!result.count("action"))
@@ -215,20 +214,55 @@ int main(int argc, char *argv[])
             }
         }
 
-        Experiment<int, int> xcs(availableActions, constants);
-
-        uint64_t repeatInputCount = result["repeat"].as<uint64_t>();
-        for (std::size_t i = 0; i < repeatInputCount; ++i)
+        std::string filename = result["csv"].as<std::string>();
+        std::string evaluationCsvFilename = filename;
+        if (result.count("csv-eval"))
         {
-            CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions);
-            while (true)
+            evaluationCsvFilename = result["csv-eval"].as<std::string>();
+        }
+
+        Experiment<int, int> xcs(availableActions, constants);
+        CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions);
+        CSVEnvironment<int, int, Symbol<int>> evaluationEnvironment(evaluationCsvFilename, availableActions);
+
+        for (std::size_t i = 0; i < iterationCount; ++i)
+        {
+            // Exploitation
+            if (exploitationCount > 0)
+            {
+                double rewardSum = 0;
+                for (std::size_t j = 0; j < exploitationCount; ++j)
+                {
+                    // Get situation from environment
+                    auto situation = evaluationEnvironment.situation();
+
+                    if (situation.size() == 0)
+                    {
+                        evaluationEnvironment.reset();
+                        situation = evaluationEnvironment.situation();
+                    }
+
+                    // Choose action
+                    bool action = xcs.exploit(evaluationEnvironment.situation());
+
+                    // Get reward
+                    double reward = evaluationEnvironment.executeAction(action);
+                    rewardSum += reward;
+                }
+
+                std::cout << (rewardSum / exploitationCount) << std::endl;
+            }
+
+            // Exploration
+            for (std::size_t j = 0; j < explorationCount; ++j)
             {
                 // Get situation from environment
                 auto situation = environment.situation();
 
                 if (situation.size() == 0)
                 {
-                    break;
+                    environment.reset();
+                    situation = environment.situation();
                 }
 
                 // Choose action

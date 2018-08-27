@@ -202,6 +202,13 @@ namespace XCS
         {
             return m_answer;
         }
+
+        void reset()
+        {
+            m_ifs.clear();
+            m_ifs.seekg(0, std::ios::beg);
+            loadNext();
+        }
     };
 
 }
