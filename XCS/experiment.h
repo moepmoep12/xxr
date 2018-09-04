@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iostream>
+#include <sstream>
 #include <algorithm>
 #include <memory>
 #include <vector>
@@ -164,13 +165,13 @@ namespace XCS
             }
         }
 
-        virtual void dumpPopulation() const
+        virtual std::string dumpPopulation() const
         {
-            std::cout << "Condition,Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+            std::stringstream ss;
+            ss << "Condition,Action,prediction,epsilon,F,exp,ts,as,n\n";
             for (auto && cl : m_population)
             {
-                std::cout
-                    << cl->condition << ","
+                ss  << cl->condition << ","
                     << cl->action << ","
                     << cl->prediction << ","
                     << cl->predictionError << ","
@@ -178,8 +179,9 @@ namespace XCS
                     << cl->experience << ","
                     << cl->timeStamp << ","
                     << cl->actionSetSize << ","
-                    << cl->numerosity << std::endl;
+                    << cl->numerosity << "\n";
             }
+            return ss.str();
         }
     };
 

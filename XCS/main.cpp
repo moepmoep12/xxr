@@ -1,6 +1,5 @@
 #include <iostream>
 #include <sstream>
-#include <istream>
 #include <memory>
 #include <string>
 #include <unordered_set>
@@ -20,9 +19,12 @@ int main(int argc, char *argv[])
 
     // Parse command line arguments
     cxxopts::Options options(argv[0], "XCS Classifier System");
+
     options
         .allow_unrecognised_options()
         .add_options()
+        ("o,coutput", "Output classifier csv filename", cxxopts::value<std::string>(), "FILENAME")
+        ("r,routput", "Output reward log csv filename", cxxopts::value<std::string>(), "FILENAME")
         ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
@@ -95,9 +97,11 @@ int main(int argc, char *argv[])
         constants.doGASubsumption = result["do-ga-subsumption"].as<bool>();
     if (result.count("do-action-set-subsumption"))
         constants.doActionSetSubsumption = result["do-action-set-subsumption"].as<bool>();
+    
+    bool isEnvironmentSpecified = (result.count("mux") || result.count("csv"));
 
     // Show help
-    if (result.count("help") || (!result.count("mux") && !result.count("csv")))
+    if (result.count("help") || !isEnvironmentSpecified)
     {
         std::cout << options.help({"", "Group"}) << std::endl;
         exit(0);
@@ -149,6 +153,13 @@ int main(int argc, char *argv[])
                 constants.generalizeProbability = 0.75;
         }
 
+        bool outputsRewardLogFile = result.count("routput");
+        std::ofstream rewardLogStream;
+        if (outputsRewardLogFile)
+        {
+            rewardLogStream = std::ofstream(result["routput"].as<std::string>());
+        }
+
         MultiplexerEnvironment environment(multiplexerLength);
         Experiment<bool, bool> xcs(environment.availableActions, constants);
         for (std::size_t i = 0; i < iterationCount; ++i)
@@ -178,12 +189,32 @@ int main(int argc, char *argv[])
                     rewardSum += reward;
                 }
 
-                std::cout << (rewardSum / exploitationCount) << std::endl;
+                if (outputsRewardLogFile)
+                {
+                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
+                }
+                else
+                {
+                    std::cout << (rewardSum / exploitationCount) << std::endl;
+                }
             }
         }
-        std::cout << std::endl;
 
-        xcs.dumpPopulation();
+        if (!outputsRewardLogFile)
+        {
+            std::cout << std::endl;
+        }
+
+        if (result.count("coutput"))
+        {
+            std::ofstream ofs(result["coutput"].as<std::string>());
+            ofs << xcs.dumpPopulation() << std::endl;
+        }
+        else
+        {
+            std::cout << xcs.dumpPopulation() << std::endl;
+        }
+
         exit(0);
     }
 
@@ -274,7 +305,7 @@ int main(int argc, char *argv[])
             }
         }
 
-        xcs.dumpPopulation();
+        std::cout << xcs.dumpPopulation();
         exit(0);
     }
 
