@@ -32,6 +32,8 @@ int main(int argc, char *argv[])
         ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
+        ("min-value", "The minimum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.minValue)), "VALUE")
+        ("max-value", "The maximum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.maxValue)), "VALUE")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
         ("beta", "The learning rate for updating fitness, prediction, prediction error, and action set size estimate in xcsr's classifiers", cxxopts::value<double>()->default_value(std::to_string(constants.learningRate)), "BETA")
         ("epsilon-0", "The error threshold under which the accuracy of a classifier is set to one", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "EPSILON_0")
@@ -59,6 +61,10 @@ int main(int argc, char *argv[])
     // Set constants
     if (result.count("max-population"))
         constants.maxPopulationClassifierCount = result["max-population"].as<uint64_t>();
+    if (result.count("min-value"))
+        constants.minValue = result["min-value"].as<double>();
+    if (result.count("max-value"))
+        constants.maxValue = result["max-value"].as<double>();
     if (result.count("alpha"))
         constants.alpha = result["alpha"].as<double>();
     if (result.count("beta"))
