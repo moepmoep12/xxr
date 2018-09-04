@@ -17,7 +17,7 @@ int main(int argc, char *argv[])
     Constants constants;
 
     // Parse command line arguments
-    cxxopts::Options options(argv[0], "xcsr Classifier System");
+    cxxopts::Options options(argv[0], "XCSR Classifier System");
 
     options
         .allow_unrecognised_options()
