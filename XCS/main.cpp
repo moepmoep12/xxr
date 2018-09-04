@@ -274,7 +274,7 @@ int main(int argc, char *argv[])
                     }
 
                     // Choose action
-                    bool action = xcs.exploit(evaluationEnvironment.situation());
+                    int action = xcs.exploit(evaluationEnvironment.situation());
 
                     // Get reward
                     double reward = evaluationEnvironment.executeAction(action);
@@ -297,7 +297,7 @@ int main(int argc, char *argv[])
                 }
 
                 // Choose action
-                bool action = xcs.explore(situation);
+                int action = xcs.explore(situation);
 
                 // Get reward
                 double reward = environment.executeAction(action);
