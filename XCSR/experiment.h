@@ -37,17 +37,18 @@ namespace XCSR
         // Constructor
         using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
 
-        virtual void dumpPopulation() const
+        virtual std::string dumpPopulation() const
         {
-            std::cout
-                << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
+            std::stringstream ss;
+
+            ss  << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
                 << "Condition[c(s)],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
 
             for (auto && cl : this->m_population)
             {
                 for (auto && symbol : cl->condition)
                 {
-                    std::cout << "|";
+                    ss << "|";
 
                     auto normalizedLowerLimit = (symbol.center - symbol.spread - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
                     auto normalizedUpperLimit = (symbol.center + symbol.spread - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
@@ -56,23 +57,22 @@ namespace XCSR
                     {
                         if (normalizedLowerLimit < i / 10.0 && (i + 1) / 10.0 < normalizedUpperLimit)
                         {
-                            std::cout << "O";
+                            ss << "O";
                         }
                         else if ((i / 10.0 <= normalizedLowerLimit && normalizedLowerLimit <= (i + 1) / 10.0)
                             || (i / 10.0 <= normalizedUpperLimit && normalizedUpperLimit <= (i + 1) / 10.0))
                         {
-                            std::cout << "o";
+                            ss << "o";
                         }
                         else
                         {
-                            std::cout << ".";
+                            ss << ".";
                         }
                     }
                 }
-                std::cout << "|" << ",";
+                ss << "|" << ",";
 
-                std::cout
-                    << cl->condition << ","
+                ss  << cl->condition << ","
                     << cl->action << ","
                     << cl->prediction << ","
                     << cl->predictionError << ","
@@ -82,6 +82,8 @@ namespace XCSR
                     << cl->actionSetSize << ","
                     << cl->numerosity << std::endl;
             }
+
+            return ss.str();
         }
 
         // Destructor
