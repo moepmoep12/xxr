@@ -111,6 +111,13 @@ int main(int argc, char *argv[])
     uint64_t explorationCount = result["explore"].as<uint64_t>();
     uint64_t exploitationCount = result["exploit"].as<uint64_t>();
 
+    bool outputsRewardLogFile = result.count("routput");
+    std::ofstream rewardLogStream;
+    if (outputsRewardLogFile)
+    {
+        rewardLogStream = std::ofstream(result["routput"].as<std::string>());
+    }
+
     // Use multiplexer problem
     if (result.count("mux"))
     {
@@ -151,13 +158,6 @@ int main(int argc, char *argv[])
                 constants.maxPopulationClassifierCount = 50000;
             if (!result.count("p-sharp"))
                 constants.generalizeProbability = 0.75;
-        }
-
-        bool outputsRewardLogFile = result.count("routput");
-        std::ofstream rewardLogStream;
-        if (outputsRewardLogFile)
-        {
-            rewardLogStream = std::ofstream(result["routput"].as<std::string>());
         }
 
         MultiplexerEnvironment environment(multiplexerLength);
@@ -281,7 +281,14 @@ int main(int argc, char *argv[])
                     rewardSum += reward;
                 }
 
-                std::cout << (rewardSum / exploitationCount) << std::endl;
+                if (outputsRewardLogFile)
+                {
+                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
+                }
+                else
+                {
+                    std::cout << (rewardSum / exploitationCount) << std::endl;
+                }
             }
 
             // Exploration
@@ -305,7 +312,21 @@ int main(int argc, char *argv[])
             }
         }
 
-        std::cout << xcs.dumpPopulation();
+        if (!outputsRewardLogFile)
+        {
+            std::cout << std::endl;
+        }
+
+        if (result.count("coutput"))
+        {
+            std::ofstream ofs(result["coutput"].as<std::string>());
+            ofs << xcs.dumpPopulation() << std::endl;
+        }
+        else
+        {
+            std::cout << xcs.dumpPopulation() << std::endl;
+        }
+
         exit(0);
     }
 
