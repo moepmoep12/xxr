@@ -25,6 +25,7 @@ int main(int argc, char *argv[])
         .add_options()
         ("o,coutput", "Output classifier csv filename", cxxopts::value<std::string>(), "FILENAME")
         ("r,routput", "Output reward log csv filename", cxxopts::value<std::string>(), "FILENAME")
+        ("n,noutput", "Output macro-classifier count log csv filename", cxxopts::value<std::string>(), "FILENAME")
         ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
@@ -325,6 +326,12 @@ int main(int argc, char *argv[])
         else
         {
             std::cout << xcs.dumpPopulation() << std::endl;
+        }
+
+        if (result.count("noutput"))
+        {
+            std::ofstream ofs(result["noutput"].as<std::string>());
+            ofs << xcs.populationSize() << std::endl;
         }
 
         exit(0);

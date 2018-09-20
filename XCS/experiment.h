@@ -183,6 +183,11 @@ namespace XCS
             }
             return ss.str();
         }
+        
+        virtual std::size_t populationSize() const
+        {
+            return m_population.size();
+        }
     };
 
 }
