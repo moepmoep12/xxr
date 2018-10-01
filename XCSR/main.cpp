@@ -127,6 +127,13 @@ int main(int argc, char *argv[])
         rewardLogStream = std::ofstream(result["routput"].as<std::string>());
     }
 
+    bool outputsPopulationSizeLogFile = result.count("noutput");
+    std::ofstream populationSizeLogStream;
+    if (result.count("noutput"))
+    {
+        populationSizeLogStream = std::ofstream(result["noutput"].as<std::string>());
+    }
+
     // Use multiplexer problem
     if (result.count("mux"))
     {
@@ -199,6 +206,11 @@ int main(int argc, char *argv[])
                 else
                 {
                     std::cout << (rewardSum / exploitationCount) << std::endl;
+                }
+
+                if (outputsPopulationSizeLogFile)
+                {
+                    populationSizeLogStream << xcsr.populationSize() << std::endl;
                 }
             }
         }
@@ -292,6 +304,11 @@ int main(int argc, char *argv[])
                 {
                     std::cout << (rewardSum / exploitationCount) << std::endl;
                 }
+
+                if (outputsPopulationSizeLogFile)
+                {
+                    populationSizeLogStream << xcsr.populationSize() << std::endl;
+                }
             }
 
             // Exploration
@@ -328,12 +345,6 @@ int main(int argc, char *argv[])
         else
         {
             std::cout << xcsr.dumpPopulation() << std::endl;
-        }
-
-        if (result.count("noutput"))
-        {
-            std::ofstream ofs(result["noutput"].as<std::string>());
-            ofs << xcsr.populationSize() << std::endl;
         }
 
         exit(0);
