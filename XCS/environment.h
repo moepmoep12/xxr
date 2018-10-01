@@ -86,14 +86,14 @@ namespace XCS
 
         ~MultiplexerEnvironment() = default;
 
-        std::vector<bool> situation() const override
+        virtual std::vector<bool> situation() const override
         {
             return m_situation;
         }
 
-        double executeAction(bool action) override
+        virtual double executeAction(bool action) override
         {
-            double reward = (action == getAnswer(m_situation)) ? 1000.0 : 0.0;
+            double reward = (action == getAnswer()) ? 1000.0 : 0.0;
 
             // Update situation
             m_situation = randomSituation(m_totalLength);
@@ -104,24 +104,24 @@ namespace XCS
             return reward;
         }
 
-        bool isEndOfProblem() const override
+        virtual bool isEndOfProblem() const override
         {
             return m_isEndOfProblem;
         }
 
         // Returns answer to situation
-        bool getAnswer(const std::vector<bool> & situation) const
+        bool getAnswer() const
         {
             std::size_t address = 0;
             for (std::size_t i = 0; i < m_addressBitLength; ++i)
             {
-                if (situation.at(i) == true)
+                if (m_situation.at(i) == true)
                 {
                     address += (std::size_t)1 << (m_addressBitLength - i - 1);
                 }
             }
 
-            return situation.at(m_addressBitLength + address) == true;
+            return m_situation.at(m_addressBitLength + address) == true;
         }
     };
 
@@ -198,7 +198,7 @@ namespace XCS
         }
 
         // Returns the answer
-        virtual Action getAnswer(const std::vector<T> & situation) const
+        Action getAnswer() const
         {
             return m_answer;
         }

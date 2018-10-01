@@ -60,7 +60,7 @@ namespace XCSR
 
         virtual double executeAction(bool action) override
         {
-            double reward = (action == getAnswer(m_situation)) ? 1000.0 : 0.0;
+            double reward = (action == getAnswer()) ? 1000.0 : 0.0;
 
             // Update situation
             m_situation = randomSituation(m_totalLength, m_spreadsBinary);
@@ -77,18 +77,18 @@ namespace XCSR
         }
 
         // Returns the answer
-        virtual bool getAnswer(const std::vector<double> & situation) const
+        bool getAnswer() const
         {
             std::size_t address = 0;
             for (std::size_t i = 0; i < m_addressBitLength; ++i)
             {
-                if (situation.at(i) >= m_binaryThreshold)
+                if (m_situation.at(i) >= m_binaryThreshold)
                 {
                     address += (std::size_t)1 << (m_addressBitLength - i - 1);
                 }
             }
 
-            return situation.at(m_addressBitLength + address) >= m_binaryThreshold;
+            return m_situation.at(m_addressBitLength + address) >= m_binaryThreshold;
         }
     };
 
