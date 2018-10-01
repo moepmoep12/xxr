@@ -29,6 +29,7 @@ int main(int argc, char *argv[])
         ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
+        ("csv-random", "Whether to choose csv data in random order", cxxopts::value<bool>()->default_value("true"), "true/false")
         ("i,iteration", "Iteration count", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
         ("explore", "Exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
@@ -266,8 +267,8 @@ int main(int argc, char *argv[])
         }
 
         Experiment<int, int> xcs(availableActions, constants);
-        CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions);
-        CSVEnvironment<int, int, Symbol<int>> evaluationEnvironment(evaluationCsvFilename, availableActions);
+        CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions, result.count("csv-random"));
+        CSVEnvironment<int, int, Symbol<int>> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
 
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
