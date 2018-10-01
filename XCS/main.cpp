@@ -280,12 +280,6 @@ int main(int argc, char *argv[])
                     // Get situation from environment
                     auto situation = evaluationEnvironment.situation();
 
-                    if (situation.size() == 0)
-                    {
-                        evaluationEnvironment.reset();
-                        situation = evaluationEnvironment.situation();
-                    }
-
                     // Choose action
                     int action = xcs.exploit(evaluationEnvironment.situation());
 
@@ -314,12 +308,6 @@ int main(int argc, char *argv[])
             {
                 // Get situation from environment
                 auto situation = environment.situation();
-
-                if (situation.size() == 0)
-                {
-                    environment.reset();
-                    situation = environment.situation();
-                }
 
                 // Choose action
                 int action = xcs.explore(situation);
