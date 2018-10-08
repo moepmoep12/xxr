@@ -26,7 +26,8 @@ namespace XCSR
 
             for (std::size_t i = 0; i < condition.size(); ++i)
             {
-                if ((cl.condition.at(i).center - cl.condition.at(i).spread < condition.at(i).center - condition.at(i).spread) && (condition.at(i).center + condition.at(i).spread < cl.condition.at(i).center + cl.condition.at(i).spread))
+                if ((cl.condition.at(i).center - cl.condition.at(i).spread < condition.at(i).center - condition.at(i).spread)
+                    || (condition.at(i).center + condition.at(i).spread < cl.condition.at(i).center + cl.condition.at(i).spread))
                 {
                     return false;
                 }
