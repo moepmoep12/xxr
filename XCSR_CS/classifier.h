@@ -2,7 +2,7 @@
 
 #include "../XCS/classifier.h"
 
-namespace XCSR
+namespace XCSR_CS
 {
 
     template <typename T, typename Action, class Symbol, class Condition>

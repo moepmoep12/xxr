@@ -7,12 +7,11 @@
 
 #include <cxxopts.hpp>
 
-#include "classifier.h"
-#include "experiment.h"
+//#include "classifier.h"
+#include "../XCSR_CS/experiment.h"
 #include "../XCSR_LU/experiment.h"
 
-//using namespace XCSR;
-using namespace XCSR_LU;
+using namespace XCSR;
 
 int main(int argc, char *argv[])
 {
@@ -179,7 +178,7 @@ int main(int argc, char *argv[])
         XCS::Experiment<double, bool> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
-            auto p = new XCSR::Experiment<double, bool>(environment.availableActions, constants);
+            auto p = new XCSR_CS::Experiment<double, bool>(environment.availableActions, constants);
             xcsr = (XCS::Experiment<double, bool> *)p;
         }
         else if (result["repr"].as<std::string>() == "lu")
@@ -289,13 +288,13 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        XCS::CSVEnvironment<double, int, XCSR_LU::Symbol<double>> environment(filename, availableActions, result.count("csv-random"));
-        XCS::CSVEnvironment<double, int, XCSR_LU::Symbol<double>> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
+        XCS::CSVEnvironment<double, int> environment(filename, availableActions, result.count("csv-random"));
+        XCS::CSVEnvironment<double, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
 
         XCS::Experiment<double, int> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
-            auto p = new XCSR::Experiment<double, int>(availableActions, constants);
+            auto p = new XCSR_CS::Experiment<double, int>(availableActions, constants);
             xcsr = (XCS::Experiment<double, int> *)p;
         }
         else if (result["repr"].as<std::string>() == "lu")

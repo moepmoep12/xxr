@@ -267,8 +267,8 @@ int main(int argc, char *argv[])
         }
 
         Experiment<int, int> xcs(availableActions, constants);
-        CSVEnvironment<int, int, Symbol<int>> environment(filename, availableActions, result.count("csv-random"));
-        CSVEnvironment<int, int, Symbol<int>> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
+        CSVEnvironment<int, int> environment(filename, availableActions, result.count("csv-random"));
+        CSVEnvironment<int, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
 
         for (std::size_t i = 0; i < iterationCount; ++i)
         {

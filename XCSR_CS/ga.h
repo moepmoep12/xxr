@@ -4,7 +4,7 @@
 
 #include "../XCS/ga.h"
 
-namespace XCSR
+namespace XCSR_CS
 {
     
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>

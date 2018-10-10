@@ -10,12 +10,11 @@
 #include <cassert>
 
 #include "random.h"
-#include "symbol.h"
 
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol>
+    template <typename T, typename Action>
     class AbstractEnvironment
     {
     protected:
@@ -45,7 +44,7 @@ namespace XCS
         virtual bool isEndOfProblem() const = 0;
     };
 
-    class MultiplexerEnvironment final : public AbstractEnvironment<bool, bool, Symbol<bool>>
+    class MultiplexerEnvironment final : public AbstractEnvironment<bool, bool>
     {
     private:
         const std::size_t m_totalLength;
@@ -73,7 +72,7 @@ namespace XCS
     public:
         // Constructor
         explicit MultiplexerEnvironment(std::size_t length) :
-            AbstractEnvironment<bool, bool, Symbol<bool>>({ false, true }),
+            AbstractEnvironment<bool, bool>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
             m_registerBitLength(length - m_addressBitLength),
@@ -125,8 +124,8 @@ namespace XCS
         }
     };
 
-    template <typename T, typename Action, class Symbol>
-    class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action, Symbol>
+    template <typename T, typename Action>
+    class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action>
     {
     private:
         bool m_chooseRandom;
@@ -157,7 +156,7 @@ namespace XCS
 
     public:
         CSVEnvironment(std::string filename, const std::unordered_set<Action> & availableActions, bool chooseRandom = true) :
-            AbstractEnvironment<T, Action, Symbol>(availableActions),
+            AbstractEnvironment<T, Action>(availableActions),
             m_nextIdx(0),
             m_isEndOfProblem(false)
         {
