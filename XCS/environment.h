@@ -10,12 +10,11 @@
 #include <cassert>
 
 #include "random.h"
-#include "symbol.h"
 
 namespace XCS
 {
 
-    template <typename T, typename Action, class Symbol>
+    template <typename T, typename Action>
     class AbstractEnvironment
     {
     protected:
@@ -45,7 +44,7 @@ namespace XCS
         virtual bool isEndOfProblem() const = 0;
     };
 
-    class MultiplexerEnvironment final : public AbstractEnvironment<bool, bool, Symbol<bool>>
+    class MultiplexerEnvironment final : public AbstractEnvironment<bool, bool>
     {
     private:
         const std::size_t m_totalLength;
@@ -73,7 +72,7 @@ namespace XCS
     public:
         // Constructor
         explicit MultiplexerEnvironment(std::size_t length) :
-            AbstractEnvironment<bool, bool, Symbol<bool>>({ false, true }),
+            AbstractEnvironment<bool, bool>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
             m_registerBitLength(length - m_addressBitLength),
@@ -125,20 +124,46 @@ namespace XCS
         }
     };
 
-    template <typename T, typename Action, class Symbol>
-    class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action, Symbol>
+    template <typename T, typename Action>
+    class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action>
     {
     private:
-        std::ifstream m_ifs;
+        bool m_chooseRandom;
+        std::vector<std::pair<std::vector<T>, Action> > m_dataSet;
         std::vector<T> m_situation;
         Action m_answer;
+        std::size_t m_nextIdx;
         bool m_isEndOfProblem;
 
         void loadNext()
         {
-            // Get next line
+            if (m_chooseRandom)
+            {
+                auto sample = Random::chooseFrom(m_dataSet);
+                m_situation = sample.first;
+                m_answer = sample.second;
+            }
+            else
+            {
+                m_situation = m_dataSet[m_nextIdx].first;
+                m_answer = m_dataSet[m_nextIdx].second;
+                if (++m_nextIdx >= m_dataSet.size())
+                {
+                    m_nextIdx = 0;
+                }
+            }
+        }
+
+    public:
+        CSVEnvironment(std::string filename, const std::unordered_set<Action> & availableActions, bool chooseRandom = true) :
+            AbstractEnvironment<T, Action>(availableActions),
+            m_nextIdx(0),
+            m_isEndOfProblem(false)
+        {
+            // Load all lines from csv
+            std::ifstream ifs(filename);
             std::string line;
-            if (std::getline(m_ifs, line) && !line.empty())
+            while (std::getline(ifs, line) && !line.empty())
             {
                 // Split comma-separated string
                 std::istringstream iss(line);
@@ -153,23 +178,14 @@ namespace XCS
                 assert(!std::isnan(fieldValue));
 
                 // Last field is action
-                m_answer = static_cast<Action>(fieldValue);
+                Action answer = static_cast<Action>(fieldValue);
                 situation.pop_back();
 
-                m_situation = situation;
+                m_dataSet.emplace_back(situation, answer);
             }
-            else
-            {
-                m_situation = std::vector<T>();
-            }
-        }
 
-    public:
-        explicit CSVEnvironment(std::string filename, const std::unordered_set<Action> & availableActions) :
-            AbstractEnvironment<T, Action, Symbol>(availableActions),
-            m_ifs(filename),
-            m_isEndOfProblem(false)
-        {
+            assert(!m_dataSet.empty());
+
             loadNext();
         }
 
@@ -201,13 +217,6 @@ namespace XCS
         Action getAnswer() const
         {
             return m_answer;
-        }
-
-        void reset()
-        {
-            m_ifs.clear();
-            m_ifs.seekg(0, std::ios::beg);
-            loadNext();
         }
     };
 

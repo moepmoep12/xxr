@@ -4,12 +4,11 @@
 
 #include "../XCS/environment.h"
 #include "../XCS/random.h"
-#include "symbol.h"
 
 namespace XCSR
 {
 
-    class RealMultiplexerEnvironment final : public XCS::AbstractEnvironment<double, bool, Symbol<double>>
+    class RealMultiplexerEnvironment final : public XCS::AbstractEnvironment<double, bool>
     {
     private:
         const std::size_t m_totalLength;
@@ -38,7 +37,7 @@ namespace XCSR
 
     public:
         explicit RealMultiplexerEnvironment(std::size_t length, bool spreadsBinary, double binaryThreshold = 0.5) :
-            AbstractEnvironment<double, bool, Symbol<double>>({ false, true }),
+            AbstractEnvironment<double, bool>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
             m_registerBitLength(length - m_addressBitLength),

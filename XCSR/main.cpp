@@ -7,14 +7,15 @@
 
 #include <cxxopts.hpp>
 
-#include "classifier.h"
-#include "experiment.h"
+//#include "classifier.h"
+#include "../XCSR_CS/experiment.h"
+#include "../XCSR_LU/experiment.h"
 
 using namespace XCSR;
 
 int main(int argc, char *argv[])
 {
-    Constants constants;
+    XCSR::Constants constants;
 
     // Parse command line arguments
     cxxopts::Options options(argv[0], "XCSR Classifier System");
@@ -28,10 +29,12 @@ int main(int argc, char *argv[])
         ("m,mux", "Use real multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
+        ("csv-random", "Whether to choose csv data in random order", cxxopts::value<bool>()->default_value("true"), "true/false")
         ("i,iteration", "Iteration count", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
         ("explore", "Exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
+        ("repr", "XCSR Classifier representation", cxxopts::value<std::string>()->default_value("cs"), "cs/lu")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
         ("min-value", "The minimum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.minValue)), "VALUE")
         ("max-value", "The maximum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.maxValue)), "VALUE")
@@ -170,19 +173,36 @@ int main(int argc, char *argv[])
                 constants.maxPopulationClassifierCount = 50000;
         }
 
-        RealMultiplexerEnvironment environment(multiplexerLength, true);
-        Experiment<double, bool> xcsr(environment.availableActions, constants);
+        XCSR::RealMultiplexerEnvironment environment(multiplexerLength, true);
+
+        XCS::Experiment<double, bool> *xcsr;
+        if (result["repr"].as<std::string>() == "cs")
+        {
+            auto p = new XCSR_CS::Experiment<double, bool>(environment.availableActions, constants);
+            xcsr = (XCS::Experiment<double, bool> *)p;
+        }
+        else if (result["repr"].as<std::string>() == "lu")
+        {
+            auto p = new XCSR_LU::Experiment<double, bool>(environment.availableActions, constants);
+            xcsr = (XCS::Experiment<double, bool> *)p;
+        }
+        else
+        {
+            std::cout << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
+            exit(1);
+        }
+
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
             // Exploration
             for (std::size_t j = 0; j < explorationCount; ++j)
             {
                 // Choose action
-                bool action = xcsr.explore(environment.situation());
+                bool action = xcsr->explore(environment.situation());
 
                 // Get reward
                 double reward = environment.executeAction(action);
-                xcsr.reward(reward);
+                xcsr->reward(reward);
             }
 
             // Exploitation
@@ -192,7 +212,7 @@ int main(int argc, char *argv[])
                 for (std::size_t j = 0; j < exploitationCount; ++j)
                 {
                     // Choose action
-                    bool action = xcsr.exploit(environment.situation());
+                    bool action = xcsr->exploit(environment.situation());
 
                     // Get reward
                     double reward = environment.executeAction(action);
@@ -210,7 +230,7 @@ int main(int argc, char *argv[])
 
                 if (outputsPopulationSizeLogFile)
                 {
-                    populationSizeLogStream << xcsr.populationSize() << std::endl;
+                    populationSizeLogStream << xcsr->populationSize() << std::endl;
                 }
             }
         }
@@ -223,12 +243,14 @@ int main(int argc, char *argv[])
         if (result.count("coutput"))
         {
             std::ofstream ofs(result["coutput"].as<std::string>());
-            ofs << xcsr.dumpPopulation() << std::endl;
+            ofs << xcsr->dumpPopulation() << std::endl;
         }
         else
         {
-            std::cout << xcsr.dumpPopulation() << std::endl;
+            std::cout << xcsr->dumpPopulation() << std::endl;
         }
+
+        delete xcsr;
 
         exit(0);
     }
@@ -236,7 +258,6 @@ int main(int argc, char *argv[])
     // Use csv file
     if (result.count("csv"))
     {
-
         // Get available action choices
         if (!result.count("action"))
         {
@@ -267,9 +288,25 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        Experiment<double, int> xcsr(availableActions, constants);
-        XCS::CSVEnvironment<double, int, Symbol<double>> environment(filename, availableActions);
-        XCS::CSVEnvironment<double, int, Symbol<double>> evaluationEnvironment(evaluationCsvFilename, availableActions);
+        XCS::CSVEnvironment<double, int> environment(filename, availableActions, result.count("csv-random"));
+        XCS::CSVEnvironment<double, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
+
+        XCS::Experiment<double, int> *xcsr;
+        if (result["repr"].as<std::string>() == "cs")
+        {
+            auto p = new XCSR_CS::Experiment<double, int>(availableActions, constants);
+            xcsr = (XCS::Experiment<double, int> *)p;
+        }
+        else if (result["repr"].as<std::string>() == "lu")
+        {
+            auto p = new XCSR_LU::Experiment<double, int>(availableActions, constants);
+            xcsr = (XCS::Experiment<double, int> *)p;
+        }
+        else
+        {
+            std::cout << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
+            exit(1);
+        }
 
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
@@ -282,14 +319,8 @@ int main(int argc, char *argv[])
                     // Get situation from environment
                     auto situation = evaluationEnvironment.situation();
 
-                    if (situation.size() == 0)
-                    {
-                        evaluationEnvironment.reset();
-                        situation = evaluationEnvironment.situation();
-                    }
-
                     // Choose action
-                    int action = xcsr.exploit(evaluationEnvironment.situation());
+                    int action = xcsr->exploit(evaluationEnvironment.situation());
 
                     // Get reward
                     double reward = evaluationEnvironment.executeAction(action);
@@ -307,7 +338,7 @@ int main(int argc, char *argv[])
 
                 if (outputsPopulationSizeLogFile)
                 {
-                    populationSizeLogStream << xcsr.populationSize() << std::endl;
+                    populationSizeLogStream << xcsr->populationSize() << std::endl;
                 }
             }
 
@@ -317,18 +348,12 @@ int main(int argc, char *argv[])
                 // Get situation from environment
                 auto situation = environment.situation();
 
-                if (situation.size() == 0)
-                {
-                    environment.reset();
-                    situation = environment.situation();
-                }
-
                 // Choose action
-                int action = xcsr.explore(situation);
+                int action = xcsr->explore(situation);
 
                 // Get reward
                 double reward = environment.executeAction(action);
-                xcsr.reward(reward);
+                xcsr->reward(reward);
             }
         }
     
@@ -340,12 +365,14 @@ int main(int argc, char *argv[])
         if (result.count("coutput"))
         {
             std::ofstream ofs(result["coutput"].as<std::string>());
-            ofs << xcsr.dumpPopulation() << std::endl;
+            ofs << xcsr->dumpPopulation() << std::endl;
         }
         else
         {
-            std::cout << xcsr.dumpPopulation() << std::endl;
+            std::cout << xcsr->dumpPopulation() << std::endl;
         }
+
+        delete xcsr;
 
         exit(0);
     }

@@ -5,7 +5,7 @@
 #include <iomanip>
 #include <string>
 
-namespace XCSR
+namespace XCSR_CS
 {
 
     // The standard symbol for XCSR (without "don't care")

@@ -2,7 +2,7 @@
 
 #include "../XCS/classifier.h"
 
-namespace XCSR
+namespace XCSR_LU
 {
 
     template <typename T, typename Action, class Symbol, class Condition>
@@ -26,12 +26,12 @@ namespace XCSR
 
             for (std::size_t i = 0; i < condition.size(); ++i)
             {
-                if ((cl.condition.at(i).center - cl.condition.at(i).spread < condition.at(i).center - condition.at(i).spread) && (condition.at(i).center + condition.at(i).spread < cl.condition.at(i).center + cl.condition.at(i).spread))
+                if (cl.condition.at(i).lower < condition.at(i).lower || condition.at(i).upper < cl.condition.at(i).upper)
                 {
                     return false;
                 }
 
-                if (condition.at(i).center == cl.condition.at(i).center && condition.at(i).spread == cl.condition.at(i).spread)
+                if (condition.at(i).lower == cl.condition.at(i).lower && condition.at(i).upper == cl.condition.at(i).upper)
                 {
                     ++equalCount;
                 }
