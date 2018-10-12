@@ -1,5 +1,5 @@
 # XCS &amp; XCSR
-XCS &amp; XCSR (CS representation) implementation in C++14
+XCS &amp; XCSR (CS & LU representation) implementation in C++14
 
 ```
 $ git clone https://github.com/m4saka/xcs-xcsr.git && cd xcs-xcsr
@@ -14,9 +14,14 @@ $ make
 $ ./xcs --mux=6
 ```
 
-## 6-Real Multiplexer Problem
+## 6-Real Multiplexer Problem (CS representation)
 ```
-$ ./xcsr --mux=6
+$ ./xcsr --mux=6 --repr=cs
+```
+
+## 6-Real Multiplexer Problem (LU representation)
+```
+$ ./xcsr --mux=6 --repr=lu
 ```
 
 ## From CSV
