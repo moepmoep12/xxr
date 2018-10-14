@@ -38,6 +38,20 @@ namespace XCSR_LU
                     std::swap(cl1.condition[i / 2].upper, cl2.condition[i / 2].upper);
                 }
             }
+
+            // Fix lower and upper order
+            for (std::size_t i = (x + 1) / 2; i < y / 2; ++i)
+            {
+                if (cl1.condition[i].lower > cl1.condition[i].upper)
+                {
+                    std::swap(cl1.condition[i].lower, cl1.condition[i].upper);
+                }
+
+                if (cl2.condition[i].lower > cl2.condition[i].upper)
+                {
+                    std::swap(cl2.condition[i].lower, cl2.condition[i].upper);
+                }
+            }
         }
 
         // APPLY MUTATION
