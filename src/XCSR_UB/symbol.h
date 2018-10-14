@@ -13,8 +13,8 @@ namespace XCSR_UB
     class Symbol : public XCS::AbstractSymbol<T>
     {
     public:
-        T lower;
-        T upper;
+        T p;
+        T q;
 
         // Constructor
         Symbol(T value) : lower(value), upper(value) {}
@@ -26,7 +26,7 @@ namespace XCSR_UB
         virtual std::string toString() const override
         {
             std::ostringstream stream;
-            stream << std::setprecision(3) << lower << "-" << upper << " ";
+            stream << std::setprecision(3) << lower << ";" << upper << " ";
             return stream.str();
         }
 
@@ -63,6 +63,16 @@ namespace XCSR_UB
         virtual void generalize() override
         {
             assert(false);
+        }
+
+        virtual double upper() const
+        {
+            return std::max(p, q);
+        }
+
+        virtual double lower() const
+        {
+            return std::min(p, q);
         }
     };
 

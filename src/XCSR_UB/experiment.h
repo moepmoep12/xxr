@@ -50,8 +50,8 @@ namespace XCSR_UB
                 {
                     ss << "|";
 
-                    auto normalizedLowerLimit = (symbol.lower - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
-                    auto normalizedUpperLimit = (symbol.upper - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+                    auto normalizedLowerLimit = (symbol.lower() - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+                    auto normalizedUpperLimit = (symbol.upper() - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
 
                     for (int i = 0; i < 10; ++i)
                     {

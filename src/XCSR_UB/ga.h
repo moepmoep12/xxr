@@ -31,25 +31,11 @@ namespace XCSR_UB
             {
                 if (i % 2 == 0)
                 {
-                    std::swap(cl1.condition[i / 2].lower, cl2.condition[i / 2].lower);
+                    std::swap(cl1.condition[i / 2].p, cl2.condition[i / 2].p);
                 }
                 else
                 {
-                    std::swap(cl1.condition[i / 2].upper, cl2.condition[i / 2].upper);
-                }
-            }
-
-            // Fix lower and upper order
-            for (std::size_t i = (x + 1) / 2; i < y / 2; ++i)
-            {
-                if (cl1.condition[i].lower > cl1.condition[i].upper)
-                {
-                    std::swap(cl1.condition[i].lower, cl1.condition[i].upper);
-                }
-
-                if (cl2.condition[i].lower > cl2.condition[i].upper)
-                {
-                    std::swap(cl2.condition[i].lower, cl2.condition[i].upper);
+                    std::swap(cl1.condition[i / 2].q, cl2.condition[i / 2].q);
                 }
             }
         }
@@ -59,24 +45,19 @@ namespace XCSR_UB
         {
             assert(cl.condition.size() == situation.size());
 
-            // Mutate lower and upper individually
+            // Mutate p and q individually
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].lower += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].lower = std::min(std::max(m_constants.minValue, cl.condition[i].lower), m_constants.maxValue);
+                    cl.condition[i].p += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                    cl.condition[i].p = std::min(std::max(m_constants.minValue, cl.condition[i].p), m_constants.maxValue);
                 }
 
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].upper += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].upper = std::min(std::max(m_constants.minValue, cl.condition[i].upper), m_constants.maxValue);
-                }
-
-                if (cl.condition[i].lower > cl.condition[i].upper)
-                {
-                    std::swap(cl.condition[i].lower, cl.condition[i].upper);
+                    cl.condition[i].q += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                    cl.condition[i].q = std::min(std::max(m_constants.minValue, cl.condition[i].q), m_constants.maxValue);
                 }
             }
 

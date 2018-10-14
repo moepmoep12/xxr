@@ -22,7 +22,15 @@ namespace XCSR_UB
             {
                 double l = std::max(symbol - XCS::Random::nextDouble(0.0, m_constants.maxSpread), m_constants.minValue);
                 double u = std::min(symbol + XCS::Random::nextDouble(0.0, m_constants.maxSpread), m_constants.maxValue);
-                symbols.emplace_back(l, u);
+
+                if (XCS::Random::nextDouble() < 0.5)
+                {
+                    symbols.emplace_back(l, u);
+                }
+                else
+                {
+                    symbols.emplace_back(u, l);
+                }
             }
 
             return std::make_shared<Classifier>(symbols, XCS::Random::chooseFrom(unselectedActions), timeStamp, m_constants);

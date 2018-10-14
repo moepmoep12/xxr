@@ -26,12 +26,12 @@ namespace XCSR_UB
 
             for (std::size_t i = 0; i < condition.size(); ++i)
             {
-                if (cl.condition.at(i).lower < condition.at(i).lower || condition.at(i).upper < cl.condition.at(i).upper)
+                if (cl.condition.at(i).lower() < condition.at(i).lower() || condition.at(i).upper() < cl.condition.at(i).upper())
                 {
                     return false;
                 }
 
-                if (condition.at(i).lower == cl.condition.at(i).lower && condition.at(i).upper == cl.condition.at(i).upper)
+                if (condition.at(i).lower() == cl.condition.at(i).lower() && condition.at(i).upper() == cl.condition.at(i).upper())
                 {
                     ++equalCount;
                 }
