@@ -17,8 +17,8 @@ namespace XCSR_UB
         T q;
 
         // Constructor
-        Symbol(T value) : lower(value), upper(value) {}
-        Symbol(T l, T u) : lower(l), upper(u) {}
+        Symbol(T value) : p(value), q(value) {}
+        Symbol(T p, T q) : p(p), q(q) {}
 
         // Destructor
         virtual ~Symbol() = default;
@@ -26,24 +26,24 @@ namespace XCSR_UB
         virtual std::string toString() const override
         {
             std::ostringstream stream;
-            stream << std::setprecision(3) << lower << ";" << upper << " ";
+            stream << std::setprecision(3) << p << ";" << q << " ";
             return stream.str();
         }
 
         friend bool operator== (const Symbol & lhs, const Symbol & rhs)
         {
-            return lhs.lower == rhs.lower && lhs.upper == rhs.upper;
+            return lhs.p == rhs.p && lhs.q == rhs.q;
         }
 
         friend bool operator!= (const Symbol & lhs, const Symbol & rhs)
         {
-            return lhs.lower != rhs.lower || lhs.upper != rhs.upper;
+            return lhs.p != rhs.p || lhs.q != rhs.q;
         }
 
         virtual Symbol & operator= (const Symbol & obj)
         {
-            lower = obj.lower;
-            upper = obj.upper;
+            p = obj.p;
+            q = obj.q;
             return *this;
         }
 
@@ -57,7 +57,7 @@ namespace XCSR_UB
         // DOES MATCH
         virtual bool matches(T value) const override
         {
-            return lower <= value && value < upper;
+            return lower() <= value && value < upper();
         }
 
         virtual void generalize() override
