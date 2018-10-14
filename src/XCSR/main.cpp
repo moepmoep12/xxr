@@ -10,6 +10,7 @@
 //#include "classifier.h"
 #include "../XCSR_CS/experiment.h"
 #include "../XCSR_LU/experiment.h"
+#include "../XCSR_UB/experiment.h"
 
 using namespace XCSR;
 
@@ -34,7 +35,7 @@ int main(int argc, char *argv[])
         ("explore", "Exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
-        ("repr", "XCSR Classifier representation", cxxopts::value<std::string>()->default_value("cs"), "cs/lu")
+        ("repr", "XCSR Classifier representation (Center-Spread / Lower-Upper [Ordered Bound] / Unordered Bound)", cxxopts::value<std::string>()->default_value("cs"), "cs/lu/ub")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
         ("min-value", "The minimum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.minValue)), "VALUE")
         ("max-value", "The maximum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.maxValue)), "VALUE")
@@ -186,6 +187,11 @@ int main(int argc, char *argv[])
             auto p = new XCSR_LU::Experiment<double, bool>(environment.availableActions, constants);
             xcsr = (XCS::Experiment<double, bool> *)p;
         }
+        else if (result["repr"].as<std::string>() == "ub")
+        {
+            auto p = new XCSR_UB::Experiment<double, bool>(environment.availableActions, constants);
+            xcsr = (XCS::Experiment<double, bool> *)p;
+        }
         else
         {
             std::cout << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
@@ -300,6 +306,11 @@ int main(int argc, char *argv[])
         else if (result["repr"].as<std::string>() == "lu")
         {
             auto p = new XCSR_LU::Experiment<double, int>(availableActions, constants);
+            xcsr = (XCS::Experiment<double, int> *)p;
+        }
+        else if (result["repr"].as<std::string>() == "ub")
+        {
+            auto p = new XCSR_UB::Experiment<double, int>(availableActions, constants);
             xcsr = (XCS::Experiment<double, int> *)p;
         }
         else
