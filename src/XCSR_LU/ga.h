@@ -14,6 +14,32 @@ namespace XCSR_LU
         using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_constants;
         using XCS::GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_availableActions;
 
+        // APPLY CROSSOVER
+        virtual void crossover(Classifier & cl1, Classifier & cl2) const override
+        {
+            assert(cl1.condition.size() == cl2.condition.size());
+
+            std::size_t x = XCS::Random::nextInt<std::size_t>(0, cl1.condition.size() * 2);
+            std::size_t y = XCS::Random::nextInt<std::size_t>(0, cl1.condition.size() * 2);
+
+            if (x > y)
+            {
+                std::swap(x, y);
+            }
+
+            for (std::size_t i = x + 1; i < y; ++i)
+            {
+                if (i % 2 == 0)
+                {
+                    std::swap(cl1.condition[i / 2].lower, cl2.condition[i / 2].lower);
+                }
+                else
+                {
+                    std::swap(cl1.condition[i / 2].upper, cl2.condition[i / 2].upper);
+                }
+            }
+        }
+
         // APPLY MUTATION
         virtual void mutate(Classifier & cl, const std::vector<T> & situation) const override
         {

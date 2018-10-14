@@ -55,8 +55,8 @@ namespace XCS
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
-            std::size_t x = static_cast<std::size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
-            std::size_t y = static_cast<std::size_t>(Random::nextDouble() * (cl1.condition.size() + 1));
+            std::size_t x = Random::nextInt<std::size_t>(0, cl1.condition.size());
+            std::size_t y = Random::nextInt<std::size_t>(0, cl1.condition.size());
 
             if (x > y)
             {
