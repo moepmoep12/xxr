@@ -7,9 +7,9 @@
 
 #include <cxxopts.hpp>
 
-#include "condition.h"
-#include "classifier.h"
 #include "experiment.h"
+#include "../environment/multiplexer_environment.h"
+#include "../environment/csv_environment.h"
 
 using namespace XCS;
 

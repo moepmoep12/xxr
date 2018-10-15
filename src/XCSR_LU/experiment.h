@@ -8,7 +8,6 @@
 #include "match_set.h"
 #include "ga.h"
 #include "../XCSR/action_set.h"
-#include "../XCSR/environment.h"
 
 namespace XCSR_LU
 {

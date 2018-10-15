@@ -7,10 +7,11 @@
 
 #include <cxxopts.hpp>
 
-//#include "classifier.h"
 #include "../XCSR_CS/experiment.h"
 #include "../XCSR_LU/experiment.h"
 #include "../XCSR_UB/experiment.h"
+#include "../environment/real_multiplexer_environment.h"
+#include "../environment/csv_environment.h"
 
 using namespace XCSR;
 

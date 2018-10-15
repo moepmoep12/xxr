@@ -1,8 +1,10 @@
 #pragma once
 
+#include <vector>
+#include <cstddef>
 #include <cassert>
 
-#include "../XCS/environment.h"
+#include "environment.h"
 #include "../XCS/random.h"
 
 namespace XCSR
