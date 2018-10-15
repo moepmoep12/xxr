@@ -3,6 +3,7 @@
 #include <vector>
 #include <cstddef>
 #include <cassert>
+#include <unordered_set>
 
 namespace XCS
 {
