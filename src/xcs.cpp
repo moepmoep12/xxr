@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
-        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
+        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.maxPopulationClassifierCount)), "COUNT")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
         ("beta", "The learning rate for updating fitness, prediction, prediction error, and action set size estimate in XCS's classifiers", cxxopts::value<double>()->default_value(std::to_string(constants.learningRate)), "BETA")
         ("epsilon-0", "The error threshold under which the accuracy of a classifier is set to one", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "EPSILON_0")
@@ -46,7 +46,7 @@ int main(int argc, char *argv[])
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
-        ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>(), "P_SHARP")
+        ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>()->default_value(std::to_string(constants.generalizeProbability)), "P_SHARP")
         ("initial-prediction", "The initial prediction value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPrediction)), "P_I")
         ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPredictionError)), "EPSILON_I")
         ("initial-fitness", "The initial fitness value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialFitness)), "F_I")
@@ -131,43 +131,6 @@ int main(int argc, char *argv[])
     if (result.count("mux"))
     {
         std::size_t multiplexerLength = result["mux"].as<int>();
-
-        if (multiplexerLength == 3)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 200;
-        }
-        else if (multiplexerLength == 6)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 400;
-        }
-        else if (multiplexerLength == 11)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 800;
-        }
-        else if (multiplexerLength == 20)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 2000;
-            if (!result.count("p-sharp"))
-                constants.generalizeProbability = 0.5;
-        }
-        else if (multiplexerLength == 37)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 5000;
-            if (!result.count("p-sharp"))
-                constants.generalizeProbability = 0.65;
-        }
-        else
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 50000;
-            if (!result.count("p-sharp"))
-                constants.generalizeProbability = 0.75;
-        }
 
         MultiplexerEnvironment environment(multiplexerLength);
         Experiment<bool, bool> xcs(environment.availableActions, constants);

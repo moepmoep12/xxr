@@ -39,7 +39,7 @@ int main(int argc, char *argv[])
         ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("repr", "The XCSR classifier representation (Center-Spread / Lower-Upper [Ordered Bound] / Unordered Bound)", cxxopts::value<std::string>()->default_value("cs"), "cs/lu/ub")
-        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
+        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.maxPopulationClassifierCount)), "COUNT")
         ("min-value", "The minimum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.minValue)), "VALUE")
         ("max-value", "The maximum value of each symbol in a situation", cxxopts::value<double>()->default_value(std::to_string(constants.maxValue)), "VALUE")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
@@ -145,37 +145,6 @@ int main(int argc, char *argv[])
     if (result.count("mux"))
     {
         std::size_t multiplexerLength = result["mux"].as<int>();
-
-        if (multiplexerLength == 3)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 200;
-        }
-        else if (multiplexerLength == 6)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 400;
-        }
-        else if (multiplexerLength == 11)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 800;
-        }
-        else if (multiplexerLength == 20)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 2000;
-        }
-        else if (multiplexerLength == 37)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 5000;
-        }
-        else
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 50000;
-        }
 
         XCSR::RealMultiplexerEnvironment environment(multiplexerLength, true);
 
