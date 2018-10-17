@@ -7,11 +7,12 @@
 
 #include <cxxopts.hpp>
 
-#include "../XCSR_CS/experiment.h"
-#include "../XCSR_LU/experiment.h"
-#include "../XCSR_UB/experiment.h"
-#include "../environment/real_multiplexer_environment.h"
-#include "../environment/csv_environment.h"
+#include "XCSR_CS/experiment.h"
+#include "XCSR_LU/experiment.h"
+#include "XCSR_UB/experiment.h"
+#include "environment/real_multiplexer_environment.h"
+#include "environment/checkerboard_environment.h"
+#include "environment/csv_environment.h"
 
 using namespace XCSR;
 
@@ -114,7 +115,7 @@ int main(int argc, char *argv[])
     if (result.count("do-action-set-subsumption"))
         constants.doActionSetSubsumption = result["do-action-set-subsumption"].as<bool>();
     
-    bool isEnvironmentSpecified = (result.count("mux") || result.count("csv"));
+    bool isEnvironmentSpecified = (result.count("mux") || result.count("csv") || result.count("chk"));
 
     // Show help
     if (result.count("help") || !isEnvironmentSpecified)
@@ -141,27 +142,38 @@ int main(int argc, char *argv[])
         populationSizeLogStream = std::ofstream(result["noutput"].as<std::string>());
     }
 
-    // Use multiplexer problem
-    if (result.count("mux"))
+    // Use multiplexer / checkerboard problem
+    if (result.count("mux") || result.count("chk"))
     {
-        std::size_t multiplexerLength = result["mux"].as<int>();
-
-        XCSR::RealMultiplexerEnvironment environment(multiplexerLength, true);
+        std::unique_ptr<XCS::AbstractEnvironment<double, bool>> environment;
+        if (result.count("mux"))
+        {
+            environment.reset(new XCSR::RealMultiplexerEnvironment(result["mux"].as<int>(), true));
+        }
+        else
+        {
+            if (!result.count("chk-div"))
+            {
+                std::cerr << "Error: The division in the checkerboard problem (--chk-div) is not specified." << std::endl;
+                exit(1);
+            }
+            environment.reset(new XCSR::CheckerboardEnvironment(result["chk"].as<int>(), result["chk-div"].as<int>()));
+        }
 
         XCS::Experiment<double, bool> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
-            auto p = new XCSR_CS::Experiment<double, bool>(environment.availableActions, constants);
+            auto p = new XCSR_CS::Experiment<double, bool>(environment->availableActions, constants);
             xcsr = (XCS::Experiment<double, bool> *)p;
         }
         else if (result["repr"].as<std::string>() == "lu")
         {
-            auto p = new XCSR_LU::Experiment<double, bool>(environment.availableActions, constants);
+            auto p = new XCSR_LU::Experiment<double, bool>(environment->availableActions, constants);
             xcsr = (XCS::Experiment<double, bool> *)p;
         }
         else if (result["repr"].as<std::string>() == "ub")
         {
-            auto p = new XCSR_UB::Experiment<double, bool>(environment.availableActions, constants);
+            auto p = new XCSR_UB::Experiment<double, bool>(environment->availableActions, constants);
             xcsr = (XCS::Experiment<double, bool> *)p;
         }
         else
@@ -176,10 +188,10 @@ int main(int argc, char *argv[])
             for (std::size_t j = 0; j < explorationCount; ++j)
             {
                 // Choose action
-                bool action = xcsr->explore(environment.situation());
+                bool action = xcsr->explore(environment->situation());
 
                 // Get reward
-                double reward = environment.executeAction(action);
+                double reward = environment->executeAction(action);
                 xcsr->reward(reward);
             }
 
@@ -190,10 +202,10 @@ int main(int argc, char *argv[])
                 for (std::size_t j = 0; j < exploitationCount; ++j)
                 {
                     // Choose action
-                    bool action = xcsr->exploit(environment.situation());
+                    bool action = xcsr->exploit(environment->situation());
 
                     // Get reward
-                    double reward = environment.executeAction(action);
+                    double reward = environment->executeAction(action);
                     rewardSum += reward;
                 }
 
