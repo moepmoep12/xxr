@@ -14,14 +14,14 @@ template <typename T>
 class UnrecursiveFilter : public AbstractFilter<T>
 {
 protected:
-    const unsigned int m_order; // How many samples to use
-    unsigned int m_cursor;
-    unsigned int m_valueCount;
+    const std::size_t m_order; // How many samples to use
+    std::size_t m_cursor;
+    std::size_t m_valueCount;
 
     // Ring buffer (Use dynamic allocation to place in the heap area in case of a large order)
     T *m_pBuffer;
 
-    explicit UnrecursiveFilter(unsigned int order) : m_order(order), m_cursor(0), m_valueCount(0)
+    explicit UnrecursiveFilter(std::size_t order) : m_order(order), m_cursor(0), m_valueCount(0)
     {
         // Filter order must not be zero
         assert(m_order > 0);
@@ -65,7 +65,7 @@ private:
     using UnrecursiveFilter<T>::m_pBuffer;
 
 public:
-    explicit SimpleMovingAverage(unsigned int order) : UnrecursiveFilter<T>(order) {}
+    explicit SimpleMovingAverage(std::size_t order) : UnrecursiveFilter<T>(order) {}
 
     T operator()(T value) override
     {
