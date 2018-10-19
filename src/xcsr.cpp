@@ -7,6 +7,7 @@
 
 #include <cxxopts.hpp>
 
+#include "util/simple_moving_average.h"
 #include "XCSR_CS/experiment.h"
 #include "XCSR_LU/experiment.h"
 #include "XCSR_UB/experiment.h"
@@ -38,6 +39,7 @@ int main(int argc, char *argv[])
         ("i,iteration", "The iteration count", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("repr", "The XCSR classifier representation (Center-Spread / Lower-Upper [Ordered Bound] / Unordered Bound)", cxxopts::value<std::string>()->default_value("cs"), "cs/lu/ub")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.maxPopulationClassifierCount)), "COUNT")
@@ -160,6 +162,9 @@ int main(int argc, char *argv[])
             environment.reset(new XCSR::CheckerboardEnvironment(result["chk"].as<int>(), result["chk-div"].as<int>()));
         }
 
+        std::size_t smaWidth = result["sma"].as<uint64_t>();
+        SimpleMovingAverage<double> sma(smaWidth);
+
         XCS::Experiment<double, bool> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
@@ -209,13 +214,18 @@ int main(int argc, char *argv[])
                     rewardSum += reward;
                 }
 
-                if (outputsRewardLogFile)
+                double rewardAverage = sma(rewardSum / exploitationCount);
+
+                if (i >= smaWidth - 1)
                 {
-                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
-                }
-                else
-                {
-                    std::cout << (rewardSum / exploitationCount) << std::endl;
+                    if (outputsRewardLogFile)
+                    {
+                        rewardLogStream << rewardAverage << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << rewardAverage << std::endl;
+                    }
                 }
 
                 if (outputsPopulationSizeLogFile)
@@ -281,6 +291,9 @@ int main(int argc, char *argv[])
         XCS::CSVEnvironment<double, int> environment(filename, availableActions, result.count("csv-random"));
         XCS::CSVEnvironment<double, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
 
+        std::size_t smaWidth = result["sma"].as<uint64_t>();
+        SimpleMovingAverage<double> sma(smaWidth);
+
         XCS::Experiment<double, int> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
@@ -322,13 +335,18 @@ int main(int argc, char *argv[])
                     rewardSum += reward;
                 }
 
-                if (outputsRewardLogFile)
+                double rewardAverage = sma(rewardSum / exploitationCount);
+
+                if (i >= smaWidth - 1)
                 {
-                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
-                }
-                else
-                {
-                    std::cout << (rewardSum / exploitationCount) << std::endl;
+                    if (outputsRewardLogFile)
+                    {
+                        rewardLogStream << rewardAverage << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << rewardAverage << std::endl;
+                    }
                 }
 
                 if (outputsPopulationSizeLogFile)

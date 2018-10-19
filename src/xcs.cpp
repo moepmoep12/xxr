@@ -7,6 +7,7 @@
 
 #include <cxxopts.hpp>
 
+#include "util/simple_moving_average.h"
 #include "XCS/experiment.h"
 #include "environment/multiplexer_environment.h"
 #include "environment/csv_environment.h"
@@ -33,6 +34,7 @@ int main(int argc, char *argv[])
         ("i,iteration", "The iteration count", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.maxPopulationClassifierCount)), "COUNT")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
@@ -134,6 +136,10 @@ int main(int argc, char *argv[])
 
         MultiplexerEnvironment environment(multiplexerLength);
         Experiment<bool, bool> xcs(environment.availableActions, constants);
+
+        std::size_t smaWidth = result["sma"].as<uint64_t>();
+        SimpleMovingAverage<double> sma(smaWidth);
+
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
             // Exploration
@@ -161,13 +167,18 @@ int main(int argc, char *argv[])
                     rewardSum += reward;
                 }
 
-                if (outputsRewardLogFile)
+                double rewardAverage = sma(rewardSum / exploitationCount);
+
+                if (i >= smaWidth - 1)
                 {
-                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
-                }
-                else
-                {
-                    std::cout << (rewardSum / exploitationCount) << std::endl;
+                    if (outputsRewardLogFile)
+                    {
+                        rewardLogStream << rewardAverage << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << rewardAverage << std::endl;
+                    }
                 }
 
                 if (outputsPopulationSizeLogFile)
@@ -233,6 +244,9 @@ int main(int argc, char *argv[])
         CSVEnvironment<int, int> environment(filename, availableActions, result.count("csv-random"));
         CSVEnvironment<int, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
 
+        std::size_t smaWidth = result["sma"].as<uint64_t>();
+        SimpleMovingAverage<double> sma(smaWidth);
+
         for (std::size_t i = 0; i < iterationCount; ++i)
         {
             // Exploitation
@@ -252,13 +266,18 @@ int main(int argc, char *argv[])
                     rewardSum += reward;
                 }
 
-                if (outputsRewardLogFile)
+                double rewardAverage = sma(rewardSum / exploitationCount);
+
+                if (i >= smaWidth - 1)
                 {
-                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
-                }
-                else
-                {
-                    std::cout << (rewardSum / exploitationCount) << std::endl;
+                    if (outputsRewardLogFile)
+                    {
+                        rewardLogStream << rewardAverage << std::endl;
+                    }
+                    else
+                    {
+                        std::cout << rewardAverage << std::endl;
+                    }
                 }
 
                 if (outputsPopulationSizeLogFile)
