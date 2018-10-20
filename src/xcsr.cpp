@@ -7,7 +7,7 @@
 
 #include <cxxopts.hpp>
 
-#include "util/simple_moving_average.h"
+#include "common.h"
 #include "XCSR_CS/experiment.h"
 #include "XCSR_LU/experiment.h"
 #include "XCSR_UB/experiment.h"
@@ -27,16 +27,17 @@ int main(int argc, char *argv[])
     options
         .allow_unrecognised_options()
         .add_options()
-        ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>(), "FILENAME")
-        ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>(), "FILENAME")
-        ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>(), "FILENAME")
+        ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the real multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("chk", "Use the n-dimentional checkerboard problem", cxxopts::value<int>(), "N")
         ("chk-div", "The division in the checkerboard problem", cxxopts::value<int>(), "DIVISION")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
-        ("i,iteration", "The iteration count", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
+        ("i,iteration", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
+        ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
@@ -127,30 +128,21 @@ int main(int argc, char *argv[])
     }
 
     uint64_t iterationCount = result["iteration"].as<uint64_t>();
+    uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
     uint64_t explorationCount = result["explore"].as<uint64_t>();
     uint64_t exploitationCount = result["exploit"].as<uint64_t>();
-
-    bool outputsRewardLogFile = result.count("routput");
-    std::ofstream rewardLogStream;
-    if (outputsRewardLogFile)
-    {
-        rewardLogStream = std::ofstream(result["routput"].as<std::string>());
-    }
-
-    bool outputsPopulationSizeLogFile = result.count("noutput");
-    std::ofstream populationSizeLogStream;
-    if (result.count("noutput"))
-    {
-        populationSizeLogStream = std::ofstream(result["noutput"].as<std::string>());
-    }
+    uint64_t smaWidth = result["sma"].as<uint64_t>();
 
     // Use multiplexer / checkerboard problem
     if (result.count("mux") || result.count("chk"))
     {
-        std::unique_ptr<XCS::AbstractEnvironment<double, bool>> environment;
+        std::vector<std::unique_ptr<XCS::AbstractEnvironment<double, bool>>> environments;
         if (result.count("mux"))
         {
-            environment.reset(new XCSR::RealMultiplexerEnvironment(result["mux"].as<int>(), true));
+            for (std::size_t i = 0; i < seedCount; ++i)
+            {
+                environments.push_back(std::make_unique<XCSR::RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
+            }
         }
         else
         {
@@ -159,98 +151,65 @@ int main(int argc, char *argv[])
                 std::cerr << "Error: The division in the checkerboard problem (--chk-div) is not specified." << std::endl;
                 exit(1);
             }
-            environment.reset(new XCSR::CheckerboardEnvironment(result["chk"].as<int>(), result["chk-div"].as<int>()));
+            for (std::size_t i = 0; i < seedCount; ++i)
+            {
+                environments.push_back(std::make_unique<XCSR::CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
+            }
         }
 
-        std::size_t smaWidth = result["sma"].as<uint64_t>();
-        SimpleMovingAverage<double> sma(smaWidth);
-
-        XCS::Experiment<double, bool> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
-            auto p = new XCSR_CS::Experiment<double, bool>(environment->availableActions, constants);
-            xcsr = (XCS::Experiment<double, bool> *)p;
+            run<XCSR_CS::Experiment<double, bool>>(
+                seedCount,
+                { false, true },
+                constants,
+                iterationCount,
+                explorationCount,
+                exploitationCount,
+                result["coutput"].as<std::string>(),
+                result["routput"].as<std::string>(),
+                result["noutput"].as<std::string>(),
+                smaWidth,
+                environments,
+                environments);
         }
         else if (result["repr"].as<std::string>() == "lu")
         {
-            auto p = new XCSR_LU::Experiment<double, bool>(environment->availableActions, constants);
-            xcsr = (XCS::Experiment<double, bool> *)p;
+            run<XCSR_LU::Experiment<double, bool>>(
+                seedCount,
+                { false, true },
+                constants,
+                iterationCount,
+                explorationCount,
+                exploitationCount,
+                result["coutput"].as<std::string>(),
+                result["routput"].as<std::string>(),
+                result["noutput"].as<std::string>(),
+                smaWidth,
+                environments,
+                environments);
         }
         else if (result["repr"].as<std::string>() == "ub")
         {
-            auto p = new XCSR_UB::Experiment<double, bool>(environment->availableActions, constants);
-            xcsr = (XCS::Experiment<double, bool> *)p;
+            run<XCSR_UB::Experiment<double, bool>>(
+                seedCount,
+                { false, true },
+                constants,
+                iterationCount,
+                explorationCount,
+                exploitationCount,
+                result["coutput"].as<std::string>(),
+                result["routput"].as<std::string>(),
+                result["noutput"].as<std::string>(),
+                smaWidth,
+                environments,
+                environments);
         }
         else
         {
-            std::cout << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
+            std::cerr << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
             exit(1);
         }
-
-        for (std::size_t i = 0; i < iterationCount; ++i)
-        {
-            // Exploration
-            for (std::size_t j = 0; j < explorationCount; ++j)
-            {
-                // Choose action
-                bool action = xcsr->explore(environment->situation());
-
-                // Get reward
-                double reward = environment->executeAction(action);
-                xcsr->reward(reward);
-            }
-
-            // Exploitation
-            if (exploitationCount > 0)
-            {
-                double rewardSum = 0;
-                for (std::size_t j = 0; j < exploitationCount; ++j)
-                {
-                    // Choose action
-                    bool action = xcsr->exploit(environment->situation());
-
-                    // Get reward
-                    double reward = environment->executeAction(action);
-                    rewardSum += reward;
-                }
-
-                double rewardAverage = sma(rewardSum / exploitationCount);
-
-                if (i >= smaWidth - 1)
-                {
-                    if (outputsRewardLogFile)
-                    {
-                        rewardLogStream << rewardAverage << std::endl;
-                    }
-                    else
-                    {
-                        std::cout << rewardAverage << std::endl;
-                    }
-                }
-
-                if (outputsPopulationSizeLogFile)
-                {
-                    populationSizeLogStream << xcsr->populationSize() << std::endl;
-                }
-            }
-        }
-
-        if (!outputsRewardLogFile)
-        {
-            std::cout << std::endl;
-        }
-
-        if (result.count("coutput"))
-        {
-            std::ofstream ofs(result["coutput"].as<std::string>());
-            ofs << xcsr->dumpPopulation() << std::endl;
-        }
-        else
-        {
-            std::cout << xcsr->dumpPopulation() << std::endl;
-        }
-
-        delete xcsr;
 
         exit(0);
     }
@@ -261,7 +220,7 @@ int main(int argc, char *argv[])
         // Get available action choices
         if (!result.count("action"))
         {
-            std::cout << "Error: Available action list (--action) is not specified." << std::endl;
+            std::cerr << "Error: Available action list (--action) is not specified." << std::endl;
             exit(1);
         }
         std::string availableActionsStr = result["action"].as<std::string>();
@@ -276,7 +235,7 @@ int main(int argc, char *argv[])
             }
             catch (std::exception & e)
             {
-                std::cout << "Error: Action must be an integer." << std::endl;
+                std::cerr << "Error: Action must be an integer." << std::endl;
                 exit(1);
             }
         }
@@ -288,104 +247,70 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        XCS::CSVEnvironment<double, int> environment(filename, availableActions, result.count("csv-random"));
-        XCS::CSVEnvironment<double, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
+        std::vector<std::unique_ptr<XCS::AbstractEnvironment<double, int>>> explorationEnvironments;
+        for (std::size_t i = 0; i < seedCount; ++i)
+        {
+            explorationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(filename, availableActions, result.count("csv-random")));
+        }
+        std::vector<std::unique_ptr<XCS::AbstractEnvironment<double, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < seedCount; ++i)
+        {
+            exploitationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(evaluationCsvFilename, availableActions, result.count("csv-random")));
+        }
 
-        std::size_t smaWidth = result["sma"].as<uint64_t>();
-        SimpleMovingAverage<double> sma(smaWidth);
-
-        XCS::Experiment<double, int> *xcsr;
         if (result["repr"].as<std::string>() == "cs")
         {
-            auto p = new XCSR_CS::Experiment<double, int>(availableActions, constants);
-            xcsr = (XCS::Experiment<double, int> *)p;
+            run<XCSR_CS::Experiment<double, int>>(
+                seedCount,
+                availableActions,
+                constants,
+                iterationCount,
+                explorationCount,
+                exploitationCount,
+                result["coutput"].as<std::string>(),
+                result["routput"].as<std::string>(),
+                result["noutput"].as<std::string>(),
+                smaWidth,
+                explorationEnvironments,
+                exploitationEnvironments);
         }
         else if (result["repr"].as<std::string>() == "lu")
         {
-            auto p = new XCSR_LU::Experiment<double, int>(availableActions, constants);
-            xcsr = (XCS::Experiment<double, int> *)p;
+            run<XCSR_LU::Experiment<double, int>>(
+                seedCount,
+                availableActions,
+                constants,
+                iterationCount,
+                explorationCount,
+                exploitationCount,
+                result["coutput"].as<std::string>(),
+                result["routput"].as<std::string>(),
+                result["noutput"].as<std::string>(),
+                smaWidth,
+                explorationEnvironments,
+                exploitationEnvironments);
         }
         else if (result["repr"].as<std::string>() == "ub")
         {
-            auto p = new XCSR_UB::Experiment<double, int>(availableActions, constants);
-            xcsr = (XCS::Experiment<double, int> *)p;
+            run<XCSR_UB::Experiment<double, int>>(
+                seedCount,
+                availableActions,
+                constants,
+                iterationCount,
+                explorationCount,
+                exploitationCount,
+                result["coutput"].as<std::string>(),
+                result["routput"].as<std::string>(),
+                result["noutput"].as<std::string>(),
+                smaWidth,
+                explorationEnvironments,
+                exploitationEnvironments);
         }
         else
         {
-            std::cout << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
+            std::cerr << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
             exit(1);
         }
-
-        for (std::size_t i = 0; i < iterationCount; ++i)
-        {
-            // Exploitation
-            if (exploitationCount > 0)
-            {
-                double rewardSum = 0;
-                for (std::size_t j = 0; j < exploitationCount; ++j)
-                {
-                    // Get situation from environment
-                    auto situation = evaluationEnvironment.situation();
-
-                    // Choose action
-                    int action = xcsr->exploit(evaluationEnvironment.situation());
-
-                    // Get reward
-                    double reward = evaluationEnvironment.executeAction(action);
-                    rewardSum += reward;
-                }
-
-                double rewardAverage = sma(rewardSum / exploitationCount);
-
-                if (i >= smaWidth - 1)
-                {
-                    if (outputsRewardLogFile)
-                    {
-                        rewardLogStream << rewardAverage << std::endl;
-                    }
-                    else
-                    {
-                        std::cout << rewardAverage << std::endl;
-                    }
-                }
-
-                if (outputsPopulationSizeLogFile)
-                {
-                    populationSizeLogStream << xcsr->populationSize() << std::endl;
-                }
-            }
-
-            // Exploration
-            for (std::size_t j = 0; j < explorationCount; ++j)
-            {
-                // Get situation from environment
-                auto situation = environment.situation();
-
-                // Choose action
-                int action = xcsr->explore(situation);
-
-                // Get reward
-                double reward = environment.executeAction(action);
-                xcsr->reward(reward);
-            }
-        }
-    
-        if (!outputsRewardLogFile)
-        {
-            std::cout << std::endl;
-        }
-
-        if (result.count("coutput"))
-        {
-            std::ofstream ofs(result["coutput"].as<std::string>());
-            ofs << xcsr->dumpPopulation() << std::endl;
-        }
-        else
-        {
-            std::cout << xcsr->dumpPopulation() << std::endl;
-        }
-
-        delete xcsr;
 
         exit(0);
     }
