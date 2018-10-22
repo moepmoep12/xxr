@@ -113,6 +113,10 @@ namespace XCS
         //   Whether action sets are to be tested for subsuming classifiers
         bool doActionSetSubsumption = true;
 
+        // doActionMutation
+        //   Whether to apply mutation to the action
+        bool doActionMutation = true;
+
         virtual ~Constants() = default;
     };
 

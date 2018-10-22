@@ -66,6 +66,7 @@ int main(int argc, char *argv[])
         ("theta-mna", "The minimal number of actions that must be present in a match set [M], or else covering will occur. Use \"0\" to set automatically.", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.thetaMna)), "THETA_MNA")
         ("do-ga-subsumption", "Whether offspring are to be tested for possible logical subsumption by parents", cxxopts::value<bool>()->default_value(constants.doGASubsumption ? "true" : "false"), "true/false")
         ("do-action-set-subsumption", "Whether action sets are to be tested for subsuming classifiers", cxxopts::value<bool>()->default_value(constants.doActionSetSubsumption ? "true" : "false"), "true/false")
+        ("do-action-mutation", "Whether to apply mutation to the action", cxxopts::value<bool>()->default_value(constants.doActionMutation ? "true" : "false"), "true/false")
         ("h,help", "Show this help");
 
     auto result = options.parse(argc, argv);
@@ -117,6 +118,8 @@ int main(int argc, char *argv[])
         constants.doGASubsumption = result["do-ga-subsumption"].as<bool>();
     if (result.count("do-action-set-subsumption"))
         constants.doActionSetSubsumption = result["do-action-set-subsumption"].as<bool>();
+    if (result.count("do-action-mutation"))
+        constants.doActionMutation = result["do-action-mutation"].as<bool>();
     
     bool isEnvironmentSpecified = (result.count("mux") || result.count("csv") || result.count("chk"));
 
