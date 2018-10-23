@@ -64,18 +64,26 @@ namespace XCSR
             return m_isEndOfProblem;
         }
 
-        // Returns the answer
+        // Returns the answer for the current situation
         bool getAnswer() const
         {
+            return getAnswer(m_situation);
+        }
+
+        // Returns the answer for the given situation
+        bool getAnswer(const std::vector<double> & situation) const
+        {
+            assert(situation.size() == m_dim);
+
             // Flatten the n-dimensional grid to one dimension
             std::size_t sum = 0;
             for (std::size_t i = 0; i < m_dim; ++i)
             {
-                sum += static_cast<std::size_t>(m_situation.at(i) * m_division);
+                sum += static_cast<std::size_t>(situation.at(i) * m_division);
             }
 
             // Alternate black and white colors
-            return sum % 2 == 0;
+            return sum % 2 != 0;
         }
     };
 
