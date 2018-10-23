@@ -1,9 +1,9 @@
 #pragma once
 
 #include <vector>
-#include <cmath>
 #include <cstddef>
 #include <cassert>
+#include <limits>
 
 #include "environment.h"
 #include "../XCS/random.h"
@@ -77,9 +77,11 @@ namespace XCSR
 
             // Flatten the n-dimensional grid to one dimension
             std::size_t sum = 0;
+            static constexpr double EPSILON = std::numeric_limits<double>::epsilon(); // used for restricting the range to [0.0, 1.0)
             for (std::size_t i = 0; i < m_dim; ++i)
             {
-                sum += static_cast<std::size_t>(situation.at(i) * m_division);
+                double value = std::min(std::max(situation.at(i), 0.0), 1.0 - EPSILON);
+                sum += static_cast<std::size_t>(value * m_division);
             }
 
             // Alternate black and white colors
