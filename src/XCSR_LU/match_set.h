@@ -20,14 +20,23 @@ namespace XCSR_LU
             std::vector<Symbol> symbols;
             for (auto && symbol : situation)
             {
-                double l = symbol - XCS::Random::nextDouble(0.0, m_constants.maxSpread);
-                double u = symbol + XCS::Random::nextDouble(0.0, m_constants.maxSpread);
+                double lowerMin = symbol - m_constants.maxSpread;
+                double upperMax = symbol + m_constants.maxSpread;
+                if (m_constants.doCoveringRandomRangeTruncation)
+                {
+                    lowerMin = std::max(lowerMin, m_constants.minValue);
+                    upperMax = std::min(upperMax, m_constants.maxValue);
+                }
+
+                double lower = XCS::Random::nextDouble(lowerMin, symbol);
+                double upper = XCS::Random::nextDouble(symbol, upperMax);
                 if (m_constants.doRangeRestriction)
                 {
-                    l = std::max(l, m_constants.minValue);
-                    u = std::min(u, m_constants.maxValue);
+                    lower = std::max(lower, m_constants.minValue);
+                    upper = std::min(upper, m_constants.maxValue);
                 }
-                symbols.emplace_back(l, u);
+
+                symbols.emplace_back(lower, upper);
             }
 
             return std::make_shared<Classifier>(symbols, XCS::Random::chooseFrom(unselectedActions), timeStamp, m_constants);
