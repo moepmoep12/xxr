@@ -57,7 +57,7 @@ namespace XCSR_CS
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].spread += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].spread = std::min(std::max(0.0, cl.condition[i].spread), m_constants.maxSpread);
+                    cl.condition[i].spread = std::max(0.0, cl.condition[i].spread);
                 }
             }
 
