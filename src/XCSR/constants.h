@@ -17,6 +17,11 @@ namespace XCSR
         // m
         double mutationMaxChange = 0.1;
 
+        // doRangeRestriction
+        //   Whether to restrict the range of the condition to the interval
+        //   [min-value, max-value) (ignored in XCSR_CS)
+        bool doRangeRestriction = true;
+
         // Destructor
         virtual ~Constants() = default;
     };

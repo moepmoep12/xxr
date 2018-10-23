@@ -51,13 +51,20 @@ namespace XCSR_UB
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].p += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].p = std::min(std::max(m_constants.minValue, cl.condition[i].p), m_constants.maxValue);
+                    if (m_constants.doRangeRestriction)
+                    {
+                        assert(false);
+                        cl.condition[i].p = std::min(std::max(m_constants.minValue, cl.condition[i].p), m_constants.maxValue);
+                    }
                 }
 
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].q += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].q = std::min(std::max(m_constants.minValue, cl.condition[i].q), m_constants.maxValue);
+                    if (m_constants.doRangeRestriction)
+                    {
+                        cl.condition[i].q = std::min(std::max(m_constants.minValue, cl.condition[i].q), m_constants.maxValue);
+                    }
                 }
             }
 

@@ -20,8 +20,13 @@ namespace XCSR_UB
             std::vector<Symbol> symbols;
             for (auto && symbol : situation)
             {
-                double l = std::max(symbol - XCS::Random::nextDouble(0.0, m_constants.maxSpread), m_constants.minValue);
-                double u = std::min(symbol + XCS::Random::nextDouble(0.0, m_constants.maxSpread), m_constants.maxValue);
+                double l = symbol - XCS::Random::nextDouble(0.0, m_constants.maxSpread);
+                double u = symbol + XCS::Random::nextDouble(0.0, m_constants.maxSpread);
+                if (m_constants.doRangeRestriction)
+                {
+                    l = std::max(l, m_constants.minValue);
+                    u = std::min(u, m_constants.maxValue);
+                }
 
                 if (XCS::Random::nextDouble() < 0.5)
                 {

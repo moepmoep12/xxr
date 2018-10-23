@@ -65,13 +65,19 @@ namespace XCSR_LU
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].lower += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].lower = std::min(std::max(m_constants.minValue, cl.condition[i].lower), m_constants.maxValue);
+                    if (m_constants.doRangeRestriction)
+                    {
+                        cl.condition[i].lower = std::min(std::max(m_constants.minValue, cl.condition[i].lower), m_constants.maxValue);
+                    }
                 }
 
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
                     cl.condition[i].upper += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].upper = std::min(std::max(m_constants.minValue, cl.condition[i].upper), m_constants.maxValue);
+                    if (m_constants.doRangeRestriction)
+                    {
+                        cl.condition[i].upper = std::min(std::max(m_constants.minValue, cl.condition[i].upper), m_constants.maxValue);
+                    }
                 }
 
                 if (cl.condition[i].lower > cl.condition[i].upper)

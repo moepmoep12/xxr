@@ -67,6 +67,7 @@ int main(int argc, char *argv[])
         ("do-ga-subsumption", "Whether offspring are to be tested for possible logical subsumption by parents", cxxopts::value<bool>()->default_value(constants.doGASubsumption ? "true" : "false"), "true/false")
         ("do-action-set-subsumption", "Whether action sets are to be tested for subsuming classifiers", cxxopts::value<bool>()->default_value(constants.doActionSetSubsumption ? "true" : "false"), "true/false")
         ("do-action-mutation", "Whether to apply mutation to the action", cxxopts::value<bool>()->default_value(constants.doActionMutation ? "true" : "false"), "true/false")
+        ("do-range-restriction", "Whether to restrict the range of the condition to the interval [min-value, max-value) in the covering and mutation operator (ignored when --repr=cs)", cxxopts::value<bool>()->default_value(constants.doRangeRestriction ? "true" : "false"), "true/false")
         ("h,help", "Show this help");
 
     auto result = options.parse(argc, argv);
@@ -120,7 +121,9 @@ int main(int argc, char *argv[])
         constants.doActionSetSubsumption = result["do-action-set-subsumption"].as<bool>();
     if (result.count("do-action-mutation"))
         constants.doActionMutation = result["do-action-mutation"].as<bool>();
-    
+    if (result.count("do-range-restriction"))
+        constants.doRangeRestriction = result["do-range-restriction"].as<bool>();
+
     bool isEnvironmentSpecified = (result.count("mux") || result.count("csv") || result.count("chk"));
 
     // Show help
