@@ -41,7 +41,7 @@ namespace XCSR_LU
             std::stringstream ss;
 
             ss  << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
-                << "Condition[l-u],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+                << "Condition[l;u],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
 
             for (auto && cl : this->m_population)
             {
