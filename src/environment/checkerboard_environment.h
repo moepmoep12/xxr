@@ -67,6 +67,10 @@ namespace XCSR
         // Returns the answer for the current situation
         bool getAnswer() const
         {
+            for (auto && value : m_situation)
+            {
+                assert(value >= 0.0 && value < 1.0 + std::numeric_limits<double>::epsilon());
+            }
             return getAnswer(m_situation);
         }
 
@@ -77,10 +81,12 @@ namespace XCSR
 
             // Flatten the n-dimensional grid to one dimension
             std::size_t sum = 0;
-            static constexpr double EPSILON = std::numeric_limits<double>::epsilon(); // used for restricting the range to [0.0, 1.0)
             for (std::size_t i = 0; i < m_dim; ++i)
             {
-                double value = std::min(std::max(situation.at(i), 0.0), 1.0 - EPSILON);
+                // Restrict the range to [0.0, 1.0)
+                double value = std::min(std::max(situation.at(i), 0.0), 1.0 - std::numeric_limits<double>::epsilon());
+
+                // Calculate the sum of the coodinate values in the grid
                 sum += static_cast<std::size_t>(value * m_division);
             }
 
