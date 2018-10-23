@@ -7,9 +7,10 @@
 
 #include <cxxopts.hpp>
 
-#include "condition.h"
-#include "classifier.h"
-#include "experiment.h"
+#include "common.h"
+#include "XCS/experiment.h"
+#include "environment/multiplexer_environment.h"
+#include "environment/csv_environment.h"
 
 using namespace XCS;
 
@@ -23,18 +24,20 @@ int main(int argc, char *argv[])
     options
         .allow_unrecognised_options()
         .add_options()
-        ("o,coutput", "Output classifier csv filename", cxxopts::value<std::string>(), "FILENAME")
-        ("r,routput", "Output reward log csv filename", cxxopts::value<std::string>(), "FILENAME")
-        ("n,noutput", "Output macro-classifier count log csv filename", cxxopts::value<std::string>(), "FILENAME")
-        ("m,mux", "Use multiplexer problem", cxxopts::value<int>(), "LENGTH")
-        ("c,csv", "Use csv file", cxxopts::value<std::string>(), "FILENAME")
-        ("e,csv-eval", "Use csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
-        ("csv-random", "Whether to choose csv data in random order", cxxopts::value<bool>()->default_value("true"), "true/false")
-        ("i,iteration", "Iteration count", cxxopts::value<uint64_t>()->default_value("100000"), "COUNT")
-        ("explore", "Exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
-        ("exploit", "Exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
-        ("a,action", "Available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
-        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>(), "COUNT")
+        ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("m,mux", "Use the multiplexer problem", cxxopts::value<int>(), "LENGTH")
+        ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
+        ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
+        ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
+        ("i,iteration", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
+        ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
+        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.maxPopulationClassifierCount)), "COUNT")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
         ("beta", "The learning rate for updating fitness, prediction, prediction error, and action set size estimate in XCS's classifiers", cxxopts::value<double>()->default_value(std::to_string(constants.learningRate)), "BETA")
         ("epsilon-0", "The error threshold under which the accuracy of a classifier is set to one", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "EPSILON_0")
@@ -46,7 +49,7 @@ int main(int argc, char *argv[])
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
-        ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>(), "P_SHARP")
+        ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>()->default_value(std::to_string(constants.generalizeProbability)), "P_SHARP")
         ("initial-prediction", "The initial prediction value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPrediction)), "P_I")
         ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPredictionError)), "EPSILON_I")
         ("initial-fitness", "The initial fitness value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialFitness)), "F_I")
@@ -54,7 +57,8 @@ int main(int argc, char *argv[])
         ("theta-mna", "The minimal number of actions that must be present in a match set [M], or else covering will occur. Use \"0\" to set automatically.", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.thetaMna)), "THETA_MNA")
         ("do-ga-subsumption", "Whether offspring are to be tested for possible logical subsumption by parents", cxxopts::value<bool>()->default_value(constants.doGASubsumption ? "true" : "false"), "true/false")
         ("do-action-set-subsumption", "Whether action sets are to be tested for subsuming classifiers", cxxopts::value<bool>()->default_value(constants.doActionSetSubsumption ? "true" : "false"), "true/false")
-        ("h,help", "Show help");
+        ("do-action-mutation", "Whether to apply mutation to the action", cxxopts::value<bool>()->default_value(constants.doActionMutation ? "true" : "false"), "true/false")
+        ("h,help", "Show this help");
 
     auto result = options.parse(argc, argv);
 
@@ -99,7 +103,9 @@ int main(int argc, char *argv[])
         constants.doGASubsumption = result["do-ga-subsumption"].as<bool>();
     if (result.count("do-action-set-subsumption"))
         constants.doActionSetSubsumption = result["do-action-set-subsumption"].as<bool>();
-    
+    if (result.count("do-action-mutation"))
+        constants.doActionMutation = result["do-action-mutation"].as<bool>();
+
     bool isEnvironmentSpecified = (result.count("mux") || result.count("csv"));
 
     // Show help
@@ -110,124 +116,33 @@ int main(int argc, char *argv[])
     }
 
     uint64_t iterationCount = result["iteration"].as<uint64_t>();
+    uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
     uint64_t explorationCount = result["explore"].as<uint64_t>();
     uint64_t exploitationCount = result["exploit"].as<uint64_t>();
-
-    bool outputsRewardLogFile = result.count("routput");
-    std::ofstream rewardLogStream;
-    if (outputsRewardLogFile)
-    {
-        rewardLogStream = std::ofstream(result["routput"].as<std::string>());
-    }
-
-    bool outputsPopulationSizeLogFile = result.count("noutput");
-    std::ofstream populationSizeLogStream;
-    if (result.count("noutput"))
-    {
-        populationSizeLogStream = std::ofstream(result["noutput"].as<std::string>());
-    }
+    uint64_t smaWidth = result["sma"].as<uint64_t>();
 
     // Use multiplexer problem
     if (result.count("mux"))
     {
-        std::size_t multiplexerLength = result["mux"].as<int>();
-
-        if (multiplexerLength == 3)
+        std::vector<std::unique_ptr<AbstractEnvironment<bool, bool>>> environments;
+        for (std::size_t i = 0; i < seedCount; ++i)
         {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 200;
-        }
-        else if (multiplexerLength == 6)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 400;
-        }
-        else if (multiplexerLength == 11)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 800;
-        }
-        else if (multiplexerLength == 20)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 2000;
-            if (!result.count("p-sharp"))
-                constants.generalizeProbability = 0.5;
-        }
-        else if (multiplexerLength == 37)
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 5000;
-            if (!result.count("p-sharp"))
-                constants.generalizeProbability = 0.65;
-        }
-        else
-        {
-            if (!result.count("max-population"))
-                constants.maxPopulationClassifierCount = 50000;
-            if (!result.count("p-sharp"))
-                constants.generalizeProbability = 0.75;
+            environments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
         }
 
-        MultiplexerEnvironment environment(multiplexerLength);
-        Experiment<bool, bool> xcs(environment.availableActions, constants);
-        for (std::size_t i = 0; i < iterationCount; ++i)
-        {
-            // Exploration
-            for (std::size_t j = 0; j < explorationCount; ++j)
-            {
-                // Choose action
-                bool action = xcs.explore(environment.situation());
-
-                // Get reward
-                double reward = environment.executeAction(action);
-                xcs.reward(reward);
-            }
-
-            // Exploitation
-            if (exploitationCount > 0)
-            {
-                double rewardSum = 0;
-                for (std::size_t j = 0; j < exploitationCount; ++j)
-                {
-                    // Choose action
-                    bool action = xcs.exploit(environment.situation());
-
-                    // Get reward
-                    double reward = environment.executeAction(action);
-                    rewardSum += reward;
-                }
-
-                if (outputsRewardLogFile)
-                {
-                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
-                }
-                else
-                {
-                    std::cout << (rewardSum / exploitationCount) << std::endl;
-                }
-
-                if (outputsPopulationSizeLogFile)
-                {
-                    populationSizeLogStream << xcs.populationSize() << std::endl;
-                }
-            }
-        }
-
-        if (!outputsRewardLogFile)
-        {
-            std::cout << std::endl;
-        }
-
-        if (result.count("coutput"))
-        {
-            std::ofstream ofs(result["coutput"].as<std::string>());
-            ofs << xcs.dumpPopulation() << std::endl;
-        }
-        else
-        {
-            std::cout << xcs.dumpPopulation() << std::endl;
-        }
+        run<Experiment<bool, bool>>(
+            seedCount,
+            { false, true },
+            constants,
+            iterationCount,
+            explorationCount,
+            exploitationCount,
+            result["coutput"].as<std::string>(),
+            result["routput"].as<std::string>(),
+            result["noutput"].as<std::string>(),
+            smaWidth,
+            environments,
+            environments);
 
         exit(0);
     }
@@ -266,73 +181,30 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        Experiment<int, int> xcs(availableActions, constants);
-        CSVEnvironment<int, int> environment(filename, availableActions, result.count("csv-random"));
-        CSVEnvironment<int, int> evaluationEnvironment(evaluationCsvFilename, availableActions, result.count("csv-random"));
-
-        for (std::size_t i = 0; i < iterationCount; ++i)
+        std::vector<std::unique_ptr<AbstractEnvironment<int, int>>> explorationEnvironments;
+        for (std::size_t i = 0; i < seedCount; ++i)
         {
-            // Exploitation
-            if (exploitationCount > 0)
-            {
-                double rewardSum = 0;
-                for (std::size_t j = 0; j < exploitationCount; ++j)
-                {
-                    // Get situation from environment
-                    auto situation = evaluationEnvironment.situation();
-
-                    // Choose action
-                    int action = xcs.exploit(evaluationEnvironment.situation());
-
-                    // Get reward
-                    double reward = evaluationEnvironment.executeAction(action);
-                    rewardSum += reward;
-                }
-
-                if (outputsRewardLogFile)
-                {
-                    rewardLogStream << (rewardSum / exploitationCount) << std::endl;
-                }
-                else
-                {
-                    std::cout << (rewardSum / exploitationCount) << std::endl;
-                }
-
-                if (outputsPopulationSizeLogFile)
-                {
-                    populationSizeLogStream << xcs.populationSize() << std::endl;
-                }
-            }
-
-            // Exploration
-            for (std::size_t j = 0; j < explorationCount; ++j)
-            {
-                // Get situation from environment
-                auto situation = environment.situation();
-
-                // Choose action
-                int action = xcs.explore(situation);
-
-                // Get reward
-                double reward = environment.executeAction(action);
-                xcs.reward(reward);
-            }
+            explorationEnvironments.push_back(std::make_unique<CSVEnvironment<int, int>>(filename, availableActions, result.count("csv-random")));
+        }
+        std::vector<std::unique_ptr<AbstractEnvironment<int, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < seedCount; ++i)
+        {
+            exploitationEnvironments.push_back(std::make_unique<CSVEnvironment<int, int>>(evaluationCsvFilename, availableActions, result.count("csv-random")));
         }
 
-        if (!outputsRewardLogFile)
-        {
-            std::cout << std::endl;
-        }
-
-        if (result.count("coutput"))
-        {
-            std::ofstream ofs(result["coutput"].as<std::string>());
-            ofs << xcs.dumpPopulation() << std::endl;
-        }
-        else
-        {
-            std::cout << xcs.dumpPopulation() << std::endl;
-        }
+        run<Experiment<int, int>>(
+            seedCount,
+            availableActions,
+            constants,
+            iterationCount,
+            explorationCount,
+            exploitationCount,
+            result["coutput"].as<std::string>(),
+            result["routput"].as<std::string>(),
+            result["noutput"].as<std::string>(),
+            smaWidth,
+            explorationEnvironments,
+            exploitationEnvironments);
 
         exit(0);
     }

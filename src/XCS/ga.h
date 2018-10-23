@@ -89,7 +89,7 @@ namespace XCS
                 }
             }
 
-            if ((Random::nextDouble() < m_constants.mutationProbability) && (m_availableActions.size() >= 2))
+            if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mutationProbability) && (m_availableActions.size() >= 2))
             {
                 std::unordered_set<Action> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);
@@ -160,7 +160,7 @@ namespace XCS
                 }
                 else
                 {
-                    population.insertOrIncrementNumerosity(*child);
+                    population.insert(std::make_shared<Classifier>(*child));
                 }
 
                 population.deleteExtraClassifiers();

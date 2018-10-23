@@ -9,7 +9,7 @@
 #include "ga.h"
 #include "../XCSR/action_set.h"
 
-namespace XCSR_LU
+namespace XCSR_UB
 {
 
     template <
@@ -41,7 +41,7 @@ namespace XCSR_LU
             std::stringstream ss;
 
             ss  << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
-                << "Condition[l;u],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+                << "Condition[p;q],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
 
             for (auto && cl : this->m_population)
             {
@@ -49,8 +49,8 @@ namespace XCSR_LU
                 {
                     ss << "|";
 
-                    auto normalizedLowerLimit = (symbol.lower - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
-                    auto normalizedUpperLimit = (symbol.upper - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+                    auto normalizedLowerLimit = (symbol.lower() - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+                    auto normalizedUpperLimit = (symbol.upper() - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
 
                     for (int i = 0; i < 10; ++i)
                     {

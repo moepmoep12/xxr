@@ -5,20 +5,20 @@
 #include <iomanip>
 #include <string>
 
-namespace XCSR_LU
+namespace XCSR_UB
 {
 
-    // The standard symbol for XCSR_LU (without "don't care")
+    // The standard symbol for XCSR_UB (without "don't care")
     template <typename T>
     class Symbol : public XCS::AbstractSymbol<T>
     {
     public:
-        T lower;
-        T upper;
+        T p;
+        T q;
 
         // Constructor
-        Symbol(T value) : lower(value), upper(value) {}
-        Symbol(T l, T u) : lower(l), upper(u) {}
+        Symbol(T value) : p(value), q(value) {}
+        Symbol(T p, T q) : p(p), q(q) {}
 
         // Destructor
         virtual ~Symbol() = default;
@@ -26,24 +26,24 @@ namespace XCSR_LU
         virtual std::string toString() const override
         {
             std::ostringstream stream;
-            stream << std::setprecision(3) << lower << ";" << upper << " ";
+            stream << std::setprecision(3) << p << ";" << q << " ";
             return stream.str();
         }
 
         friend bool operator== (const Symbol & lhs, const Symbol & rhs)
         {
-            return lhs.lower == rhs.lower && lhs.upper == rhs.upper;
+            return lhs.p == rhs.p && lhs.q == rhs.q;
         }
 
         friend bool operator!= (const Symbol & lhs, const Symbol & rhs)
         {
-            return lhs.lower != rhs.lower || lhs.upper != rhs.upper;
+            return lhs.p != rhs.p || lhs.q != rhs.q;
         }
 
         virtual Symbol & operator= (const Symbol & obj)
         {
-            lower = obj.lower;
-            upper = obj.upper;
+            p = obj.p;
+            q = obj.q;
             return *this;
         }
 
@@ -57,12 +57,22 @@ namespace XCSR_LU
         // DOES MATCH
         virtual bool matches(T value) const override
         {
-            return lower <= value && value < upper;
+            return lower() <= value && value < upper();
         }
 
         virtual void generalize() override
         {
             assert(false);
+        }
+
+        virtual double upper() const
+        {
+            return std::max(p, q);
+        }
+
+        virtual double lower() const
+        {
+            return std::min(p, q);
         }
     };
 

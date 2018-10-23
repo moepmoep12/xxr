@@ -19,7 +19,6 @@
 #include "action_set.h"
 #include "ga.h"
 #include "prediction_array.h"
-#include "environment.h"
 #include "random.h"
 
 namespace XCS

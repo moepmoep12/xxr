@@ -4,7 +4,7 @@
 
 #include "../XCS/ga.h"
 
-namespace XCSR_CS
+namespace XCSR_UB
 {
     
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
@@ -31,11 +31,11 @@ namespace XCSR_CS
             {
                 if (i % 2 == 0)
                 {
-                    std::swap(cl1.condition[i / 2].center, cl2.condition[i / 2].center);
+                    std::swap(cl1.condition[i / 2].p, cl2.condition[i / 2].p);
                 }
                 else
                 {
-                    std::swap(cl1.condition[i / 2].spread, cl2.condition[i / 2].spread);
+                    std::swap(cl1.condition[i / 2].q, cl2.condition[i / 2].q);
                 }
             }
         }
@@ -45,19 +45,25 @@ namespace XCSR_CS
         {
             assert(cl.condition.size() == situation.size());
 
-            // Mutate center and spread individually
+            // Mutate p and q individually
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].center += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].center = std::min(std::max(m_constants.minValue, cl.condition[i].center), m_constants.maxValue);
+                    cl.condition[i].p += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                    if (m_constants.doRangeRestriction)
+                    {
+                        cl.condition[i].p = std::min(std::max(m_constants.minValue, cl.condition[i].p), m_constants.maxValue);
+                    }
                 }
 
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].spread += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].spread = std::max(0.0, cl.condition[i].spread);
+                    cl.condition[i].q += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                    if (m_constants.doRangeRestriction)
+                    {
+                        cl.condition[i].q = std::min(std::max(m_constants.minValue, cl.condition[i].q), m_constants.maxValue);
+                    }
                 }
             }
 

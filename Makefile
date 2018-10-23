@@ -4,10 +4,10 @@ LDFLAGS  =
 
 all: xcs xcsr
 
-xcs: src/XCS/main.cpp
+xcs: src/xcs.cpp
 	$(CC) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
-xcsr: src/XCSR/main.cpp
+xcsr: src/xcsr.cpp
 	$(CC) -o $@ $^ $(CXXFLAGS) $(LDFLAGS)
 
 .PHONY: clean

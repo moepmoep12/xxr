@@ -2,7 +2,7 @@
 
 #include "../XCS/match_set.h"
 
-namespace XCSR_LU
+namespace XCSR_UB
 {
 
     template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
@@ -36,7 +36,14 @@ namespace XCSR_LU
                     upper = std::min(upper, m_constants.maxValue);
                 }
 
-                symbols.emplace_back(lower, upper);
+                if (XCS::Random::nextDouble() < 0.5)
+                {
+                    symbols.emplace_back(lower, upper);
+                }
+                else
+                {
+                    symbols.emplace_back(upper, lower);
+                }
             }
 
             return std::make_shared<Classifier>(symbols, XCS::Random::chooseFrom(unselectedActions), timeStamp, m_constants);
