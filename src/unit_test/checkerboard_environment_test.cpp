@@ -25,6 +25,8 @@ int main()
             std::cout << std::endl;
         }
     }
+    std::cout << "\n========================================\n" << std::endl;
+
     std::cout << "chk(2, 5):" << std::endl;
     {
         XCSR::CheckerboardEnvironment env(2, 5);
@@ -51,6 +53,8 @@ int main()
             std::cout << std::endl;
         }
     }
+    std::cout << "\n========================================\n" << std::endl;
+
     std::cout << "chk(3, 3):" << std::endl;
     {
         XCSR::CheckerboardEnvironment env(3, 3);
