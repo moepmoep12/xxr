@@ -3,6 +3,7 @@
 #include "../XCS/experiment.h"
 #include "../XCS/condition.h"
 #include "symbol.h"
+#include "../XCSR/classifier.h"
 #include "classifier.h"
 #include "../XCSR/constants.h"
 #include "match_set.h"
@@ -19,7 +20,7 @@ namespace XCSR_CS
         class Condition = XCS::Condition<T, Symbol>,
         class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
         class Constants = XCSR::Constants,
-        class Classifier = XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
+        class Classifier = XCSR::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
         class ClassifierPtrSet = XCS::ClassifierPtrSet<Action, Classifier, Constants>,
         class Population = XCS::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
         class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,

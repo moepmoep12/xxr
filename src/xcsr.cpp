@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
         ("s-0", "The maximum value of a spread in the covering operator", cxxopts::value<double>()->default_value(std::to_string(constants.coveringMaxSpread)), "S_0")
         ("max-mutation", "The maximum change of a spread value or a center value in mutation", cxxopts::value<double>()->default_value(std::to_string(constants.mutationMaxChange)), "M")
+        ("tol-sub", "The tolerance range of the upper and lower bound in the subsumption", cxxopts::value<double>()->default_value(std::to_string(constants.subsumptionTolerance)), "TOL_SUB")
         ("initial-prediction", "The initial prediction value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPrediction)), "P_I")
         ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPredictionError)), "EPSILON_I")
         ("initial-fitness", "The initial fitness value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialFitness)), "F_I")
@@ -106,6 +107,8 @@ int main(int argc, char *argv[])
         constants.coveringMaxSpread = result["s-0"].as<double>();
     if (result.count("max-mutation"))
         constants.mutationMaxChange = result["max-mutation"].as<double>();
+    if (result.count("tol-sub"))
+        constants.subsumptionTolerance = result["tol-sub"].as<double>();
     if (result.count("initial-prediction"))
         constants.initialPrediction = result["initial-prediction"].as<double>();
     if (result.count("initial-prediction-error"))

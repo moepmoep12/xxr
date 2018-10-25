@@ -19,6 +19,10 @@ namespace XCSR
         //   The maximum change of a spread value or a center value in the mutation
         double mutationMaxChange = 0.1;
 
+        // Tol_sub
+        //   The tolerance range of the upper and lower bound in the subsumption
+        double subsumptionTolerance = 0.0;
+
         // doRangeRestriction (ignored in XCSR_CS)
         //   Whether to restrict the range of the condition to the interval
         //   [min-value, max-value)

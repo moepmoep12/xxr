@@ -23,7 +23,7 @@ namespace XCSR
             {
                 if (c->isSubsumer())
                 {
-                    if (cl.get() == nullptr || c->isMoreGeneral(*cl))
+                    if (cl.get() == nullptr || c->isMoreGeneral(*cl, m_constants.subsumptionTolerance))
                     {
                         cl = c;
                     }
@@ -35,7 +35,7 @@ namespace XCSR
                 std::vector<const ClassifierPtr *> removedClassifiers;
                 for (auto && c : m_set)
                 {
-                    if (cl->isMoreGeneral(*c))
+                    if (cl->isMoreGeneral(*c, m_constants.subsumptionTolerance))
                     {
                         cl->numerosity += c->numerosity;
                         removedClassifiers.push_back(&c);
