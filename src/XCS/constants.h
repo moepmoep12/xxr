@@ -114,7 +114,7 @@ namespace XCS
         bool doActionSetSubsumption = true;
 
         // doActionMutation
-        //   Whether to apply mutation to the action
+        //   Whether to apply the mutation to the action
         bool doActionMutation = true;
 
         virtual ~Constants() = default;

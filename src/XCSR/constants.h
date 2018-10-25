@@ -12,9 +12,11 @@ namespace XCSR
         double maxValue = 1.0;
 
         // s_0
+        //   The maximum value of a spread in the covering operator
         double coveringMaxSpread = 1.0;
 
         // m
+        //   The maximum change of a spread value or a center value in the mutation
         double mutationMaxChange = 0.1;
 
         // doRangeRestriction (ignored in XCSR_CS)
@@ -29,7 +31,7 @@ namespace XCSR
         //   "false" is common for this option, but the covering operator can
         //   generate too many maximum-range intervals if s_0 is larger than
         //   (max-value - min-value) / 2.
-        //   Choose \"true\" to avoid the random bias in this situation.
+        //   Choose "true" to avoid the random bias in this situation.
         bool doCoveringRandomRangeTruncation = false;
 
         // Destructor
