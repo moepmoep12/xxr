@@ -20,8 +20,8 @@ namespace XCSR_UB
             std::vector<Symbol> symbols;
             for (auto && symbol : situation)
             {
-                double lowerMin = symbol - m_constants.maxSpread;
-                double upperMax = symbol + m_constants.maxSpread;
+                double lowerMin = symbol - m_constants.coveringMaxSpread;
+                double upperMax = symbol + m_constants.coveringMaxSpread;
                 if (m_constants.doCoveringRandomRangeTruncation)
                 {
                     lowerMin = std::max(lowerMin, m_constants.minValue);

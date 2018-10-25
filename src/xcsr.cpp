@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
-        ("s-0", "The maximum value of a spread in the covering operator", cxxopts::value<double>()->default_value(std::to_string(constants.maxSpread)), "S_0")
+        ("s-0", "The maximum value of a spread in the covering operator", cxxopts::value<double>()->default_value(std::to_string(constants.coveringMaxSpread)), "S_0")
         ("max-mutation", "The maximum change of a spread value or a center value in mutation", cxxopts::value<double>()->default_value(std::to_string(constants.mutationMaxChange)), "M")
         ("initial-prediction", "The initial prediction value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPrediction)), "P_I")
         ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPredictionError)), "EPSILON_I")
@@ -103,7 +103,7 @@ int main(int argc, char *argv[])
     if (result.count("theta-sub"))
         constants.thetaSub = result["theta-sub"].as<double>();
     if (result.count("s-0"))
-        constants.maxSpread = result["s-0"].as<double>();
+        constants.coveringMaxSpread = result["s-0"].as<double>();
     if (result.count("max-mutation"))
         constants.mutationMaxChange = result["max-mutation"].as<double>();
     if (result.count("initial-prediction"))

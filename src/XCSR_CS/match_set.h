@@ -20,7 +20,7 @@ namespace XCSR_CS
             std::vector<Symbol> symbols;
             for (auto && symbol : situation)
             {
-                symbols.emplace_back(symbol, XCS::Random::nextDouble(0.0, m_constants.maxSpread));
+                symbols.emplace_back(symbol, XCS::Random::nextDouble(0.0, m_constants.coveringMaxSpread));
             }
 
             return std::make_shared<Classifier>(symbols, XCS::Random::chooseFrom(unselectedActions), timeStamp, m_constants);

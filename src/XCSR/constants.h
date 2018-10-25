@@ -12,7 +12,7 @@ namespace XCSR
         double maxValue = 1.0;
 
         // s_0
-        double maxSpread = 1.0;
+        double coveringMaxSpread = 1.0;
 
         // m
         double mutationMaxChange = 0.1;
