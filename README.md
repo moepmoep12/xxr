@@ -62,6 +62,6 @@ $ ./xcsr --help
     - The UB (Unordered Bound) representation in this program is based on this paper.
         - To reproduce the results in this paper, use `--do-covering-random-range-truncation=true` option to truncate the random range in covering.
 
-- A. Wada, K. Takadama, K. Shimohara, O. Katai, "Analyzing Parameter Sensitivity and Classifier Representations for Real-Valued XCS, "Learning Classifier Systems. IWLCS 2003, IWLCS 2004, IWLCS 2005, Lecture Notes in Computer Science, vol 4399, pp 1-16, 2007. https://doi.org/10.1007/978-3-540-71231-2_1
+- A. Wada, K. Takadama, K. Shimohara, O. Katai, "Analyzing Parameter Sensitivity and Classifier Representations for Real-Valued XCS," Learning Classifier Systems. IWLCS 2003, IWLCS 2004, IWLCS 2005, Lecture Notes in Computer Science, vol 4399, pp 1-16, 2007. https://doi.org/10.1007/978-3-540-71231-2_1
     - The Ordered Bound Representation (LU representation) is rediscovered based on the representation in XCSI [Wilson, 2001].
     - The CS (Center-Spread) representation and the LU (Lower-Upper) representation in this program are based on this paper.
