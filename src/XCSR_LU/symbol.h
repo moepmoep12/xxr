@@ -4,6 +4,7 @@
 #include <sstream>
 #include <iomanip>
 #include <string>
+#include <limits>
 
 namespace XCSR_LU
 {
@@ -57,7 +58,7 @@ namespace XCSR_LU
         // DOES MATCH
         virtual bool matches(T value) const override
         {
-            return lower <= value && value < upper;
+            return lower - std::numeric_limits<double>::epsilon() <= value && value < upper + std::numeric_limits<double>::epsilon();
         }
 
         virtual void generalize() override
