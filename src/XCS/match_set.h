@@ -62,7 +62,20 @@ namespace XCS
                 // Generate classifiers covering the unselected actions
                 if (m_availableActions.size() - unselectedActions.size() < thetaMna)
                 {
-                    population.insert(generateCoveringClassifier(situation, unselectedActions, timeStamp));
+                    auto coveringClassifier = generateCoveringClassifier(situation, unselectedActions, timeStamp);
+                    if (!coveringClassifier->condition.matches(situation))
+                    {
+                        std::cerr <<
+                            "Error: The covering classifier does not contain the current situation!\n"
+                            "  - Current situation: ";
+                        for (auto && s : situation)
+                        {
+                            std::cerr << s << " ";
+                        }
+                        std::cerr << "\n  - Covering classifier: " << *coveringClassifier << "\n" << std::endl;
+                        assert(false);
+                    }
+                    population.insert(coveringClassifier);
                     population.deleteExtraClassifiers();
                     m_set.clear();
                 }
