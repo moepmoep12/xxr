@@ -31,6 +31,7 @@ int main(int argc, char *argv[])
         ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        //("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the real multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("chk", "Use the n-dimentional checkerboard problem", cxxopts::value<int>(), "N")
         ("chk-div", "The division in the checkerboard problem", cxxopts::value<int>(), "DIVISION")
@@ -182,6 +183,7 @@ int main(int argc, char *argv[])
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
+                "",//result["nsoutput"].as<std::string>(),
                 smaWidth,
                 environments,
                 environments);
@@ -198,6 +200,7 @@ int main(int argc, char *argv[])
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
+                "",//result["nsoutput"].as<std::string>(),
                 smaWidth,
                 environments,
                 environments);
@@ -214,6 +217,7 @@ int main(int argc, char *argv[])
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
+                "",//result["nsoutput"].as<std::string>(),
                 smaWidth,
                 environments,
                 environments);
@@ -283,6 +287,7 @@ int main(int argc, char *argv[])
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
+                "",//result["nsoutput"].as<std::string>(),
                 smaWidth,
                 explorationEnvironments,
                 exploitationEnvironments);
@@ -299,6 +304,7 @@ int main(int argc, char *argv[])
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
+                "",//result["nsoutput"].as<std::string>(),
                 smaWidth,
                 explorationEnvironments,
                 exploitationEnvironments);
@@ -315,6 +321,7 @@ int main(int argc, char *argv[])
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
+                "",//result["nsoutput"].as<std::string>(),
                 smaWidth,
                 explorationEnvironments,
                 exploitationEnvironments);

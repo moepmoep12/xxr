@@ -23,6 +23,7 @@ void run(
     const std::string & classifierLogFilename,
     const std::string & rewardLogFilename,
     const std::string & populationSizeLogFilename,
+    const std::string & stepCountLogFilename,
     std::size_t smaWidth,
     std::vector<std::unique_ptr<XCS::AbstractEnvironment<T, Action>>> & explorationEnvironments,
     std::vector<Environment> & exploitationEnvironments)
@@ -53,25 +54,38 @@ void run(
         populationSizeLogStream.open(populationSizeLogFilename);
     }
 
+    bool outputsStepCountLogFile = !stepCountLogFilename.empty();
+    std::ofstream stepCountLogStream;
+    if (outputsStepCountLogFile)
+    {
+        stepCountLogStream.open(stepCountLogFilename);
+    }
+
     for (std::size_t i = 0; i < iterationCount; ++i)
     {
         // Exploitation
         if (exploitationCount > 0)
         {
+            std::size_t totalStepCount = 0;
             double rewardSum = 0;
             for (std::size_t j = 0; j < seedCount; ++j)
             {
                 for (std::size_t k = 0; k < exploitationCount; ++k)
                 {
-                    // Get situation from environment
-                    auto situation = exploitationEnvironments[j]->situation();
+                    do
+                    {
+                        // Get situation from environment
+                        auto situation = exploitationEnvironments[j]->situation();
 
-                    // Choose action
-                    int action = experiments[j].exploit(exploitationEnvironments[j]->situation());
+                        // Choose action
+                        int action = experiments[j].exploit(exploitationEnvironments[j]->situation());
 
-                    // Get reward
-                    double reward = exploitationEnvironments[j]->executeAction(action);
-                    rewardSum += reward;
+                        // Get reward
+                        double reward = exploitationEnvironments[j]->executeAction(action);
+                        rewardSum += reward;
+
+                        ++totalStepCount;
+                    } while (!exploitationEnvironments[j]->isEndOfProblem());
                 }
             }
 
@@ -80,6 +94,12 @@ void run(
             if (i >= smaWidth - 1)
             {
                 rewardLogStream << rewardAverage << std::endl;
+            }
+
+            if (outputsStepCountLogFile)
+            {
+                double stepCountAverage = static_cast<double>(totalStepCount) / exploitationCount / seedCount;
+                stepCountLogStream << stepCountAverage << std::endl;
             }
 
             if (outputsPopulationSizeLogFile)

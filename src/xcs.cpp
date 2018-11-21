@@ -29,13 +29,14 @@ int main(int argc, char *argv[])
         ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
         ("blc-diag", "Allow diagonal actions in the block world problem", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
-        ("max-step", "The maximum step count in the multi-step problems", cxxopts::value<uint64_t>()->default_value("50"))
+        ("max-step", "The maximum number of steps in the multi-step problem", cxxopts::value<uint64_t>()->default_value("50"))
         ("i,iteration", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
         ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
@@ -145,6 +146,7 @@ int main(int argc, char *argv[])
             result["coutput"].as<std::string>(),
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
+            result["nsoutput"].as<std::string>(),
             smaWidth,
             environments,
             environments);
@@ -176,6 +178,7 @@ int main(int argc, char *argv[])
             result["coutput"].as<std::string>(),
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
+            result["nsoutput"].as<std::string>(),
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments);
@@ -238,6 +241,7 @@ int main(int argc, char *argv[])
             result["coutput"].as<std::string>(),
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
+            result["nsoutput"].as<std::string>(),
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments);
