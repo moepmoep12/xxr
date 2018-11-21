@@ -181,15 +181,13 @@ namespace XCS
                 m_isEndOfProblem = false;
                 reward = 0.0;
             }
-            
+
             if (++m_currentStep >= m_maxStep)
             {
                 setRandomEmptyPosition();
                 m_isEndOfProblem = true;
                 m_currentStep = 0;
             }
-
-            std::cout << *this;
 
             return reward;
         }
