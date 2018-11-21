@@ -11,6 +11,7 @@
 #include "common.h"
 #include "XCS/experiment.h"
 #include "environment/multiplexer_environment.h"
+#include "environment/block_world_environment.h"
 #include "environment/csv_environment.h"
 
 using namespace XCS;
@@ -29,9 +30,12 @@ int main(int argc, char *argv[])
         ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the multiplexer problem", cxxopts::value<int>(), "LENGTH")
+        ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
+        ("blc-diag", "Allow diagonal actions in the block world problem", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
+        ("max-step", "The maximum step count in the multi-step problems", cxxopts::value<uint64_t>()->default_value("50"))
         ("i,iteration", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
         ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
@@ -107,7 +111,7 @@ int main(int argc, char *argv[])
     if (result.count("do-action-mutation"))
         constants.doActionMutation = result["do-action-mutation"].as<bool>();
 
-    bool isEnvironmentSpecified = (result.count("mux") || result.count("csv"));
+    bool isEnvironmentSpecified = (result.count("mux") || result.count("blc") || result.count("csv"));
 
     // Show help
     if (result.count("help") || !isEnvironmentSpecified)
@@ -144,6 +148,37 @@ int main(int argc, char *argv[])
             smaWidth,
             environments,
             environments);
+
+        exit(0);
+    }
+
+    // Use block world problem
+    if (result.count("blc"))
+    {
+        std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> explorationEnvironments;
+        for (std::size_t i = 0; i < seedCount; ++i)
+        {
+            explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-diag")));
+        }
+        std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < seedCount; ++i)
+        {
+            exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-diag")));
+        }
+
+        run<Experiment<bool, int>>(
+            seedCount,
+            explorationEnvironments[0]->availableActions,
+            constants,
+            iterationCount,
+            explorationCount,
+            exploitationCount,
+            result["coutput"].as<std::string>(),
+            result["routput"].as<std::string>(),
+            result["noutput"].as<std::string>(),
+            smaWidth,
+            explorationEnvironments,
+            exploitationEnvironments);
 
         exit(0);
     }
