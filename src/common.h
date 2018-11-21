@@ -38,6 +38,7 @@ void run(
     }
 
     SimpleMovingAverage<double> sma(smaWidth);
+    SimpleMovingAverage<double> stepCountSMA(smaWidth);
 
     std::ofstream classifierLogFileStream;
     std::ostream & classifierLogStream = classifierLogFilename.empty() ? std::cout
@@ -99,7 +100,7 @@ void run(
             if (outputsStepCountLogFile)
             {
                 double stepCountAverage = static_cast<double>(totalStepCount) / exploitationCount / seedCount;
-                stepCountLogStream << stepCountAverage << std::endl;
+                stepCountLogStream << stepCountSMA(stepCountAverage) << std::endl;
             }
 
             if (outputsPopulationSizeLogFile)
