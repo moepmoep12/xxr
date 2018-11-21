@@ -175,7 +175,6 @@ int main(int argc, char *argv[])
         {
             run<XCSR_CS::Experiment<double, bool>>(
                 seedCount,
-                { false, true },
                 constants,
                 iterationCount,
                 explorationCount,
@@ -192,7 +191,6 @@ int main(int argc, char *argv[])
         {
             run<XCSR_LU::Experiment<double, bool>>(
                 seedCount,
-                { false, true },
                 constants,
                 iterationCount,
                 explorationCount,
@@ -209,7 +207,6 @@ int main(int argc, char *argv[])
         {
             run<XCSR_UB::Experiment<double, bool>>(
                 seedCount,
-                { false, true },
                 constants,
                 iterationCount,
                 explorationCount,
@@ -279,7 +276,6 @@ int main(int argc, char *argv[])
         {
             run<XCSR_CS::Experiment<double, int>>(
                 seedCount,
-                availableActions,
                 constants,
                 iterationCount,
                 explorationCount,
@@ -296,7 +292,6 @@ int main(int argc, char *argv[])
         {
             run<XCSR_LU::Experiment<double, int>>(
                 seedCount,
-                availableActions,
                 constants,
                 iterationCount,
                 explorationCount,
@@ -313,7 +308,6 @@ int main(int argc, char *argv[])
         {
             run<XCSR_UB::Experiment<double, int>>(
                 seedCount,
-                availableActions,
                 constants,
                 iterationCount,
                 explorationCount,

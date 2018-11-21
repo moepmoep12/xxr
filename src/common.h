@@ -15,7 +15,6 @@
 template <class Experiment, typename T, typename Action, class Constants, class Environment>
 void run(
     std::size_t seedCount,
-    const std::unordered_set<Action> & availableActions,
     const Constants & constants,
     std::size_t iterationCount,
     std::size_t explorationCount,
@@ -34,7 +33,7 @@ void run(
     std::vector<Experiment> experiments;
     for (std::size_t i = 0; i < seedCount; ++i)
     {
-        experiments.emplace_back(availableActions, constants);
+        experiments.emplace_back(explorationEnvironments[i]->availableActions, constants);
     }
 
     SimpleMovingAverage<double> sma(smaWidth);

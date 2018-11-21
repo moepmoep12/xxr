@@ -138,7 +138,6 @@ int main(int argc, char *argv[])
 
         run<Experiment<bool, bool>>(
             seedCount,
-            { false, true },
             constants,
             iterationCount,
             explorationCount,
@@ -170,7 +169,6 @@ int main(int argc, char *argv[])
 
         run<Experiment<bool, int>>(
             seedCount,
-            explorationEnvironments[0]->availableActions,
             constants,
             iterationCount,
             explorationCount,
@@ -233,7 +231,6 @@ int main(int argc, char *argv[])
 
         run<Experiment<int, int>>(
             seedCount,
-            availableActions,
             constants,
             iterationCount,
             explorationCount,
