@@ -32,6 +32,7 @@ int main(int argc, char *argv[])
         ("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
+        ("blc-3bit", "Use 3-bit representation for each block in a situation", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("blc-diag", "Allow diagonal actions in the block world problem", cxxopts::value<bool>()->default_value("true"), "true/false")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
@@ -159,12 +160,12 @@ int main(int argc, char *argv[])
         std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-diag")));
+            explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-3bit"), result.count("blc-diag")));
         }
         std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-diag")));
+            exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-3bit"), result.count("blc-diag")));
         }
 
         run<Experiment<bool, int>>(

@@ -23,6 +23,7 @@ namespace XCS
         int m_currentY;
         std::size_t m_maxStep;
         std::size_t m_currentStep;
+        bool m_threeBitMode;
         bool m_isEndOfProblem;
 
         static constexpr int s_xDiffs[] = {  0, +1, +1, +1,  0, -1, -1, -1 };
@@ -40,36 +41,66 @@ namespace XCS
             UP_LEFT
         };
 
-        enum BlockType
+        bool isEmpty(int x, int y) const
         {
-            EMPTY = 0,
-            TREE,
-            FOOD
-        };
-
-        static BlockType charToBlock(unsigned char c)
-        {
-            switch(c)
+            switch(getBlock(x, y))
             {
             case 'T':
-                return TREE;
+            case 'O':
+            case 'Q':
             case 'F':
-                return FOOD;
+            case 'G':
+                return false;
             default:
-                return EMPTY;
+                return true;
             }
         }
 
-        static std::vector<bool> blockToBits(BlockType block)
+        bool isFood(int x, int y) const
         {
-            switch(block)
+            switch(getBlock(x, y))
             {
-            case TREE:
-                return { 0, 1 }; // Tree (Obstacle)
-            case FOOD:
-                return { 1, 1 }; // Food
+            case 'F':
+            case 'G':
+                return true;
             default:
-                return { 0, 0 }; // Empty
+                return false;
+            }
+        }
+
+        std::vector<bool> charToBits(unsigned char block) const
+        {
+            if (m_threeBitMode)
+            {
+                switch(block)
+                {
+                case 'T':
+                case 'O':
+                    return { 0, 1, 0 }; // O-obstacle
+                case 'Q':
+                    return { 0, 1, 1 }; // Q-obstacle
+                case 'F':
+                    return { 1, 1, 0 }; // Food-F
+                case 'G':
+                    return { 1, 1, 1 }; // Food-G
+                default:
+                    return { 0, 0, 0 }; // Empty
+                }
+            }
+            else
+            {
+                switch(block)
+                {
+                case 'T':
+                case 'O':
+                case 'Q':
+                    return { 0, 1 }; // Tree (Obstacle)
+                case 'F':
+                case 'G':
+                    return { 1, 1 }; // Food
+                default:
+                    return { 0, 0 }; // Empty
+                }
             }
         }
 
@@ -80,21 +111,21 @@ namespace XCS
             m_currentY = randomPosition.second;
         }
 
-        virtual BlockType getBlock(int x, int y) const
+        virtual unsigned char getBlock(int x, int y) const
         {
             if (x < 0 || y < 0 || x >= static_cast<int>(m_worldWidth) || y >= static_cast<int>(m_worldHeight))
             {
-                return TREE;
+                return 'T';
             }
             else
             {
-                return charToBlock(m_worldMap[y][x]);
+                return m_worldMap[y][x];
             }
         }
 
     public:
         // Constructor
-        explicit BlockWorldEnvironment(const std::string & mapFilename, std::size_t maxStep, bool allowDiagonalAction) :
+        BlockWorldEnvironment(const std::string & mapFilename, std::size_t maxStep, bool threeBitMode, bool allowDiagonalAction) :
             AbstractEnvironment<bool, int>(
                 allowDiagonalAction
                     ? std::unordered_set<int>{ UP, UP_RIGHT, RIGHT, DOWN_RIGHT, DOWN, DOWN_LEFT, LEFT, UP_LEFT }
@@ -104,6 +135,7 @@ namespace XCS
             m_worldHeight(0),
             m_maxStep(maxStep),
             m_currentStep(0),
+            m_threeBitMode(threeBitMode),
             m_isEndOfProblem(false)
         {
             std::ifstream ifs(mapFilename);
@@ -128,7 +160,7 @@ namespace XCS
             {
                 for (std::size_t x = 0; x < m_worldWidth; ++x)
                 {
-                    if (getBlock(x, y) == EMPTY)
+                    if (isEmpty(x, y))
                     {
                         m_emptyPositions.emplace_back(x, y);
                     }
@@ -146,7 +178,7 @@ namespace XCS
             for (std::size_t i = 0; i < sizeof(s_xDiffs) / sizeof(int); ++i)
             {
                 auto block = getBlock(m_currentX + s_xDiffs[i], m_currentY + s_yDiffs[i]);
-                for (auto && bit : blockToBits(block))
+                for (auto && bit : charToBits(block))
                 {
                     situation.push_back(bit);
                 }
@@ -163,13 +195,13 @@ namespace XCS
 
             double reward;
 
-            if (getBlock(x, y) == FOOD)
+            if (isFood(x, y))
             {
                 setRandomEmptyPosition();
                 m_isEndOfProblem = true;
                 reward = 1000.0;
             }
-            else if (getBlock(x, y) == EMPTY)
+            else if (isEmpty(x, y))
             {
                 m_currentX = x;
                 m_currentY = y;
@@ -204,13 +236,9 @@ namespace XCS
             {
                 for (std::size_t x = 0; x < m_worldWidth; ++x)
                 {
-                    auto block = getBlock(x, y);
-                    str +=
-                        (block == TREE) ? 'T' :
-                        (block == FOOD) ? 'F' :
-                        (static_cast<int>(x) == m_currentX && static_cast<int>(y) == m_currentY) ? 'A' : '.';
+                    str += (static_cast<int>(x) == m_currentX && static_cast<int>(y) == m_currentY) ? '*' : getBlock(x, y);
                 }
-                str += "\n";
+                str += '\n';
             }
             return str;
         }
