@@ -19,6 +19,7 @@ std::unique_ptr<Experiment> run(
     std::size_t iterationCount,
     std::size_t explorationCount,
     std::size_t exploitationCount,
+    bool updateInExploitation,
     const std::string & classifierLogFilename,
     const std::string & rewardLogFilename,
     const std::string & populationSizeLogFilename,
@@ -78,10 +79,14 @@ std::unique_ptr<Experiment> run(
                         auto situation = exploitationEnvironments[j]->situation();
 
                         // Choose action
-                        int action = experiments[j]->exploit(exploitationEnvironments[j]->situation());
+                        int action = experiments[j]->exploit(exploitationEnvironments[j]->situation(), updateInExploitation);
 
                         // Get reward
                         double reward = exploitationEnvironments[j]->executeAction(action);
+                        if (updateInExploitation)
+                        {
+                            experiments[j]->reward(reward, explorationEnvironments[j]->isEndOfProblem());
+                        }
                         rewardSum += reward;
 
                         ++totalStepCount;

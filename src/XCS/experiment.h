@@ -70,6 +70,7 @@ namespace XCS
 
         bool m_expectsReward;
         double m_prevReward;
+        bool m_isPrevModeExplore;
 
         std::vector<T> m_prevSituation;
 
@@ -86,6 +87,7 @@ namespace XCS
             m_timeStamp(0),
             m_expectsReward(false),
             m_prevReward(0.0),
+            m_isPrevModeExplore(false),
             m_constants(constants)
         {
         }
@@ -107,6 +109,7 @@ namespace XCS
             m_actionSet.regenerate(m_matchSet, action);
 
             m_expectsReward = true;
+            m_isPrevModeExplore = true;
 
             if (!m_prevActionSet.empty())
             {
@@ -127,7 +130,10 @@ namespace XCS
             if (isEndOfProblem)
             {
                 m_actionSet.update(value, m_population);
-                m_actionSet.runGA(m_prevSituation, m_population, m_timeStamp);
+                if (m_isPrevModeExplore) // Do not perform GA operations in exploitation
+                {
+                    m_actionSet.runGA(m_prevSituation, m_population, m_timeStamp);
+                }
                 m_prevActionSet.clear();
             }
             else
@@ -135,7 +141,11 @@ namespace XCS
                 m_actionSet.copyTo(m_prevActionSet);
                 m_prevReward = value;
             }
-            ++m_timeStamp;
+
+            if (m_isPrevModeExplore) // Do not increment actual time in exploitation
+            {
+                ++m_timeStamp;
+            }
 
             m_expectsReward = false;
         }
@@ -143,7 +153,7 @@ namespace XCS
         // Run without exploration
         virtual Action exploit(const std::vector<T> & situation) const
         {
-            // Create new match set as sandbox
+            // Create new match set as sandbox (because of const member function)
             MatchSet matchSet(m_constants, m_availableActions);
             for (auto && cl : m_population)
             {
@@ -155,12 +165,49 @@ namespace XCS
 
             if (!matchSet.empty())
             {
-                auto predictionArray = GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>(matchSet);
+                GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet> predictionArray(matchSet);
                 return predictionArray.selectAction();
             }
             else
             {
                 return Random::chooseFrom(m_availableActions);
+            }
+        }
+
+        // Run without exploration (for testing multi-step problems)
+        // (Make sure to call reward() after this if update is true)
+        virtual Action exploit(const std::vector<T> & situation, bool update)
+        {
+            if (update)
+            {
+                assert(!m_expectsReward);
+
+                m_matchSet.regenerate(m_population, situation, m_timeStamp);
+
+                GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet> predictionArray(m_matchSet);
+
+                Action action = predictionArray.selectAction();
+
+                m_actionSet.regenerate(m_matchSet, action);
+
+                m_expectsReward = true;
+                m_isPrevModeExplore = false;
+
+                if (!m_prevActionSet.empty())
+                {
+                    double p = m_prevReward + m_constants.gamma * predictionArray.max();
+                    m_prevActionSet.update(p, m_population);
+
+                    // Do not perform GA operations in exploitation
+                }
+
+                m_prevSituation = situation;
+
+                return action;
+            }
+            else
+            {
+                return exploit(situation);
             }
         }
 

@@ -41,7 +41,8 @@ int main(int argc, char *argv[])
         ("i,iteration", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
         ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
-        ("exploit", "The exploitation count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("exploit", "The exploitation (= test mode) count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("exploit-upd", "Whether to update classifier parameters in test mode (\"auto\": false for single-step & true for multi-step)", cxxopts::value<std::string>()->default_value("auto"), "auto/true/false")
         ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
         ("repr", "The XCSR classifier representation (Center-Spread: \"cs\" / Lower-Upper [Ordered Bound]: \"lu\" / Unordered Bound: \"ub\")", cxxopts::value<std::string>()->default_value("cs"), "cs/lu/ub")
@@ -134,6 +135,26 @@ int main(int argc, char *argv[])
 
     bool isEnvironmentSpecified = (result.count("mux") || result.count("csv") || result.count("chk"));
 
+    // Determine whether to update classifier parameters in exploitation
+    bool updateInExploitation;
+    if (result["exploit-upd"].as<std::string>() == "true")
+    {
+        updateInExploitation = true;
+    }
+    else if (result["exploit-upd"].as<std::string>() == "false")
+    {
+        updateInExploitation = false;
+    }
+    else if (result["exploit-upd"].as<std::string>() == "auto")
+    {
+        updateInExploitation = false /* No multi-step problems for now */;
+    }
+    else
+    {
+        std::cerr << "Error: Unknown value for --exploit-upd (" << result["exploit-upd"].as<std::string>() << ")" << std::endl;
+        exit(0);
+    }
+
     // Show help
     if (result.count("help") || !isEnvironmentSpecified)
     {
@@ -179,6 +200,7 @@ int main(int argc, char *argv[])
                 iterationCount,
                 explorationCount,
                 exploitationCount,
+                updateInExploitation,
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
@@ -195,6 +217,7 @@ int main(int argc, char *argv[])
                 iterationCount,
                 explorationCount,
                 exploitationCount,
+                updateInExploitation,
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
@@ -211,6 +234,7 @@ int main(int argc, char *argv[])
                 iterationCount,
                 explorationCount,
                 exploitationCount,
+                updateInExploitation,
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
@@ -280,6 +304,7 @@ int main(int argc, char *argv[])
                 iterationCount,
                 explorationCount,
                 exploitationCount,
+                updateInExploitation,
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
@@ -296,6 +321,7 @@ int main(int argc, char *argv[])
                 iterationCount,
                 explorationCount,
                 exploitationCount,
+                updateInExploitation,
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
@@ -312,6 +338,7 @@ int main(int argc, char *argv[])
                 iterationCount,
                 explorationCount,
                 exploitationCount,
+                updateInExploitation,
                 result["coutput"].as<std::string>(),
                 result["routput"].as<std::string>(),
                 result["noutput"].as<std::string>(),
