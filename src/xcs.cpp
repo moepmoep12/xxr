@@ -35,6 +35,7 @@ int main(int argc, char *argv[])
         ("blc-3bit", "Use 3-bit representation for each block in a situation", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("blc-diag", "Allow diagonal actions in the block world problem", cxxopts::value<bool>()->default_value("true"), "true/false")
         ("blc-output", "Output the result of the desired action for blocks in the block world problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("blc-output-uni", "Use UTF-8 square & arrow characters for --blc-output", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
@@ -189,6 +190,8 @@ int main(int argc, char *argv[])
         {
             std::ofstream ofs(result["blc-output"].as<std::string>());
 
+            bool useUnicode = result["blc-output-uni"].as<bool>();
+
             for (std::size_t y = 0; y < environment->worldHeight(); ++y)
             {
                 for (std::size_t x = 0; x < environment->worldWidth(); ++x)
@@ -197,12 +200,80 @@ int main(int argc, char *argv[])
                     {
                         // Output the selected action
                         auto situation = environment->situation(x, y);
-                        ofs << experiment->exploit(situation);
+                        int action = experiment->exploit(situation);
+                        if (useUnicode)
+                        {
+                            switch (action)
+                            {
+                            case 0:
+                                ofs << u8"↑";
+                                break;
+
+                            case 1:
+                                ofs << u8"↗";
+                                break;
+
+                            case 2:
+                                ofs << u8"→";
+                                break;
+
+                            case 3:
+                                ofs << u8"↘";
+                                break;
+
+                            case 4:
+                                ofs << u8"↓";
+                                break;
+
+                            case 5:
+                                ofs << u8"↙";
+                                break;
+
+                            case 6:
+                                ofs << u8"←";
+                                break;
+
+                            case 7:
+                                ofs << u8"↖";
+                                break;
+
+                            default:
+                                ofs << u8"？";
+                            }
+                        }
+                        else
+                        {
+                            ofs << action;
+                        }
                     }
                     else
                     {
                         // Obstacle or Food
-                        ofs << environment->getBlock(x, y);
+                        unsigned char c = environment->getBlock(x, y);
+                        if (useUnicode)
+                        {
+                            switch (c)
+                            {
+                            case 'Q':
+                                ofs << u8"◆";
+                                break;
+
+                            case 'F':
+                                ofs << u8"Ｆ";
+                                break;
+
+                            case 'G':
+                                ofs << u8"Ｇ";
+                                break;
+
+                            default:
+                                ofs << u8"■";
+                            }
+                        }
+                        else
+                        {
+                            ofs << c;
+                        }
                     }
                 }
                 ofs << std::endl;
