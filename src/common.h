@@ -90,16 +90,16 @@ std::unique_ptr<Experiment> run(
             }
 
             double rewardAverage = sma(rewardSum / exploitationCount / seedCount);
+            double stepCountAverage = stepCountSMA(static_cast<double>(totalStepCount) / exploitationCount / seedCount);
 
             if (i >= smaWidth - 1)
             {
                 rewardLogStream << rewardAverage << std::endl;
-            }
 
-            if (outputsStepCountLogFile)
-            {
-                double stepCountAverage = static_cast<double>(totalStepCount) / exploitationCount / seedCount;
-                stepCountLogStream << stepCountSMA(stepCountAverage) << std::endl;
+                if (outputsStepCountLogFile)
+                {
+                    stepCountLogStream << stepCountAverage << std::endl;
+                }
             }
 
             if (outputsPopulationSizeLogFile)
