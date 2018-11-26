@@ -118,15 +118,18 @@ void run(
         {
             for (std::size_t k = 0; k < explorationCount; ++k)
             {
-                // Get situation from environment
-                auto situation = explorationEnvironments[j]->situation();
+                do
+                {
+                    // Get situation from environment
+                    auto situation = explorationEnvironments[j]->situation();
 
-                // Choose action
-                int action = experiments[j].explore(situation);
+                    // Choose action
+                    int action = experiments[j].explore(situation);
 
-                // Get reward
-                double reward = explorationEnvironments[j]->executeAction(action);
-                experiments[j].reward(reward);
+                    // Get reward
+                    double reward = explorationEnvironments[j]->executeAction(action);
+                    experiments[j].reward(reward, explorationEnvironments[j]->isEndOfProblem());
+                } while (!explorationEnvironments[j]->isEndOfProblem());
             }
         }
     }

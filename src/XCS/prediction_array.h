@@ -44,7 +44,7 @@ namespace XCS
                 fsa[cl->action] += cl->fitness;
             }
 
-            m_maxPA = std::numeric_limits<double>::lowest();
+            m_maxPA = -DBL_EPSILON;
 
             for (auto && pair : m_pa)
             {
@@ -72,7 +72,7 @@ namespace XCS
 
         virtual double max() const
         {
-            assert(m_maxPA == std::numeric_limits<double>::lowest());
+            assert(m_maxPA != -DBL_EPSILON);
             return m_maxPA;
         }
 
