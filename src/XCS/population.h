@@ -20,7 +20,7 @@ namespace XCS
             double vote = cl.actionSetSize * cl.numerosity;
 
             // Consider fitness for deletion vote
-            if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < averageFitness))
+            if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < m_constants.delta * averageFitness))
             {
                 vote *= averageFitness / (cl.fitness / cl.numerosity);
             }
