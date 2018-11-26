@@ -160,12 +160,12 @@ int main(int argc, char *argv[])
         std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-3bit"), result.count("blc-diag")));
+            explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
         std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result.count("blc-3bit"), result.count("blc-diag")));
+            exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
 
         run<Experiment<bool, int>>(
