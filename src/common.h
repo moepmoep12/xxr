@@ -13,7 +13,7 @@
 #include "util/simple_moving_average.h"
 
 template <class Experiment, typename T, typename Action, class Constants, class Environment>
-void run(
+std::unique_ptr<Experiment> run(
     std::size_t seedCount,
     const Constants & constants,
     std::size_t iterationCount,
@@ -30,10 +30,10 @@ void run(
     assert(explorationEnvironments.size() == seedCount);
     assert(exploitationEnvironments.size() == seedCount);
 
-    std::vector<Experiment> experiments;
+    std::vector<std::unique_ptr<Experiment>> experiments;
     for (std::size_t i = 0; i < seedCount; ++i)
     {
-        experiments.emplace_back(explorationEnvironments[i]->availableActions, constants);
+        experiments.push_back(std::make_unique<Experiment>(explorationEnvironments[i]->availableActions, constants));
     }
 
     SimpleMovingAverage<double> sma(smaWidth);
@@ -78,7 +78,7 @@ void run(
                         auto situation = exploitationEnvironments[j]->situation();
 
                         // Choose action
-                        int action = experiments[j].exploit(exploitationEnvironments[j]->situation());
+                        int action = experiments[j]->exploit(exploitationEnvironments[j]->situation());
 
                         // Get reward
                         double reward = exploitationEnvironments[j]->executeAction(action);
@@ -107,7 +107,7 @@ void run(
                 std::size_t populationSizeSum = 0;
                 for (std::size_t j = 0; j < seedCount; ++j)
                 {
-                    populationSizeSum += experiments[j].populationSize();
+                    populationSizeSum += experiments[j]->populationSize();
                 }
                 populationSizeLogStream << (populationSizeSum / seedCount) << std::endl;
             }
@@ -124,11 +124,11 @@ void run(
                     auto situation = explorationEnvironments[j]->situation();
 
                     // Choose action
-                    int action = experiments[j].explore(situation);
+                    int action = experiments[j]->explore(situation);
 
                     // Get reward
                     double reward = explorationEnvironments[j]->executeAction(action);
-                    experiments[j].reward(reward, explorationEnvironments[j]->isEndOfProblem());
+                    experiments[j]->reward(reward, explorationEnvironments[j]->isEndOfProblem());
                 } while (!explorationEnvironments[j]->isEndOfProblem());
             }
         }
@@ -139,5 +139,7 @@ void run(
         std::cout << std::endl;
     }
 
-    classifierLogStream << experiments[0].dumpPopulation() << std::endl;
+    classifierLogStream << experiments[0]->dumpPopulation() << std::endl;
+
+    return std::move(experiments[0]);
 }

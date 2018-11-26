@@ -41,33 +41,6 @@ namespace XCS
             UP_LEFT
         };
 
-        bool isEmpty(int x, int y) const
-        {
-            switch(getBlock(x, y))
-            {
-            case 'T':
-            case 'O':
-            case 'Q':
-            case 'F':
-            case 'G':
-                return false;
-            default:
-                return true;
-            }
-        }
-
-        bool isFood(int x, int y) const
-        {
-            switch(getBlock(x, y))
-            {
-            case 'F':
-            case 'G':
-                return true;
-            default:
-                return false;
-            }
-        }
-
         std::vector<bool> charToBits(unsigned char block) const
         {
             if (m_threeBitMode)
@@ -109,18 +82,6 @@ namespace XCS
             auto randomPosition = Random::chooseFrom(m_emptyPositions);
             m_currentX = randomPosition.first;
             m_currentY = randomPosition.second;
-        }
-
-        virtual unsigned char getBlock(int x, int y) const
-        {
-            if (x < 0 || y < 0 || x >= static_cast<int>(m_worldWidth) || y >= static_cast<int>(m_worldHeight))
-            {
-                return 'T';
-            }
-            else
-            {
-                return m_worldMap[y][x];
-            }
         }
 
     public:
@@ -172,18 +133,85 @@ namespace XCS
 
         ~BlockWorldEnvironment() = default;
 
-        virtual std::vector<bool> situation() const override
+        virtual std::size_t worldWidth() const
+        {
+            return m_worldWidth;
+        }
+
+        virtual std::size_t worldHeight() const
+        {
+            return m_worldHeight;
+        }
+
+        virtual unsigned char getBlock(int x, int y) const
+        {
+            if (x < 0 || y < 0 || x >= static_cast<int>(m_worldWidth) || y >= static_cast<int>(m_worldHeight))
+            {
+                return 'T';
+            }
+            else
+            {
+                return m_worldMap[y][x];
+            }
+        }
+
+        bool isEmpty(int x, int y) const
+        {
+            switch(getBlock(x, y))
+            {
+            case 'T':
+            case 'O':
+            case 'Q':
+            case 'F':
+            case 'G':
+                return false;
+            default:
+                return true;
+            }
+        }
+
+        bool isFood(int x, int y) const
+        {
+            switch(getBlock(x, y))
+            {
+            case 'F':
+            case 'G':
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        bool isObstacle(int x, int y) const
+        {
+            switch(getBlock(x, y))
+            {
+            case 'T':
+            case 'O':
+            case 'Q':
+                return true;
+            default:
+                return false;
+            }
+        }
+
+        virtual std::vector<bool> situation(int x, int y) const
         {
             std::vector<bool> situation;
             for (std::size_t i = 0; i < sizeof(s_xDiffs) / sizeof(int); ++i)
             {
-                auto block = getBlock(m_currentX + s_xDiffs[i], m_currentY + s_yDiffs[i]);
+                auto block = getBlock(x + s_xDiffs[i], y + s_yDiffs[i]);
                 for (auto && bit : charToBits(block))
                 {
                     situation.push_back(bit);
                 }
             }
             return situation;
+        }
+
+        virtual std::vector<bool> situation() const override
+        {
+            return situation(m_currentX, m_currentY);
         }
 
         virtual double executeAction(int action) override

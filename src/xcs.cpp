@@ -34,6 +34,7 @@ int main(int argc, char *argv[])
         ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
         ("blc-3bit", "Use 3-bit representation for each block in a situation", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("blc-diag", "Allow diagonal actions in the block world problem", cxxopts::value<bool>()->default_value("true"), "true/false")
+        ("blc-output", "Output the result of the desired action for blocks in the block world problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
@@ -168,7 +169,7 @@ int main(int argc, char *argv[])
             exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
 
-        run<Experiment<bool, int>>(
+        auto experiment = run<Experiment<bool, int>>(
             seedCount,
             constants,
             iterationCount,
@@ -181,6 +182,32 @@ int main(int argc, char *argv[])
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments);
+
+        std::unique_ptr<BlockWorldEnvironment> environment(dynamic_cast<BlockWorldEnvironment *>(explorationEnvironments[0].release()));
+
+        if (!result["blc-output"].as<std::string>().empty())
+        {
+            std::ofstream ofs(result["blc-output"].as<std::string>());
+
+            for (std::size_t y = 0; y < environment->worldHeight(); ++y)
+            {
+                for (std::size_t x = 0; x < environment->worldWidth(); ++x)
+                {
+                    if (environment->isEmpty(x, y))
+                    {
+                        // Output the selected action
+                        auto situation = environment->situation(x, y);
+                        ofs << experiment->exploit(situation);
+                    }
+                    else
+                    {
+                        // Obstacle or Food
+                        ofs << environment->getBlock(x, y);
+                    }
+                }
+                ofs << std::endl;
+            }
+        }
 
         exit(0);
     }
