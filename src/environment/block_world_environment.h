@@ -29,10 +29,15 @@ namespace XCS
         int m_currentY;
 
         // Current position before random initialization
-        int m_lastX; 
+        int m_lastX;
         int m_lastY;
 
+        // Position of the last random initialization before the current step
+        int m_lastInitialX;
+        int m_lastInitialY;
+
         std::size_t m_maxStep;
+        std::size_t m_lastStep;
         std::size_t m_currentStep;
         bool m_threeBitMode;
         bool m_isEndOfProblem;
@@ -110,6 +115,7 @@ namespace XCS
             m_worldWidth(0),
             m_worldHeight(0),
             m_maxStep(maxStep),
+            m_lastStep(0),
             m_currentStep(0),
             m_threeBitMode(threeBitMode),
             m_isEndOfProblem(false)
@@ -146,6 +152,8 @@ namespace XCS
             setRandomEmptyPosition();
             m_lastX = m_currentX;
             m_lastY = m_currentY;
+            m_lastInitialX = m_initialX;
+            m_lastInitialY = m_initialY;
         }
 
         ~BlockWorldEnvironment() = default;
@@ -180,7 +188,7 @@ namespace XCS
             return m_currentY;
         }
 
-        virtual int currentStep() const
+        virtual std::size_t currentStep() const
         {
             return m_currentStep;
         }
@@ -193,6 +201,21 @@ namespace XCS
         virtual int lastY() const
         {
             return m_lastY;
+        }
+
+        virtual std::size_t lastStep() const
+        {
+            return m_lastStep;
+        }
+
+        virtual int lastInitialX() const
+        {
+            return m_lastInitialX;
+        }
+
+        virtual int lastInitialY() const
+        {
+            return m_lastInitialY;
         }
 
         virtual unsigned char getBlock(int x, int y) const
@@ -265,6 +288,9 @@ namespace XCS
         {
             assert(action >= 0 && action < 8);
 
+            m_lastInitialX = m_initialX;
+            m_lastInitialY = m_initialY;
+
             // The coordinates after performing the action
             int x = (m_currentX + s_xDiffs[action] + m_worldWidth) % static_cast<int>(m_worldWidth);
             int y = (m_currentY + s_yDiffs[action] + m_worldHeight) % static_cast<int>(m_worldHeight);
@@ -276,6 +302,7 @@ namespace XCS
                 m_lastY = y;
                 setRandomEmptyPosition();
                 m_isEndOfProblem = true;
+                m_lastStep = m_currentStep + 1;
                 m_currentStep = 0;
                 reward = 1000.0;
             }
@@ -290,15 +317,21 @@ namespace XCS
             }
             else
             {
+                m_lastX = m_currentX;
+                m_lastY = m_currentY;
                 m_isEndOfProblem = false;
                 reward = 0.0;
             }
 
-            if (!m_isEndOfProblem && ++m_currentStep >= m_maxStep)
+            if (!m_isEndOfProblem)
             {
-                setRandomEmptyPosition();
-                m_isEndOfProblem = true;
-                m_currentStep = 0;
+                m_lastStep = ++m_currentStep;
+                if (m_currentStep >= m_maxStep)
+                {
+                    setRandomEmptyPosition();
+                    m_isEndOfProblem = true;
+                    m_currentStep = 0;
+                }
             }
 
             return reward;

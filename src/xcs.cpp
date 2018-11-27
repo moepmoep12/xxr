@@ -203,9 +203,9 @@ int main(int argc, char *argv[])
         std::function<void(BlockWorldEnvironment &)> explorationCallback = [&](BlockWorldEnvironment & env) {
             if (outputTraceLog)
             {
-                if (env.currentStep() <= 1)
+                if (env.lastStep() <= 1)
                 {
-                    traceLogStream << "(" << env.initialX() << "," << env.initialY() << ")";
+                    traceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
                 }
                 traceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
                 if (env.isEndOfProblem())
@@ -217,9 +217,9 @@ int main(int argc, char *argv[])
         std::function<void(BlockWorldEnvironment &)> exploitationCallback = [&](BlockWorldEnvironment & env) {
             if (outputTraceLog)
             {
-                if (env.currentStep() <= 1)
+                if (env.lastStep() <= 1)
                 {
-                    traceLogStream << "(" << env.initialX() << "," << env.initialY() << ")";
+                    traceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
                 }
                 traceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
                 if (env.isEndOfProblem())
