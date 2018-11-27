@@ -271,7 +271,7 @@ namespace XCS
         {
             assert(action >= 0 && action < 8);
 
-            // The coodinates after performing the action
+            // The coordinates after performing the action
             int x = (m_currentX + s_xDiffs[action] + m_worldWidth) % m_worldWidth;
             int y = (m_currentY + s_yDiffs[action] + m_worldHeight) % m_worldHeight;
 

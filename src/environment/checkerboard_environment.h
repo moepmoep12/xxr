@@ -86,7 +86,7 @@ namespace XCSR
                 // Restrict the range to [0.0, 1.0)
                 double value = std::min(std::max(situation.at(i), 0.0), 1.0 - std::numeric_limits<double>::epsilon());
 
-                // Calculate the sum of the coodinate values in the grid
+                // Calculate the sum of the coordinate values in the grid
                 sum += static_cast<std::size_t>(value * m_division);
             }
 
