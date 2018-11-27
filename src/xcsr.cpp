@@ -259,6 +259,34 @@ int main(int argc, char *argv[])
         std::cout << options.help({"", "Group"}) << std::endl;
         exit(0);
     }
+    else
+    {
+        // Output parameters
+        std::cout << "[ XCSR General Parameters ]" << std::endl;
+        std::cout << "               N = " << constants.maxPopulationClassifierCount << std::endl;
+        std::cout << "            beta = " << constants.learningRate << std::endl;
+        std::cout << "           alpha = " << constants.alpha << std::endl;
+        std::cout << "       epsilon_0 = " << constants.predictionErrorThreshold << std::endl;
+        std::cout << "              nu = " << constants.nu << std::endl;
+        std::cout << "           alpha = " << constants.alpha << std::endl;
+        std::cout << "           gamma = " << constants.gamma << std::endl;
+        std::cout << "        theta_GA = " << constants.thetaGA << std::endl;
+        std::cout << "             chi = " << constants.crossoverProbability << std::endl;
+        std::cout << "              mu = " << constants.mutationProbability << std::endl;
+        std::cout << "       theta_del = " << constants.thetaDel << std::endl;
+        std::cout << "           delta = " << constants.delta << std::endl;
+        std::cout << "       theta_sub = " << constants.thetaSub << std::endl;
+        std::cout << "             s_0 = " << constants.coveringMaxSpread << std::endl;
+        std::cout << "               m = " << constants.mutationMaxChange << std::endl;
+        std::cout << "             p_I = " << constants.initialPrediction << std::endl;
+        std::cout << "       epsilon_I = " << constants.initialPredictionError << std::endl;
+        std::cout << "             F_I = " << constants.initialFitness << std::endl;
+        std::cout << "         p_explr = " << constants.exploreProbability << std::endl;
+        if (constants.thetaMna != 0) std::cout << "       theta_mna = " << constants.thetaMna << std::endl;
+        std::cout << " doGASubsumption = " << (constants.doGASubsumption ? "true" : "false") << std::endl;
+        std::cout << " doASSubsumption = " << (constants.doActionSetSubsumption ? "true" : "false") << std::endl;
+        std::cout << std::endl;
+    }
 
     uint64_t iterationCount = result["iteration"].as<uint64_t>();
     uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
