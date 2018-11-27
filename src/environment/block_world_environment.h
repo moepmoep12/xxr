@@ -197,15 +197,9 @@ namespace XCS
 
         virtual unsigned char getBlock(int x, int y) const
         {
-            while (x < 0)
-            {
-                x += m_worldWidth;
-            }
-            while (y < 0)
-            {
-                y += m_worldHeight;
-            }
-            return m_worldMap[y % m_worldHeight][x % m_worldWidth];
+            x = (x + m_worldWidth) % static_cast<int>(m_worldWidth);
+            y = (y + m_worldHeight) % static_cast<int>(m_worldHeight);
+            return m_worldMap[y][x];
         }
 
         bool isEmpty(int x, int y) const
@@ -272,8 +266,8 @@ namespace XCS
             assert(action >= 0 && action < 8);
 
             // The coordinates after performing the action
-            int x = (m_currentX + s_xDiffs[action] + m_worldWidth) % m_worldWidth;
-            int y = (m_currentY + s_yDiffs[action] + m_worldHeight) % m_worldHeight;
+            int x = (m_currentX + s_xDiffs[action] + m_worldWidth) % static_cast<int>(m_worldWidth);
+            int y = (m_currentY + s_yDiffs[action] + m_worldHeight) % static_cast<int>(m_worldHeight);
 
             double reward;
             if (isFood(x, y))
