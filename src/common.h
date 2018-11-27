@@ -88,7 +88,7 @@ std::unique_ptr<Experiment> run(
                         double reward = exploitationEnvironments[j]->executeAction(action);
                         if (updateInExploitation)
                         {
-                            experiments[j]->reward(reward, explorationEnvironments[j]->isEndOfProblem());
+                            experiments[j]->reward(reward, exploitationEnvironments[j]->isEndOfProblem());
                         }
                         rewardSum += reward;
 
