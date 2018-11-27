@@ -285,12 +285,12 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        std::vector<std::unique_ptr<XCS::AbstractEnvironment<double, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<XCS::CSVEnvironment<double, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(filename, availableActions, result["csv-random"].as<bool>()));
         }
-        std::vector<std::unique_ptr<XCS::AbstractEnvironment<double, int>>> exploitationEnvironments;
+        std::vector<std::unique_ptr<XCS::CSVEnvironment<double, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             exploitationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(evaluationCsvFilename, availableActions, result["csv-random"].as<bool>()));

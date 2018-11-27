@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
     // Use multiplexer problem
     if (result.count("mux"))
     {
-        std::vector<std::unique_ptr<AbstractEnvironment<bool, bool>>> environments;
+        std::vector<std::unique_ptr<MultiplexerEnvironment>> environments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             environments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
@@ -181,12 +181,12 @@ int main(int argc, char *argv[])
     // Use block world problem
     if (result.count("blc"))
     {
-        std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<BlockWorldEnvironment>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
-        std::vector<std::unique_ptr<AbstractEnvironment<bool, int>>> exploitationEnvironments;
+        std::vector<std::unique_ptr<BlockWorldEnvironment>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
@@ -340,12 +340,12 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        std::vector<std::unique_ptr<AbstractEnvironment<int, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<CSVEnvironment<int, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<CSVEnvironment<int, int>>(filename, availableActions, result.count("csv-random")));
         }
-        std::vector<std::unique_ptr<AbstractEnvironment<int, int>>> exploitationEnvironments;
+        std::vector<std::unique_ptr<CSVEnvironment<int, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
             exploitationEnvironments.push_back(std::make_unique<CSVEnvironment<int, int>>(evaluationCsvFilename, availableActions, result.count("csv-random")));

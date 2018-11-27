@@ -3,6 +3,7 @@
 #include <iostream>
 #include <fstream>
 #include <memory>
+#include <functional>
 #include <string>
 #include <vector>
 #include <unordered_set>
@@ -12,7 +13,7 @@
 #include "environment/environment.h"
 #include "util/simple_moving_average.h"
 
-template <class Experiment, typename T, typename Action, class Constants, class Environment>
+template <class Experiment, class Constants, class Environment>
 std::unique_ptr<Experiment> run(
     std::size_t seedCount,
     const Constants & constants,
@@ -25,8 +26,8 @@ std::unique_ptr<Experiment> run(
     const std::string & populationSizeLogFilename,
     const std::string & stepCountLogFilename,
     std::size_t smaWidth,
-    std::vector<std::unique_ptr<XCS::AbstractEnvironment<T, Action>>> & explorationEnvironments,
-    std::vector<Environment> & exploitationEnvironments)
+    std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
+    std::vector<std::unique_ptr<Environment>> & exploitationEnvironments)
 {
     assert(explorationEnvironments.size() == seedCount);
     assert(exploitationEnvironments.size() == seedCount);
