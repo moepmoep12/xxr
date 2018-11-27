@@ -18,6 +18,104 @@
 
 using namespace XCSR;
 
+template <typename T, typename Action, class Constants, class Environment>
+std::unique_ptr<XCS::Experiment<T, Action>> runXCSR(
+    std::string representation,
+    std::size_t seedCount,
+    const Constants & constants,
+    std::size_t iterationCount,
+    std::size_t explorationCount,
+    std::size_t exploitationCount,
+    bool updateInExploitation,
+    const std::string & classifierLogFilename,
+    const std::string & rewardLogFilename,
+    const std::string & populationSizeLogFilename,
+    const std::string & stepCountLogFilename,
+    std::size_t smaWidth,
+    std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
+    std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
+    std::function<void(Environment &)> explorationCallback = [](Environment &){},
+    std::function<void(Environment &)> exploitationCallback = [](Environment &){})
+{
+    if (representation == "cs")
+    {
+        return std::unique_ptr<XCS::Experiment<T, Action>>(
+            dynamic_cast<XCS::Experiment<T, Action> *>(
+                run<XCSR_CS::Experiment<T, Action>>(
+                    seedCount,
+                    constants,
+                    iterationCount,
+                    explorationCount,
+                    exploitationCount,
+                    updateInExploitation,
+                    classifierLogFilename,
+                    rewardLogFilename,
+                    populationSizeLogFilename,
+                    stepCountLogFilename,
+                    smaWidth,
+                    explorationEnvironments,
+                    exploitationEnvironments,
+                    explorationCallback,
+                    exploitationCallback
+                ).release()
+            )
+        );
+    }
+    else if (representation == "lu")
+    {
+        return std::unique_ptr<XCS::Experiment<T, Action>>(
+            dynamic_cast<XCS::Experiment<T, Action> *>(
+                run<XCSR_LU::Experiment<T, Action>>(
+                    seedCount,
+                    constants,
+                    iterationCount,
+                    explorationCount,
+                    exploitationCount,
+                    updateInExploitation,
+                    classifierLogFilename,
+                    rewardLogFilename,
+                    populationSizeLogFilename,
+                    stepCountLogFilename,
+                    smaWidth,
+                    explorationEnvironments,
+                    exploitationEnvironments,
+                    explorationCallback,
+                    exploitationCallback
+                ).release()
+            )
+        );
+    }
+    else if (representation == "ub")
+    {
+        return std::unique_ptr<XCS::Experiment<T, Action>>(
+            dynamic_cast<XCS::Experiment<T, Action> *>(
+                run<XCSR_UB::Experiment<T, Action>>(
+                    seedCount,
+                    constants,
+                    iterationCount,
+                    explorationCount,
+                    exploitationCount,
+                    updateInExploitation,
+                    classifierLogFilename,
+                    rewardLogFilename,
+                    populationSizeLogFilename,
+                    stepCountLogFilename,
+                    smaWidth,
+                    explorationEnvironments,
+                    exploitationEnvironments,
+                    explorationCallback,
+                    exploitationCallback
+                ).release()
+            )
+        );
+    }
+    else
+    {
+        std::cerr << "Error: Unknown representation (" << representation << ")" << std::endl;
+        exit(1);
+    }
+}
+
 int main(int argc, char *argv[])
 {
     XCSR::Constants constants;
@@ -168,86 +266,63 @@ int main(int argc, char *argv[])
     uint64_t exploitationCount = result["exploit"].as<uint64_t>();
     uint64_t smaWidth = result["sma"].as<uint64_t>();
 
-    // Use multiplexer / checkerboard problem
-    if (result.count("mux") || result.count("chk"))
+    // Use multiplexer problem
+    if (result.count("mux"))
     {
-        std::vector<std::unique_ptr<XCS::AbstractEnvironment<double, bool>>> environments;
-        if (result.count("mux"))
+        std::vector<std::unique_ptr<XCSR::RealMultiplexerEnvironment>> environments;
+        for (std::size_t i = 0; i < seedCount; ++i)
         {
-            for (std::size_t i = 0; i < seedCount; ++i)
-            {
-                environments.push_back(std::make_unique<XCSR::RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
-            }
-        }
-        else
-        {
-            if (!result.count("chk-div"))
-            {
-                std::cerr << "Error: The division in the checkerboard problem (--chk-div) is not specified." << std::endl;
-                exit(1);
-            }
-            for (std::size_t i = 0; i < seedCount; ++i)
-            {
-                environments.push_back(std::make_unique<XCSR::CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
-            }
+            environments.push_back(std::make_unique<XCSR::RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
         }
 
-        if (result["repr"].as<std::string>() == "cs")
+        runXCSR<double, bool>(
+            result["repr"].as<std::string>(),
+            seedCount,
+            constants,
+            iterationCount,
+            explorationCount,
+            exploitationCount,
+            updateInExploitation,
+            result["coutput"].as<std::string>(),
+            result["routput"].as<std::string>(),
+            result["noutput"].as<std::string>(),
+            "",//result["nsoutput"].as<std::string>(),
+            smaWidth,
+            environments,
+            environments);
+
+        exit(0);
+    }
+
+    // Use checkerboard problem
+    if (result.count("chk"))
+    {
+        if (!result.count("chk-div"))
         {
-            run<XCSR_CS::Experiment<double, bool>>(
-                seedCount,
-                constants,
-                iterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                result["coutput"].as<std::string>(),
-                result["routput"].as<std::string>(),
-                result["noutput"].as<std::string>(),
-                "",//result["nsoutput"].as<std::string>(),
-                smaWidth,
-                environments,
-                environments);
-        }
-        else if (result["repr"].as<std::string>() == "lu")
-        {
-            run<XCSR_LU::Experiment<double, bool>>(
-                seedCount,
-                constants,
-                iterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                result["coutput"].as<std::string>(),
-                result["routput"].as<std::string>(),
-                result["noutput"].as<std::string>(),
-                "",//result["nsoutput"].as<std::string>(),
-                smaWidth,
-                environments,
-                environments);
-        }
-        else if (result["repr"].as<std::string>() == "ub")
-        {
-            run<XCSR_UB::Experiment<double, bool>>(
-                seedCount,
-                constants,
-                iterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                result["coutput"].as<std::string>(),
-                result["routput"].as<std::string>(),
-                result["noutput"].as<std::string>(),
-                "",//result["nsoutput"].as<std::string>(),
-                smaWidth,
-                environments,
-                environments);
-        }
-        else
-        {
-            std::cerr << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
+            std::cerr << "Error: The division in the checkerboard problem (--chk-div) is not specified." << std::endl;
             exit(1);
         }
+        std::vector<std::unique_ptr<XCSR::CheckerboardEnvironment>> environments;
+        for (std::size_t i = 0; i < seedCount; ++i)
+        {
+            environments.push_back(std::make_unique<XCSR::CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
+        }
+
+        runXCSR<double, bool>(
+            result["repr"].as<std::string>(),
+            seedCount,
+            constants,
+            iterationCount,
+            explorationCount,
+            exploitationCount,
+            updateInExploitation,
+            result["coutput"].as<std::string>(),
+            result["routput"].as<std::string>(),
+            result["noutput"].as<std::string>(),
+            "",//result["nsoutput"].as<std::string>(),
+            smaWidth,
+            environments,
+            environments);
 
         exit(0);
     }
@@ -296,62 +371,21 @@ int main(int argc, char *argv[])
             exploitationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(evaluationCsvFilename, availableActions, result["csv-random"].as<bool>()));
         }
 
-        if (result["repr"].as<std::string>() == "cs")
-        {
-            run<XCSR_CS::Experiment<double, int>>(
-                seedCount,
-                constants,
-                iterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                result["coutput"].as<std::string>(),
-                result["routput"].as<std::string>(),
-                result["noutput"].as<std::string>(),
-                "",//result["nsoutput"].as<std::string>(),
-                smaWidth,
-                explorationEnvironments,
-                exploitationEnvironments);
-        }
-        else if (result["repr"].as<std::string>() == "lu")
-        {
-            run<XCSR_LU::Experiment<double, int>>(
-                seedCount,
-                constants,
-                iterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                result["coutput"].as<std::string>(),
-                result["routput"].as<std::string>(),
-                result["noutput"].as<std::string>(),
-                "",//result["nsoutput"].as<std::string>(),
-                smaWidth,
-                explorationEnvironments,
-                exploitationEnvironments);
-        }
-        else if (result["repr"].as<std::string>() == "ub")
-        {
-            run<XCSR_UB::Experiment<double, int>>(
-                seedCount,
-                constants,
-                iterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                result["coutput"].as<std::string>(),
-                result["routput"].as<std::string>(),
-                result["noutput"].as<std::string>(),
-                "",//result["nsoutput"].as<std::string>(),
-                smaWidth,
-                explorationEnvironments,
-                exploitationEnvironments);
-        }
-        else
-        {
-            std::cerr << "Error: Unknown representation (" << result["repr"].as<std::string>() << ")" << std::endl;
-            exit(1);
-        }
+        runXCSR<double, int>(
+            result["repr"].as<std::string>(),
+            seedCount,
+            constants,
+            iterationCount,
+            explorationCount,
+            exploitationCount,
+            updateInExploitation,
+            result["coutput"].as<std::string>(),
+            result["routput"].as<std::string>(),
+            result["noutput"].as<std::string>(),
+            "",//result["nsoutput"].as<std::string>(),
+            smaWidth,
+            explorationEnvironments,
+            exploitationEnvironments);
 
         exit(0);
     }
