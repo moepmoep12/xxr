@@ -25,26 +25,14 @@ namespace XCS
         {
             double accuracySum = 0.0;
 
-            // Accuracy vector
-            std::unordered_map<const ClassifierPtr *, double> kappa(m_set.size());
-
             for (auto && cl : m_set)
             {
-                if (cl->predictionError < m_constants.predictionErrorThreshold)
-                {
-                    kappa[&cl] = 1.0;
-                }
-                else
-                {
-                    kappa[&cl] = m_constants.alpha * pow(cl->predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
-                }
-
-                accuracySum += kappa[&cl] * cl->numerosity;
+                accuracySum += cl->accuracy() * cl->numerosity;
             }
 
             for (auto && cl : m_set)
             {
-                cl->fitness += m_constants.learningRate * (kappa[&cl] * cl->numerosity / accuracySum - cl->fitness);
+                cl->fitness += m_constants.learningRate * (cl->accuracy() * cl->numerosity / accuracySum - cl->fitness);
             }
         }
 

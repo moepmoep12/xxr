@@ -150,6 +150,18 @@ namespace XCS
         {
             return isSubsumer() && isMoreGeneral(cl);
         }
+
+        virtual double accuracy() const
+        {
+            if (predictionError < m_constants.predictionErrorThreshold)
+            {
+                return 1.0;
+            }
+            else
+            {
+                return m_constants.alpha * pow(predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
+            }
+        }
     };
 
 }
