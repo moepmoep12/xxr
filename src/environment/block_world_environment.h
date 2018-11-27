@@ -19,8 +19,19 @@ namespace XCS
         std::size_t m_worldHeight;
         std::vector<std::string> m_worldMap;
         std::vector<std::pair<int, int>> m_emptyPositions;
+
+        // Position of the last random initialization
+        int m_initialX;
+        int m_initialY;
+
+        // Current position
         int m_currentX;
         int m_currentY;
+
+        // Current position before random initialization
+        int m_lastX; 
+        int m_lastY;
+
         std::size_t m_maxStep;
         std::size_t m_currentStep;
         bool m_threeBitMode;
@@ -82,6 +93,10 @@ namespace XCS
             auto randomPosition = Random::chooseFrom(m_emptyPositions);
             m_currentX = randomPosition.first;
             m_currentY = randomPosition.second;
+            m_initialX = m_currentX;
+            m_initialY = m_currentY;
+
+            assert(isEmpty(m_currentX, m_currentY));
         }
 
     public:
@@ -129,6 +144,8 @@ namespace XCS
             }
 
             setRandomEmptyPosition();
+            m_lastX = m_currentX;
+            m_lastY = m_currentY;
         }
 
         ~BlockWorldEnvironment() = default;
@@ -143,6 +160,16 @@ namespace XCS
             return m_worldHeight;
         }
 
+        virtual int initialX() const
+        {
+            return m_initialX;
+        }
+
+        virtual int initialY() const
+        {
+            return m_initialY;
+        }
+
         virtual int currentX() const
         {
             return m_currentX;
@@ -151,6 +178,21 @@ namespace XCS
         virtual int currentY() const
         {
             return m_currentY;
+        }
+
+        virtual int currentStep() const
+        {
+            return m_currentStep;
+        }
+
+        virtual int lastX() const
+        {
+            return m_lastX;
+        }
+
+        virtual int lastY() const
+        {
+            return m_lastY;
         }
 
         virtual unsigned char getBlock(int x, int y) const
@@ -236,6 +278,8 @@ namespace XCS
             double reward;
             if (isFood(x, y))
             {
+                m_lastX = x;
+                m_lastY = y;
                 setRandomEmptyPosition();
                 m_isEndOfProblem = true;
                 m_currentStep = 0;
@@ -245,6 +289,8 @@ namespace XCS
             {
                 m_currentX = x;
                 m_currentY = y;
+                m_lastX = m_currentX;
+                m_lastY = m_currentY;
                 m_isEndOfProblem = false;
                 reward = 0.0;
             }
