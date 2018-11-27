@@ -28,8 +28,8 @@ std::unique_ptr<Experiment> run(
     std::size_t smaWidth,
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
     std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
-    std::function<void(Environment &)> explorationCallback = std::function<void(Environment &)>(),
-    std::function<void(Environment &)> exploitationCallback = std::function<void(Environment &)>())
+    std::function<void(Environment &)> explorationCallback = [](Environment &){},
+    std::function<void(Environment &)> exploitationCallback = [](Environment &){})
 {
     assert(explorationEnvironments.size() == seedCount);
     assert(exploitationEnvironments.size() == seedCount);
