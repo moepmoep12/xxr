@@ -214,7 +214,7 @@ namespace XCS
         virtual std::string dumpPopulation() const
         {
             std::stringstream ss;
-            ss << "Condition,Action,prediction,epsilon,F,exp,ts,as,n\n";
+            ss << "Condition,Action,prediction,epsilon,F,exp,ts,as,n,acc\n";
             for (auto && cl : m_population)
             {
                 ss  << cl->condition << ","
@@ -225,11 +225,12 @@ namespace XCS
                     << cl->experience << ","
                     << cl->timeStamp << ","
                     << cl->actionSetSize << ","
-                    << cl->numerosity << "\n";
+                    << cl->numerosity << ","
+                    << cl->accuracy() << "\n";
             }
             return ss.str();
         }
-        
+
         virtual std::size_t populationSize() const
         {
             return m_population.size();

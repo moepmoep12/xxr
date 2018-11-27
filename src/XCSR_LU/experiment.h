@@ -42,7 +42,7 @@ namespace XCSR_LU
             std::stringstream ss;
 
             ss  << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
-                << "Condition[l;u],Action,prediction,epsilon,F,exp,ts,as,n" << std::endl;
+                << "Condition[l;u],Action,prediction,epsilon,F,exp,ts,as,n,acc" << std::endl;
 
             for (auto && cl : this->m_population)
             {
@@ -80,7 +80,8 @@ namespace XCSR_LU
                     << cl->experience << ","
                     << cl->timeStamp << ","
                     << cl->actionSetSize << ","
-                    << cl->numerosity << std::endl;
+                    << cl->numerosity << ","
+                    << cl->accuracy() << std::endl;
             }
 
             return ss.str();
