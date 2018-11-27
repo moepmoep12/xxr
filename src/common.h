@@ -27,7 +27,9 @@ std::unique_ptr<Experiment> run(
     const std::string & stepCountLogFilename,
     std::size_t smaWidth,
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
-    std::vector<std::unique_ptr<Environment>> & exploitationEnvironments)
+    std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
+    std::function<void(Environment &)> explorationCallback = std::function<void(Environment &)>(),
+    std::function<void(Environment &)> exploitationCallback = std::function<void(Environment &)>())
 {
     assert(explorationEnvironments.size() == seedCount);
     assert(exploitationEnvironments.size() == seedCount);
@@ -91,6 +93,9 @@ std::unique_ptr<Experiment> run(
                         rewardSum += reward;
 
                         ++totalStepCount;
+
+                        // Run callback if needed
+                        exploitationCallback(*exploitationEnvironments[j]);
                     } while (!exploitationEnvironments[j]->isEndOfProblem());
                 }
             }
@@ -135,6 +140,9 @@ std::unique_ptr<Experiment> run(
                     // Get reward
                     double reward = explorationEnvironments[j]->executeAction(action);
                     experiments[j]->reward(reward, explorationEnvironments[j]->isEndOfProblem());
+
+                    // Run callback if needed
+                    explorationCallback(*explorationEnvironments[j]);
                 } while (!explorationEnvironments[j]->isEndOfProblem());
             }
         }

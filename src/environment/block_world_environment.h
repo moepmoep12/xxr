@@ -143,6 +143,16 @@ namespace XCS
             return m_worldHeight;
         }
 
+        virtual int currentX() const
+        {
+            return m_currentX;
+        }
+
+        virtual int currentY() const
+        {
+            return m_currentY;
+        }
+
         virtual unsigned char getBlock(int x, int y) const
         {
             while (x < 0)
@@ -228,6 +238,7 @@ namespace XCS
             {
                 setRandomEmptyPosition();
                 m_isEndOfProblem = true;
+                m_currentStep = 0;
                 reward = 1000.0;
             }
             else if (isEmpty(x, y))
@@ -243,7 +254,7 @@ namespace XCS
                 reward = 0.0;
             }
 
-            if (++m_currentStep >= m_maxStep)
+            if (!m_isEndOfProblem && ++m_currentStep >= m_maxStep)
             {
                 setRandomEmptyPosition();
                 m_isEndOfProblem = true;

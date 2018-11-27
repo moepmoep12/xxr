@@ -34,8 +34,9 @@ int main(int argc, char *argv[])
         ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
         ("blc-3bit", "Use 3-bit representation for each block in a situation", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("blc-diag", "Allow diagonal actions in the block world problem", cxxopts::value<bool>()->default_value("true"), "true/false")
-        ("blc-output", "Output the result of the desired action for blocks in the block world problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
-        ("blc-output-uni", "Use UTF-8 square & arrow characters for --blc-output", cxxopts::value<bool>()->default_value("false"), "true/false")
+        ("blc-output-best", "Output the result of the desired action for blocks in the block world problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("blc-output-best-uni", "Use UTF-8 square & arrow characters for --blc-output", cxxopts::value<bool>()->default_value("false"), "true/false")
+        ("blc-output-trace", "Output the coodination of the animat in the block world problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("c,csv", "Use the csv file", cxxopts::value<std::string>(), "FILENAME")
         ("e,csv-eval", "Use the csv file for evaluation", cxxopts::value<std::string>(), "FILENAME")
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
@@ -192,6 +193,34 @@ int main(int argc, char *argv[])
             exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
 
+        // Prepare trace output
+        bool outputTraceLog = !result["blc-output-trace"].as<std::string>().empty();
+        std::ofstream traceLogStream;
+        if (outputTraceLog)
+        {
+            traceLogStream.open(result["blc-output-trace"].as<std::string>());
+        }
+        std::function<void(BlockWorldEnvironment &)> explorationCallback = [&](BlockWorldEnvironment & env) {
+            if (outputTraceLog)
+            {
+                traceLogStream << "(" << env.currentX() << "," << env.currentY() << ")";
+                if (env.isEndOfProblem())
+                {
+                    traceLogStream << " Explore" << std::endl;
+                }
+            }
+        };
+        std::function<void(BlockWorldEnvironment &)> exploitationCallback = [&](BlockWorldEnvironment & env) {
+            if (outputTraceLog)
+            {
+                traceLogStream << "(" << env.currentX() << "," << env.currentY() << ")";
+                if (env.isEndOfProblem())
+                {
+                    traceLogStream << " Exploit" << std::endl;
+                }
+            }
+        };
+
         auto experiment = run<Experiment<bool, int>>(
             seedCount,
             constants,
@@ -205,15 +234,17 @@ int main(int argc, char *argv[])
             result["nsoutput"].as<std::string>(),
             smaWidth,
             explorationEnvironments,
-            exploitationEnvironments);
+            exploitationEnvironments,
+            explorationCallback,
+            exploitationCallback);
 
         std::unique_ptr<BlockWorldEnvironment> environment(dynamic_cast<BlockWorldEnvironment *>(explorationEnvironments[0].release()));
 
-        if (!result["blc-output"].as<std::string>().empty())
+        if (!result["blc-output-best"].as<std::string>().empty())
         {
-            std::ofstream ofs(result["blc-output"].as<std::string>());
+            std::ofstream ofs(result["blc-output-best"].as<std::string>());
 
-            bool useUnicode = result["blc-output-uni"].as<bool>();
+            bool useUnicode = result["blc-output-best-uni"].as<bool>();
 
             for (std::size_t y = 0; y < environment->worldHeight(); ++y)
             {
