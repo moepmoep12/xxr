@@ -96,8 +96,7 @@ namespace XCS
 
     protected:
         // Constants
-        const uint64_t m_thetaSub;
-        const double m_predictionErrorThreshold;
+        const Constants m_constants;
 
     public:
         // Constructor
@@ -110,8 +109,7 @@ namespace XCS
             timeStamp(obj.timeStamp),
             actionSetSize(obj.actionSetSize),
             numerosity(obj.numerosity),
-            m_thetaSub(obj.m_thetaSub),
-            m_predictionErrorThreshold(obj.m_predictionErrorThreshold)
+            m_constants(obj.m_constants)
         {
         }
 
@@ -124,8 +122,7 @@ namespace XCS
             timeStamp(timeStamp),
             actionSetSize(1),
             numerosity(1),
-            m_thetaSub(constants.thetaSub),
-            m_predictionErrorThreshold(constants.predictionErrorThreshold)
+            m_constants(constants)
         {
         }
 
@@ -145,7 +142,7 @@ namespace XCS
         // COULD SUBSUME
         virtual bool isSubsumer() const
         {
-            return experience > m_thetaSub && predictionError < m_predictionErrorThreshold;
+            return experience > m_constants.thetaSub && predictionError < m_constants.predictionErrorThreshold;
         }
 
         // DOES SUBSUME
