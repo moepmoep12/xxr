@@ -145,14 +145,15 @@ namespace XCS
 
         virtual unsigned char getBlock(int x, int y) const
         {
-            if (x < 0 || y < 0 || x >= static_cast<int>(m_worldWidth) || y >= static_cast<int>(m_worldHeight))
+            while (x < 0)
             {
-                return 'T';
+                x += m_worldWidth;
             }
-            else
+            while (y < 0)
             {
-                return m_worldMap[y][x];
+                y += m_worldHeight;
             }
+            return m_worldMap[y % m_worldHeight][x % m_worldWidth];
         }
 
         bool isEmpty(int x, int y) const
