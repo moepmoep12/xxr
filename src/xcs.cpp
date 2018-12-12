@@ -171,6 +171,17 @@ int main(int argc, char *argv[])
         std::cout << " doGASubsumption = " << (constants.doGASubsumption ? "true" : "false") << std::endl;
         std::cout << " doASSubsumption = " << (constants.doActionSetSubsumption ? "true" : "false") << std::endl;
         std::cout << std::endl;
+
+        // Output optional settings
+        std::stringstream ss;
+        if (!constants.doActionMutation)
+            ss << " doActionMutation = false" << std::endl;
+        std::string str = ss.str();
+        if (!str.empty())
+        {
+            std::cout << "[ XCS Optional Settings ]" << std::endl;
+            std::cout << str << std::endl;
+        }
     }
 
     uint64_t iterationCount = result["iteration"].as<uint64_t>();

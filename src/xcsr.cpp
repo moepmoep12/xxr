@@ -261,7 +261,7 @@ int main(int argc, char *argv[])
     }
     else
     {
-        // Output parameters
+        // Output general parameters
         std::cout << "[ XCSR General Parameters ]" << std::endl;
         std::cout << "               N = " << constants.maxPopulationClassifierCount << std::endl;
         std::cout << "            beta = " << constants.learningRate << std::endl;
@@ -282,10 +282,28 @@ int main(int argc, char *argv[])
         std::cout << "       epsilon_I = " << constants.initialPredictionError << std::endl;
         std::cout << "             F_I = " << constants.initialFitness << std::endl;
         std::cout << "         p_explr = " << constants.exploreProbability << std::endl;
-        if (constants.thetaMna != 0) std::cout << "       theta_mna = " << constants.thetaMna << std::endl;
+        if (constants.thetaMna != 0)
+            std::cout << "       theta_mna = " << constants.thetaMna << std::endl;
         std::cout << " doGASubsumption = " << (constants.doGASubsumption ? "true" : "false") << std::endl;
         std::cout << " doASSubsumption = " << (constants.doActionSetSubsumption ? "true" : "false") << std::endl;
         std::cout << std::endl;
+
+        // Output optional settings
+        std::stringstream ss;
+        if (constants.subsumptionTolerance != 0)
+            ss << "           Tol_sub = " << constants.subsumptionTolerance << std::endl;
+        if (!constants.doActionMutation)
+            ss << "  doActionMutation = false" << std::endl;
+        if (!constants.doRangeRestriction)
+            ss << "doRangeRestriction = false" << std::endl;
+        if (constants.doCoveringRandomRangeTruncation)
+            ss << "doCoveringRangeTruncation = true" << std::endl;
+        std::string str = ss.str();
+        if (!str.empty())
+        {
+            std::cout << "[ XCSR Optional Settings ]" << std::endl;
+            std::cout << str << std::endl;
+        }
     }
 
     uint64_t iterationCount = result["iteration"].as<uint64_t>();
