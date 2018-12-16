@@ -18,6 +18,7 @@ std::unique_ptr<Experiment> run(
     std::size_t seedCount,
     const Constants & constants,
     std::size_t iterationCount,
+    std::size_t condensationIterationCount,
     std::size_t explorationCount,
     std::size_t exploitationCount,
     bool updateInExploitation,
@@ -65,8 +66,18 @@ std::unique_ptr<Experiment> run(
         stepCountLogStream.open(stepCountLogFilename);
     }
 
-    for (std::size_t i = 0; i < iterationCount; ++i)
+    for (std::size_t i = 0; i < iterationCount + condensationIterationCount; ++i)
     {
+        // Switch to rule condensation mode after normal iterations
+        if (i == iterationCount)
+        {
+            for (std::size_t j = 0; j < seedCount; ++j)
+            {
+                experiments[j]->constants.crossoverProbability = 0.0;
+                experiments[j]->constants.mutationProbability = 0.0;
+            }
+        }
+
         // Exploitation
         if (exploitationCount > 0)
         {

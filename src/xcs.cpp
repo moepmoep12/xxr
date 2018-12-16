@@ -42,6 +42,7 @@ int main(int argc, char *argv[])
         ("csv-random", "Whether to choose lines in random order from the csv file", cxxopts::value<bool>()->default_value("true"), "true/false")
         ("max-step", "The maximum number of steps in the multi-step problem", cxxopts::value<uint64_t>()->default_value("50"))
         ("i,iteration", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
+        ("condense-iteration", "The number of iterations for the Wilson's rule condensation method (chi=0, mu=0) after normal iterations", cxxopts::value<uint64_t>()->default_value("0"), "COUNT")
         ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit", "The exploitation (= test mode) count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
@@ -185,6 +186,7 @@ int main(int argc, char *argv[])
     }
 
     uint64_t iterationCount = result["iteration"].as<uint64_t>();
+    uint64_t condensationIterationCount = result["condense-iteration"].as<uint64_t>();
     uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
     uint64_t explorationCount = result["explore"].as<uint64_t>();
     uint64_t exploitationCount = result["exploit"].as<uint64_t>();
@@ -203,6 +205,7 @@ int main(int argc, char *argv[])
             seedCount,
             constants,
             iterationCount,
+            condensationIterationCount,
             explorationCount,
             exploitationCount,
             updateInExploitation,
@@ -271,6 +274,7 @@ int main(int argc, char *argv[])
             seedCount,
             constants,
             iterationCount,
+            condensationIterationCount,
             explorationCount,
             exploitationCount,
             updateInExploitation,
@@ -432,6 +436,7 @@ int main(int argc, char *argv[])
             seedCount,
             constants,
             iterationCount,
+            condensationIterationCount,
             explorationCount,
             exploitationCount,
             updateInExploitation,

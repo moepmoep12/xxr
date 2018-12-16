@@ -13,7 +13,7 @@ namespace XCSR
         using XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>::isMoreGeneral;
         using XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>::m_constants;
 
-        Classifier(const Condition & condition, Action action, uint64_t timeStamp, const Constants & constants) :
+        Classifier(const Condition & condition, Action action, uint64_t timeStamp, Constants & constants) :
             XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>(condition, action, timeStamp, constants)
         {
         }

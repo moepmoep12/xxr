@@ -96,7 +96,7 @@ namespace XCS
 
     protected:
         // Constants
-        const Constants m_constants;
+        Constants & m_constants;
 
     public:
         // Constructor
@@ -113,7 +113,7 @@ namespace XCS
         {
         }
 
-        Classifier(const Condition & condition, Action action, uint64_t timeStamp, const Constants & constants) :
+        Classifier(const Condition & condition, Action action, uint64_t timeStamp, Constants & constants) :
             ConditionActionPair(condition, action),
             prediction(constants.initialPrediction),
             predictionError(constants.initialPredictionError),
@@ -126,12 +126,12 @@ namespace XCS
         {
         }
 
-        Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, const Constants & constants) :
+        Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, Constants & constants) :
             Classifier(Condition(situation), action, timeStamp, constants)
         {
         }
 
-        Classifier(const std::string & condition, Action action, uint64_t timeStamp, const Constants & constants) :
+        Classifier(const std::string & condition, Action action, uint64_t timeStamp, Constants & constants) :
             Classifier(Condition(condition), action, timeStamp, constants)
         {
         }

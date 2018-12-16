@@ -14,7 +14,7 @@ namespace XCS
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
-        const Constants m_constants;
+        Constants & m_constants;
         const std::unordered_set<Action> & m_availableActions;
 
         // SELECT OFFSPRING
@@ -99,7 +99,7 @@ namespace XCS
 
     public:
         // Constructor
-        GA(const Constants & constants, const std::unordered_set<Action> & availableActions) :
+        GA(Constants & constants, const std::unordered_set<Action> & availableActions) :
             m_constants(constants),
             m_availableActions(availableActions)
         {

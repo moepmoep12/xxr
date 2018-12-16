@@ -11,20 +11,20 @@ namespace XCS
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
-        const Constants m_constants;
+        Constants & m_constants;
         const std::unordered_set<Action> m_availableActions;
 
         std::unordered_set<ClassifierPtr> m_set;
 
     public:
         // Constructor
-        ClassifierPtrSet(const Constants & constants, const std::unordered_set<Action> availableActions) :
+        ClassifierPtrSet(Constants & constants, const std::unordered_set<Action> availableActions) :
             m_constants(constants),
             m_availableActions(availableActions)
         {
         }
 
-        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, const Constants & constants, const std::unordered_set<Action> availableActions) :
+        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, Constants & constants, const std::unordered_set<Action> availableActions) :
             m_set(set),
             m_constants(constants),
             m_availableActions(availableActions)

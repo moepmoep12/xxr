@@ -41,6 +41,9 @@ namespace XCS
     >
     class Experiment
     {
+    public:
+        Constants constants;
+
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
@@ -74,21 +77,19 @@ namespace XCS
 
         std::vector<T> m_prevSituation;
 
-        const Constants m_constants;
-
     public:
         // Constructor
         Experiment(const std::unordered_set<Action> & availableActions, const Constants & constants) :
-            m_population(constants, availableActions),
-            m_matchSet(constants, availableActions),
-            m_actionSet(constants, availableActions),
-            m_prevActionSet(constants, availableActions),
+            constants(constants),
+            m_population(this->constants, availableActions),
+            m_matchSet(this->constants, availableActions),
+            m_actionSet(this->constants, availableActions),
+            m_prevActionSet(this->constants, availableActions),
             m_availableActions(availableActions),
             m_timeStamp(0),
             m_expectsReward(false),
             m_prevReward(0.0),
-            m_isPrevModeExplore(false),
-            m_constants(constants)
+            m_isPrevModeExplore(false)
         {
         }
 
@@ -102,7 +103,7 @@ namespace XCS
 
             m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
-            PredictionArray predictionArray(m_matchSet, m_constants.exploreProbability);
+            PredictionArray predictionArray(m_matchSet, constants.exploreProbability);
 
             Action action = predictionArray.selectAction();
 
@@ -113,7 +114,7 @@ namespace XCS
 
             if (!m_prevActionSet.empty())
             {
-                double p = m_prevReward + m_constants.gamma * predictionArray.max();
+                double p = m_prevReward + constants.gamma * predictionArray.max();
                 m_prevActionSet.update(p, m_population);
                 m_prevActionSet.runGA(m_prevSituation, m_population, m_timeStamp);
             }
@@ -151,10 +152,10 @@ namespace XCS
         }
 
         // Run without exploration
-        virtual Action exploit(const std::vector<T> & situation) const
+        virtual Action exploit(const std::vector<T> & situation)// const /* TODO: use const */
         {
-            // Create new match set as sandbox (because of const member function)
-            MatchSet matchSet(m_constants, m_availableActions);
+            // Create new match set as sandbox /*(because of const member function)*/
+            MatchSet matchSet(constants, m_availableActions);
             for (auto && cl : m_population)
             {
                 if (cl->condition.matches(situation))
@@ -195,7 +196,7 @@ namespace XCS
 
                 if (!m_prevActionSet.empty())
                 {
-                    double p = m_prevReward + m_constants.gamma * predictionArray.max();
+                    double p = m_prevReward + constants.gamma * predictionArray.max();
                     m_prevActionSet.update(p, m_population);
 
                     // Do not perform GA operations in exploitation

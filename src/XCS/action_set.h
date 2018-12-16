@@ -78,13 +78,13 @@ namespace XCS
 
     public:
         // Constructor
-        ActionSet(const Constants & constants, const std::unordered_set<Action> & availableActions) :
+        ActionSet(Constants & constants, const std::unordered_set<Action> & availableActions) :
             ClassifierPtrSet(constants, availableActions),
             m_ga(constants, availableActions)
         {
         }
 
-        ActionSet(const MatchSet & matchSet, Action action, const Constants & constants, const std::unordered_set<Action> & availableActions) :
+        ActionSet(const MatchSet & matchSet, Action action, Constants & constants, const std::unordered_set<Action> & availableActions) :
             ClassifierPtrSet(constants, availableActions),
             m_ga(constants, availableActions)
         {

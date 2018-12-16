@@ -30,10 +30,9 @@ namespace XCSR_CS
     >
     class Experiment : public XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
     {
-    protected:
-        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::m_constants;
-
     public:
+        using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::constants;
+
         // Constructor
         using XCS::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
 
@@ -41,7 +40,7 @@ namespace XCSR_CS
         {
             std::stringstream ss;
 
-            ss  << "Condition[" << m_constants.minValue << "-" << m_constants.maxValue << "],"
+            ss  << "Condition[" << constants.minValue << "-" << constants.maxValue << "],"
                 << "Condition[c;s],Action,prediction,epsilon,F,exp,ts,as,n,acc" << std::endl;
 
             for (auto && cl : this->m_population)
@@ -50,8 +49,8 @@ namespace XCSR_CS
                 {
                     ss << "|";
 
-                    auto normalizedLowerLimit = (symbol.center - symbol.spread - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
-                    auto normalizedUpperLimit = (symbol.center + symbol.spread - m_constants.minValue) / (m_constants.maxValue - m_constants.minValue);
+                    auto normalizedLowerLimit = (symbol.center - symbol.spread - constants.minValue) / (constants.maxValue - constants.minValue);
+                    auto normalizedUpperLimit = (symbol.center + symbol.spread - constants.minValue) / (constants.maxValue - constants.minValue);
 
                     for (int i = 0; i < 10; ++i)
                     {

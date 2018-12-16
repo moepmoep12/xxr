@@ -29,7 +29,7 @@ namespace XCS
         // Constructor
         using ClassifierPtrSet::ClassifierPtrSet;
 
-        MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, const Constants & constants, const std::unordered_set<Action> & availableActions) :
+        MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, Constants & constants, const std::unordered_set<Action> & availableActions) :
             ClassifierPtrSet(constants, availableActions)
         {
             regenerate(population, situation, timeStamp);
