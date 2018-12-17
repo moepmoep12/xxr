@@ -45,24 +45,26 @@ namespace XCSR_UB
         {
             assert(cl.condition.size() == situation.size());
 
-            // Mutate p and q individually
+            // Mutate p or q
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].p += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    if (m_constants.doRangeRestriction)
+                    if (XCS::Random::nextDouble() < 0.5)
                     {
-                        cl.condition[i].p = std::min(std::max(m_constants.minValue, cl.condition[i].p), m_constants.maxValue);
+                        cl.condition[i].p += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        if (m_constants.doRangeRestriction)
+                        {
+                            cl.condition[i].p = std::min(std::max(m_constants.minValue, cl.condition[i].p), m_constants.maxValue);
+                        }
                     }
-                }
-
-                if (XCS::Random::nextDouble() < m_constants.mutationProbability)
-                {
-                    cl.condition[i].q += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    if (m_constants.doRangeRestriction)
+                    else
                     {
-                        cl.condition[i].q = std::min(std::max(m_constants.minValue, cl.condition[i].q), m_constants.maxValue);
+                        cl.condition[i].q += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        if (m_constants.doRangeRestriction)
+                        {
+                            cl.condition[i].q = std::min(std::max(m_constants.minValue, cl.condition[i].q), m_constants.maxValue);
+                        }
                     }
                 }
             }

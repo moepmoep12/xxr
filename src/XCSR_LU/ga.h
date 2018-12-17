@@ -59,24 +59,26 @@ namespace XCSR_LU
         {
             assert(cl.condition.size() == situation.size());
 
-            // Mutate lower and upper individually
+            // Mutate lower or upper
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].lower += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    if (m_constants.doRangeRestriction)
+                    if (XCS::Random::nextDouble() < 0.5)
                     {
-                        cl.condition[i].lower = std::min(std::max(m_constants.minValue, cl.condition[i].lower), m_constants.maxValue);
+                        cl.condition[i].lower += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        if (m_constants.doRangeRestriction)
+                        {
+                            cl.condition[i].lower = std::min(std::max(m_constants.minValue, cl.condition[i].lower), m_constants.maxValue);
+                        }
                     }
-                }
-
-                if (XCS::Random::nextDouble() < m_constants.mutationProbability)
-                {
-                    cl.condition[i].upper += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    if (m_constants.doRangeRestriction)
+                    else
                     {
-                        cl.condition[i].upper = std::min(std::max(m_constants.minValue, cl.condition[i].upper), m_constants.maxValue);
+                        cl.condition[i].upper += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        if (m_constants.doRangeRestriction)
+                        {
+                            cl.condition[i].upper = std::min(std::max(m_constants.minValue, cl.condition[i].upper), m_constants.maxValue);
+                        }
                     }
                 }
 

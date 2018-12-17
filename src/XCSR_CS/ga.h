@@ -45,19 +45,21 @@ namespace XCSR_CS
         {
             assert(cl.condition.size() == situation.size());
 
-            // Mutate center and spread individually
+            // Mutate center or spread
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
                 if (XCS::Random::nextDouble() < m_constants.mutationProbability)
                 {
-                    cl.condition[i].center += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].center = std::min(std::max(m_constants.minValue, cl.condition[i].center), m_constants.maxValue);
-                }
-
-                if (XCS::Random::nextDouble() < m_constants.mutationProbability)
-                {
-                    cl.condition[i].spread += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
-                    cl.condition[i].spread = std::max(0.0, cl.condition[i].spread);
+                    if (XCS::Random::nextDouble() < 0.5)
+                    {
+                        cl.condition[i].center += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        cl.condition[i].center = std::min(std::max(m_constants.minValue, cl.condition[i].center), m_constants.maxValue);
+                    }
+                    else
+                    {
+                        cl.condition[i].spread += XCS::Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        cl.condition[i].spread = std::max(0.0, cl.condition[i].spread);
+                    }
                 }
             }
 
