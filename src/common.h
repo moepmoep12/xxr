@@ -12,6 +12,22 @@
 
 #include "environment/environment.h"
 #include "util/simple_moving_average.h"
+#include "XCSR/constants.h"
+
+template <class Constants>
+void switchToCondensationMode(Constants & constants)
+{
+    constants.crossoverProbability = 0.0;
+    constants.mutationProbability = 0.0;
+}
+
+template <>
+void switchToCondensationMode(XCSR::Constants & constants)
+{
+    constants.crossoverProbability = 0.0;
+    constants.mutationProbability = 0.0;
+    constants.subsumptionTolerance = 0.0;
+}
 
 template <class Experiment, class Constants, class Environment>
 std::unique_ptr<Experiment> run(
@@ -73,8 +89,7 @@ std::unique_ptr<Experiment> run(
         {
             for (std::size_t j = 0; j < seedCount; ++j)
             {
-                experiments[j]->constants.crossoverProbability = 0.0;
-                experiments[j]->constants.mutationProbability = 0.0;
+                switchToCondensationMode(experiments[j]->constants);
             }
         }
 
