@@ -50,7 +50,8 @@ namespace XCS
         template <typename T>
         static auto chooseFrom(const std::unordered_set<T> & container)
         {
-            std::vector<T> vec(container.size());
+            std::vector<T> vec;
+            vec.reserve(container.size());
             vec.insert(vec.end(), container.begin(), container.end());
             return chooseFrom(vec);
         }
