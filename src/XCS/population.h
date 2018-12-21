@@ -36,7 +36,7 @@ namespace XCS
         virtual ~Population() = default;
 
         // INSERT IN POPULATION
-        virtual ClassifierPtr insertOrIncrementNumerosity(const Classifier & cl)
+        virtual void insertOrIncrementNumerosity(const Classifier & cl)
         {
             for (auto && c : m_set)
             {
@@ -46,10 +46,7 @@ namespace XCS
                     return;
                 }
             }
-            auto clPtr = std::make_shared<Classifier>(cl);
-            m_set.insert(clPtr);
-
-            return clPtr;
+            m_set.insert(std::make_shared<Classifier>(cl));
         }
 
         // DELETE FROM POPULATION
