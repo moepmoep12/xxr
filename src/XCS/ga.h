@@ -155,7 +155,7 @@ namespace XCS
                     }
                     else
                     {
-                        population.insertOrIncrementNumerosity(*child);
+                        population.insertOrIncrementNumerosity(std::make_shared<Classifier>(*child));
                     }
                 }
                 else
