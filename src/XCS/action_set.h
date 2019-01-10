@@ -152,17 +152,25 @@ namespace XCS
             {
                 ++cl->experience;
 
-                // Update prediction, prediction error, and action set size estimate
-                if (cl->experience < 1.0 / m_constants.learningRate)
+                // Update prediction, prediction error
+                if (m_constants.useMAM && cl->experience < 1.0 / m_constants.learningRate)
                 {
                     cl->prediction += (p - cl->prediction) / cl->experience;
                     cl->predictionError += (fabs(p - cl->prediction) - cl->predictionError) / cl->experience;
-                    cl->actionSetSize += (numerositySum - cl->actionSetSize) / cl->experience;
                 }
                 else
                 {
                     cl->prediction += m_constants.learningRate * (p - cl->prediction);
                     cl->predictionError += m_constants.learningRate * (fabs(p - cl->prediction) - cl->predictionError);
+                }
+
+                // Update action set size estimate
+                if (cl->experience < 1.0 / m_constants.learningRate)
+                {
+                    cl->actionSetSize += (numerositySum - cl->actionSetSize) / cl->experience;
+                }
+                else
+                {
                     cl->actionSetSize += m_constants.learningRate * (numerositySum - cl->actionSetSize);
                 }
             }
