@@ -163,6 +163,7 @@ int main(int argc, char *argv[])
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
+        ("tau", "The tournament size for selection [Butz et al., 2003] (set \"0\" to use the roulette-wheel selection)", cxxopts::value<double>()->default_value(std::to_string(constants.tournamentSize)), "TAU")
         ("s-0", "The maximum value of a spread in the covering operator", cxxopts::value<double>()->default_value(std::to_string(constants.coveringMaxSpread)), "S_0")
         ("max-mutation", "The maximum change of a spread value or a center value in mutation", cxxopts::value<double>()->default_value(std::to_string(constants.mutationMaxChange)), "M")
         ("tol-sub", "The tolerance range of the upper and lower bound in the subsumption", cxxopts::value<double>()->default_value(std::to_string(constants.subsumptionTolerance)), "TOL_SUB")
@@ -210,6 +211,8 @@ int main(int argc, char *argv[])
         constants.delta = result["delta"].as<double>();
     if (result.count("theta-sub"))
         constants.thetaSub = result["theta-sub"].as<double>();
+    if (result.count("tau"))
+        constants.tournamentSize = result["tau"].as<double>();
     if (result.count("s-0"))
         constants.coveringMaxSpread = result["s-0"].as<double>();
     if (result.count("max-mutation"))
@@ -298,6 +301,8 @@ int main(int argc, char *argv[])
 
         // Output optional settings
         std::stringstream ss;
+        if (constants.tournamentSize > 0.0 && constants.tournamentSize <= 1.0)
+            ss << "               tau = " << constants.tournamentSize << std::endl;
         if (constants.subsumptionTolerance != 0)
             ss << "           Tol_sub = " << constants.subsumptionTolerance << std::endl;
         if (!constants.doActionMutation)

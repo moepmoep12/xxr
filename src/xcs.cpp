@@ -182,7 +182,7 @@ int main(int argc, char *argv[])
         // Output optional settings
         std::stringstream ss;
         if (constants.tournamentSize > 0.0 && constants.tournamentSize <= 1.0)
-            ss << "              tau = " << constants.tournamentSize << std::endl;
+            ss << "             tau = " << constants.tournamentSize << std::endl;
         if (!constants.doActionMutation)
             ss << "doActionMutation = false" << std::endl;
         if (!constants.useMAM)
