@@ -3,6 +3,7 @@
 #include <random>
 #include <vector>
 #include <unordered_set>
+#include <limits>
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
@@ -113,6 +114,24 @@ namespace XCS
             {
                 // Greedy selection
                 selectedIdx = greedySelection(container);
+            }
+
+            return selectedIdx;
+        }
+
+        template <typename T>
+        static std::size_t tournamentSelection(const std::vector<T> & container, double proportionalTournamentSize)
+        {
+            std::size_t selectedIdx = container.size() - 1;
+            T best = std::numeric_limits<T>::min();
+
+            for (std::size_t i = 0; i < container.size(); ++i)
+            {
+                if (nextDouble() < proportionalTournamentSize && best < container[i])
+                {
+                    best = container[selectedIdx];
+                    selectedIdx = i;
+                }
             }
 
             return selectedIdx;
