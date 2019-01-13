@@ -76,7 +76,8 @@ namespace XCS
             }
 
             std::size_t selectedIdx;
-            if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
+            // Note: not using tournament selection in deletion
+            /*if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
             {
                 // Tournament selection
                 std::vector<std::pair<double, std::size_t>> votes;
@@ -88,7 +89,7 @@ namespace XCS
                 selectedIdx = Random::tournamentSelection(votes, m_constants.tournamentSize);
             }
             else
-            {
+            {*/
                 // Roulette-wheel selection
                 std::vector<double> votes;
                 votes.reserve(m_set.size());
@@ -97,7 +98,7 @@ namespace XCS
                     votes.push_back(deletionVote(*c, averageFitness));
                 }
                 selectedIdx = Random::rouletteWheelSelection(votes);
-            }
+            //}
 
             // Distrust the selected classifier
             if ((*targets[selectedIdx])->numerosity > 1)
