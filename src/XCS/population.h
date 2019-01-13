@@ -79,17 +79,26 @@ namespace XCS
                 targets.push_back(&c);
             }
 
-            // Roulette-wheel selection
-            std::size_t rouletteIdx = Random::rouletteWheelSelection(votes);
-
-            // Distrust the selected classifier
-            if ((*targets[rouletteIdx])->numerosity > 1)
+            std::size_t selectedIdx;
+            if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
             {
-                (*targets[rouletteIdx])->numerosity--;
+                // Tournament selection
+                selectedIdx = Random::tournamentSelection(votes, m_constants.tournamentSize);
             }
             else
             {
-                m_set.erase(*targets[rouletteIdx]);
+                // Roulette-wheel selection
+                selectedIdx = Random::rouletteWheelSelection(votes);
+            }
+
+            // Distrust the selected classifier
+            if ((*targets[selectedIdx])->numerosity > 1)
+            {
+                (*targets[selectedIdx])->numerosity--;
+            }
+            else
+            {
+                m_set.erase(*targets[selectedIdx]);
             }
         }
     };

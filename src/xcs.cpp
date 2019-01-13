@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
+        ("tau", "The tournament size for selection [Butz et al., 2003] (set \"0\" to use the roulette-wheel selection)", cxxopts::value<double>()->default_value(std::to_string(constants.tournamentSize)), "TAU")
         ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>()->default_value(std::to_string(constants.generalizeProbability)), "P_SHARP")
         ("initial-prediction", "The initial prediction value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPrediction)), "P_I")
         ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPredictionError)), "EPSILON_I")
@@ -99,6 +100,8 @@ int main(int argc, char *argv[])
         constants.delta = result["delta"].as<double>();
     if (result.count("theta-sub"))
         constants.thetaSub = result["theta-sub"].as<double>();
+    if (result.count("tau"))
+        constants.tournamentSize = result["tau"].as<double>();
     if (result.count("p-sharp"))
         constants.generalizeProbability = result["p-sharp"].as<double>();
     if (result.count("initial-prediction"))
@@ -175,6 +178,8 @@ int main(int argc, char *argv[])
 
         // Output optional settings
         std::stringstream ss;
+        if (constants.tournamentSize > 0.0 && constants.tournamentSize <= 1.0)
+            ss << "              tau = " << constants.tournamentSize << std::endl;
         if (!constants.doActionMutation)
             ss << " doActionMutation = false" << std::endl;
         std::string str = ss.str();

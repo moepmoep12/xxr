@@ -71,6 +71,11 @@ namespace XCS
         //   Recommended: 20
         uint64_t thetaSub = 20;
 
+        // tau
+        //   The tournament size for selection [Butz et al., 2003]
+        //   (set "0" to use the roulette-wheel selection)
+        double tournamentSize = 0.0;
+
         // P_sharp
         //   The probability of using a don't care symbol in an allele when covering
         //   Recommended: 0.33
