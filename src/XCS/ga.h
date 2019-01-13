@@ -20,13 +20,9 @@ namespace XCS
         // SELECT OFFSPRING
         virtual ClassifierPtr selectOffspring(const ClassifierPtrSet & actionSet) const
         {
-            // Prepare weights for selection
-            std::vector<double> fitnesses;
-            fitnesses.reserve(actionSet.size());
             std::vector<const ClassifierPtr *> targets;
             for (auto && cl : actionSet)
             {
-                fitnesses.push_back(cl->fitness);
                 targets.push_back(&cl);
             }
 
@@ -34,11 +30,23 @@ namespace XCS
             if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
             {
                 // Tournament selection
+                std::vector<std::pair<double, std::size_t>> fitnesses;
+                fitnesses.reserve(actionSet.size());
+                for (auto && cl : actionSet)
+                {
+                    fitnesses.emplace_back(cl->fitness, cl->numerosity);
+                }
                 selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tournamentSize);
             }
             else
             {
                 // Roulette-wheel selection
+                std::vector<double> fitnesses;
+                fitnesses.reserve(actionSet.size());
+                for (auto && cl : actionSet)
+                {
+                    fitnesses.push_back(cl->fitness);
+                }
                 selectedIdx = Random::rouletteWheelSelection(fitnesses);
             }
             return *targets[selectedIdx];

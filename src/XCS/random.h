@@ -135,7 +135,43 @@ namespace XCS
                 }
             }
 
-            return selectedIdx;
+            if (best == std::numeric_limits<T>::lowest())
+            {
+                return nextInt<std::size_t>(0, container.size() - 1);
+            }
+            else
+            {
+                return selectedIdx;
+            }
+        }
+
+        template <typename T>
+        static std::size_t tournamentSelectionMicroClassifier(const std::vector<std::pair<T, std::size_t>> & container, double proportionalTournamentSize)
+        {
+            std::size_t selectedIdx = container.size() - 1;
+            T best = std::numeric_limits<T>::lowest();
+
+            for (std::size_t i = 0; i < container.size(); ++i)
+            {
+                for (std::size_t j = 0; j < container[i].second /*numerosity*/; ++j)
+                {
+                    if (nextDouble() < proportionalTournamentSize && best < container[i].first / container[i].second)
+                    {
+                        best = container[i].first / container[i].second;
+                        selectedIdx = i;
+                        break;
+                    }
+                }
+            }
+
+            if (best == std::numeric_limits<T>::lowest())
+            {
+                return nextInt<std::size_t>(0, container.size() - 1);
+            }
+            else
+            {
+                return selectedIdx;
+            }
         }
     };
 

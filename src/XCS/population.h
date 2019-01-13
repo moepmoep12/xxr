@@ -69,25 +69,33 @@ namespace XCS
             // The average fitness in the population
             double averageFitness = fitnessSum / numerositySum;
 
-            // Prepare weights for roulette-wheel selection
-            std::vector<double> votes;
-            votes.reserve(m_set.size());
             std::vector<const ClassifierPtr *> targets;
-            for (auto && c : m_set)
+            for (auto && cl : m_set)
             {
-                votes.push_back(deletionVote(*c, averageFitness));
-                targets.push_back(&c);
+                targets.push_back(&cl);
             }
 
             std::size_t selectedIdx;
             if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
             {
                 // Tournament selection
+                std::vector<std::pair<double, std::size_t>> votes;
+                votes.reserve(m_set.size());
+                for (auto && c : m_set)
+                {
+                    votes.emplace_back(deletionVote(*c, averageFitness), c->numerosity);
+                }
                 selectedIdx = Random::tournamentSelection(votes, m_constants.tournamentSize);
             }
             else
             {
                 // Roulette-wheel selection
+                std::vector<double> votes;
+                votes.reserve(m_set.size());
+                for (auto && c : m_set)
+                {
+                    votes.push_back(deletionVote(*c, averageFitness));
+                }
                 selectedIdx = Random::rouletteWheelSelection(votes);
             }
 
