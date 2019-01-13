@@ -153,13 +153,16 @@ namespace XCS
 
             for (std::size_t i = 0; i < container.size(); ++i)
             {
-                for (std::size_t j = 0; j < container[i].second /*numerosity*/; ++j)
+                if (best < container[i].first / container[i].second)
                 {
-                    if (nextDouble() < proportionalTournamentSize && best < container[i].first / container[i].second)
+                    for (std::size_t j = 0; j < container[i].second /*numerosity*/; ++j)
                     {
-                        best = container[i].first / container[i].second;
-                        selectedIdx = i;
-                        break;
+                        if (nextDouble() < proportionalTournamentSize)
+                        {
+                            best = container[i].first / container[i].second;
+                            selectedIdx = i;
+                            break;
+                        }
                     }
                 }
             }
