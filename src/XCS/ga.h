@@ -34,7 +34,7 @@ namespace XCS
             if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
             {
                 // Tournament selection
-                selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tau);
+                selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tournamentSize);
             }
             else
             {

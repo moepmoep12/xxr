@@ -7,6 +7,7 @@
 #include <cassert>
 #include <cstddef>
 #include <algorithm>
+#include <iostream>
 
 namespace XCS
 {
@@ -123,13 +124,13 @@ namespace XCS
         static std::size_t tournamentSelection(const std::vector<T> & container, double proportionalTournamentSize)
         {
             std::size_t selectedIdx = container.size() - 1;
-            T best = std::numeric_limits<T>::min();
+            T best = std::numeric_limits<T>::lowest();
 
             for (std::size_t i = 0; i < container.size(); ++i)
             {
                 if (nextDouble() < proportionalTournamentSize && best < container[i])
                 {
-                    best = container[selectedIdx];
+                    best = container[i];
                     selectedIdx = i;
                 }
             }
