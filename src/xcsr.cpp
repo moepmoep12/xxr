@@ -176,6 +176,7 @@ int main(int argc, char *argv[])
         ("do-action-mutation", "Whether to apply mutation to the action", cxxopts::value<bool>()->default_value(constants.doActionMutation ? "true" : "false"), "true/false")
         ("do-range-restriction", "Whether to restrict the range of the condition to the interval [min-value, max-value) in the covering and mutation operator (ignored when --repr=cs)", cxxopts::value<bool>()->default_value(constants.doRangeRestriction ? "true" : "false"), "true/false")
         ("do-covering-random-range-truncation", "Whether to truncate the covering random range before generating random intervals if the interval [x-s_0, x+s_0) is not contained in [min-value, max-value).  \"false\" is common for this option, but the covering operator can generate too many maximum-range intervals if s_0 is larger than (max-value - min-value) / 2.  Choose \"true\" to avoid the random bias in this situation.  (ignored when --repr=cs)", cxxopts::value<bool>()->default_value(constants.doCoveringRandomRangeTruncation ? "true" : "false"), "true/false")
+        ("mam", "Whether to use the moyenne adaptive modifee (MAM) for updating the prediction and the prediction error of classifiers", cxxopts::value<bool>()->default_value(constants.useMAM ? "true" : "false"), "true/false")
         ("h,help", "Show this help");
 
     auto result = options.parse(argc, argv);
@@ -235,6 +236,8 @@ int main(int argc, char *argv[])
         constants.doRangeRestriction = result["do-range-restriction"].as<bool>();
     if (result.count("do-covering-random-range-truncation"))
         constants.doCoveringRandomRangeTruncation = result["do-covering-random-range-truncation"].as<bool>();
+    if (result.count("mam"))
+        constants.useMAM = result["mam"].as<bool>();
 
     bool isEnvironmentSpecified = (result.count("mux") || result.count("csv") || result.count("chk"));
 
@@ -303,6 +306,8 @@ int main(int argc, char *argv[])
             ss << "doRangeRestriction = false" << std::endl;
         if (constants.doCoveringRandomRangeTruncation)
             ss << "doCoveringRangeTruncation = true" << std::endl;
+        if (!constants.useMAM)
+            ss << "            useMAM = false" << std::endl;
         std::string str = ss.str();
         if (!str.empty())
         {

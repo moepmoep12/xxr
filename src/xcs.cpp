@@ -71,6 +71,7 @@ int main(int argc, char *argv[])
         ("do-ga-subsumption", "Whether offspring are to be tested for possible logical subsumption by parents", cxxopts::value<bool>()->default_value(constants.doGASubsumption ? "true" : "false"), "true/false")
         ("do-action-set-subsumption", "Whether action sets are to be tested for subsuming classifiers", cxxopts::value<bool>()->default_value(constants.doActionSetSubsumption ? "true" : "false"), "true/false")
         ("do-action-mutation", "Whether to apply mutation to the action", cxxopts::value<bool>()->default_value(constants.doActionMutation ? "true" : "false"), "true/false")
+        ("mam", "Whether to use the moyenne adaptive modifee (MAM) for updating the prediction and the prediction error of classifiers", cxxopts::value<bool>()->default_value(constants.useMAM ? "true" : "false"), "true/false")
         ("h,help", "Show this help");
 
     auto result = options.parse(argc, argv);
@@ -120,6 +121,8 @@ int main(int argc, char *argv[])
         constants.doActionSetSubsumption = result["do-action-set-subsumption"].as<bool>();
     if (result.count("do-action-mutation"))
         constants.doActionMutation = result["do-action-mutation"].as<bool>();
+    if (result.count("mam"))
+        constants.useMAM = result["mam"].as<bool>();
 
     bool isEnvironmentSpecified = (result.count("mux") || result.count("blc") || result.count("csv"));
 
@@ -181,7 +184,9 @@ int main(int argc, char *argv[])
         if (constants.tournamentSize > 0.0 && constants.tournamentSize <= 1.0)
             ss << "              tau = " << constants.tournamentSize << std::endl;
         if (!constants.doActionMutation)
-            ss << " doActionMutation = false" << std::endl;
+            ss << "doActionMutation = false" << std::endl;
+        if (!constants.useMAM)
+            ss << "          useMAM = false" << std::endl;
         std::string str = ss.str();
         if (!str.empty())
         {

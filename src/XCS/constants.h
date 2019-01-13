@@ -122,6 +122,11 @@ namespace XCS
         //   Whether to apply the mutation to the action
         bool doActionMutation = true;
 
+        // useMAM
+        //   Whether to use the moyenne adaptive modifee (MAM) for updating the
+        //   prediction and the prediction error of classifiers
+        bool useMAM = true;
+
         virtual ~Constants() = default;
     };
 

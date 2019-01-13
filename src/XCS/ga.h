@@ -121,6 +121,8 @@ namespace XCS
             Classifier child1(*parent1);
             Classifier child2(*parent2);
 
+            child1.fitness /= parent1->numerosity;
+            child2.fitness /= parent2->numerosity;
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;
 
@@ -135,11 +137,8 @@ namespace XCS
                     child2.predictionError = (parent1->predictionError + parent2->predictionError) / 2;
 
                 child1.fitness =
-                    child2.fitness = (parent1->fitness + parent2->fitness) / 2;
+                    child2.fitness = (parent1->fitness + parent2->fitness) / 2 * 0.1;
             }
-
-            child1.fitness *= 0.1;
-            child2.fitness *= 0.1;
 
             for (auto && child : { &child1, &child2 })
             {
