@@ -18,11 +18,11 @@ namespace XCS
     class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action>
     {
     private:
-        const bool m_chooseRandom;
         std::vector<std::pair<std::vector<T>, Action> > m_dataSet;
         std::vector<T> m_situation;
         Action m_answer;
         std::size_t m_nextIdx;
+        const bool m_chooseRandom;
         bool m_isEndOfProblem;
 
         void loadNext()
