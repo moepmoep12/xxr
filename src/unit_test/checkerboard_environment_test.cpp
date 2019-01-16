@@ -25,7 +25,7 @@ int main()
             std::cout << std::endl;
         }
     }
-    std::cout << "\n========================================\n" << std::endl;
+    hr();
 
     std::cout << "chk(2, 5):" << std::endl;
     {
@@ -53,7 +53,7 @@ int main()
             std::cout << std::endl;
         }
     }
-    std::cout << "\n========================================\n" << std::endl;
+    hr();
 
     std::cout << "chk(3, 3):" << std::endl;
     {

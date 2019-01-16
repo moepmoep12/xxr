@@ -17,3 +17,8 @@ void expect(const std::string & testName, bool cond)
 #endif
     std::cout << " " << testName << std::endl;
 }
+
+void hr()
+{
+    std::cout << "\n========================================\n" << std::endl;
+}
