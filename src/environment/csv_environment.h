@@ -18,7 +18,7 @@ namespace XCS
     class CSVEnvironment final : public XCS::AbstractEnvironment<T, Action>
     {
     private:
-        bool m_chooseRandom;
+        const bool m_chooseRandom;
         std::vector<std::pair<std::vector<T>, Action> > m_dataSet;
         std::vector<T> m_situation;
         Action m_answer;
@@ -48,6 +48,7 @@ namespace XCS
         CSVEnvironment(std::string filename, const std::unordered_set<Action> & availableActions, bool chooseRandom = true) :
             AbstractEnvironment<T, Action>(availableActions),
             m_nextIdx(0),
+            m_chooseRandom(chooseRandom),
             m_isEndOfProblem(false)
         {
             // Load all lines from csv
