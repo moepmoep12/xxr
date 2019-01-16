@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../XCS/experiment.h"
-#include "../XCS/condition.h"
+#include "../XCSR/condition.h"
 #include "symbol.h"
 #include "../XCSR/classifier.h"
 #include "classifier.h"
@@ -17,7 +17,7 @@ namespace XCSR_UB
         typename T,
         typename Action,
         class Symbol = Symbol<T>,
-        class Condition = XCS::Condition<T, Symbol>,
+        class Condition = XCSR::Condition<T, Symbol>,
         class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
         class Constants = XCSR::Constants,
         class Classifier = XCSR::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
