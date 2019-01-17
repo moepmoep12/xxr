@@ -9,6 +9,7 @@ namespace XCSR
     struct Classifier : XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>
     {
     public:
+        using XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>::action;
         using XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>::isSubsumer;
         using XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>::isMoreGeneral;
         using XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>::m_constants;
@@ -21,7 +22,7 @@ namespace XCSR
         // DOES SUBSUME
         virtual bool subsumes(const XCS::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants> & cl) const override
         {
-            return isSubsumer() && isMoreGeneral(cl, m_constants.subsumptionTolerance);
+            return action == cl.action && isSubsumer() && isMoreGeneral(cl, m_constants.subsumptionTolerance);
         }
     };
 

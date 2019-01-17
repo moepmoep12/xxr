@@ -92,6 +92,7 @@ namespace XCS
         //   classifier - represents.
         uint64_t numerosity;
 
+        using ConditionActionPair::action;
         using ConditionActionPair::isMoreGeneral;
 
     protected:
@@ -148,7 +149,7 @@ namespace XCS
         // DOES SUBSUME
         virtual bool subsumes(const Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants> & cl) const
         {
-            return isSubsumer() && isMoreGeneral(cl);
+            return action == cl.action && isSubsumer() && isMoreGeneral(cl);
         }
 
         virtual double accuracy() const
