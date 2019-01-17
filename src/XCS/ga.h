@@ -161,7 +161,7 @@ namespace XCS
                 }
                 else
                 {
-                    population.insert(std::make_shared<Classifier>(*child));
+                    population.insertOrIncrementNumerosity(std::make_shared<Classifier>(*child));
                 }
 
                 population.deleteExtraClassifiers();
