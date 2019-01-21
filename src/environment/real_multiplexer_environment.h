@@ -15,7 +15,6 @@ namespace XCSR
     private:
         const std::size_t m_totalLength;
         const std::size_t m_addressBitLength;
-        const std::size_t m_registerBitLength;
         const bool m_spreadsBinary;
         const double m_binaryThreshold;
         std::vector<double> m_situation;
@@ -42,7 +41,6 @@ namespace XCSR
             AbstractEnvironment<double, bool>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
-            m_registerBitLength(length - m_addressBitLength),
             m_spreadsBinary(spreadsBinary),
             m_binaryThreshold(binaryThreshold),
             m_situation(randomSituation(length, spreadsBinary)),

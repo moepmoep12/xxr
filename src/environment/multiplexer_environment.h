@@ -15,7 +15,6 @@ namespace XCS
     private:
         const std::size_t m_totalLength;
         const std::size_t m_addressBitLength;
-        const std::size_t m_registerBitLength;
         std::vector<bool> m_situation;
         bool m_isEndOfProblem;
 
@@ -41,7 +40,6 @@ namespace XCS
             AbstractEnvironment<bool, bool>({ false, true }),
             m_totalLength(length),
             m_addressBitLength(addressBitLength(length, 0)),
-            m_registerBitLength(length - m_addressBitLength),
             m_situation(randomSituation(length)),
             m_isEndOfProblem(false)
         {
