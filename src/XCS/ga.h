@@ -82,7 +82,7 @@ namespace XCS
                 {
                     if (cl.condition[i].isDontCare())
                     {
-                        cl.condition[i] = situation.at(i);
+                        cl.condition[i] = Symbol(situation.at(i));
                     }
                     else
                     {
