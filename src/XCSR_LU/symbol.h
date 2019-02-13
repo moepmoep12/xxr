@@ -56,7 +56,7 @@ namespace XCSR_LU
         }
 
         // DOES MATCH
-        virtual bool matches(T value) const override
+        virtual bool matches(T value) const noexcept override
         {
             return lower - std::numeric_limits<double>::epsilon() <= value && value < upper + std::numeric_limits<double>::epsilon();
         }

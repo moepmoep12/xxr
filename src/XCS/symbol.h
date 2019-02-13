@@ -85,7 +85,7 @@ namespace XCS
         }
 
         // DOES MATCH
-        virtual bool matches(T value) const override
+        virtual bool matches(T value) const noexcept override
         {
             return isDontCare() || this->value() == value;
         }

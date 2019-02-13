@@ -54,7 +54,7 @@ namespace XCSR_CS
         }
 
         // DOES MATCH
-        virtual bool matches(T value) const override
+        virtual bool matches(T value) const noexcept override
         {
             return (center - spread) <= value && value < (center + spread);
         }
