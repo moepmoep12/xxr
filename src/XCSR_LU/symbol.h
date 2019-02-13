@@ -18,8 +18,8 @@ namespace XCSR_LU
         T upper;
 
         // Constructor
-        Symbol(T value) : lower(value), upper(value) {}
-        Symbol(T l, T u) : lower(l), upper(u) {}
+        constexpr Symbol(T value) : lower(value), upper(value) {}
+        constexpr Symbol(T l, T u) : lower(l), upper(u) {}
 
         // Destructor
         virtual ~Symbol() = default;

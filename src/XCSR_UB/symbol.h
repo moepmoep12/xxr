@@ -18,8 +18,8 @@ namespace XCSR_UB
         T q;
 
         // Constructor
-        Symbol(T value) : p(value), q(value) {}
-        Symbol(T p, T q) : p(p), q(q) {}
+        constexpr Symbol(T value) : p(value), q(value) {}
+        constexpr Symbol(T p, T q) : p(p), q(q) {}
 
         // Destructor
         virtual ~Symbol() = default;

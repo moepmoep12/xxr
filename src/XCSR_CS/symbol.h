@@ -17,7 +17,7 @@ namespace XCSR_CS
         T spread;
 
         // Constructor
-        Symbol(T c, T s = 0.0) : center(c), spread(s) {}
+        constexpr Symbol(T c, T s = 0.0) : center(c), spread(s) {}
 
         // Destructor
         virtual ~Symbol() = default;
