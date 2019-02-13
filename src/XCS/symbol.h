@@ -39,11 +39,11 @@ namespace XCS
 
     public:
         // Constructor
-        constexpr Symbol(T value) : m_value(value), m_isDontCare(false) {}
+        constexpr explicit Symbol(T value) : m_value(value), m_isDontCare(false) {}
 
-        constexpr Symbol(char c);
+        constexpr explicit Symbol(char c);
 
-        constexpr Symbol(const Symbol<T> & obj) : m_value(obj.m_value), m_isDontCare(obj.m_isDontCare) {}
+        constexpr Symbol(const Symbol<T> & obj) = default;
 
         // Destructor
         virtual ~Symbol() = default;

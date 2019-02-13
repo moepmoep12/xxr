@@ -30,7 +30,7 @@ namespace XCS
         {
             for (const char symbol : symbols)
             {
-                m_symbols.push_back(symbol);
+                m_symbols.emplace_back(symbol);
             }
         }
 
