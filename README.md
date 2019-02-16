@@ -5,7 +5,7 @@ Learning classifier systems (XCS & XCSR) written in C++14
     - Built-in benchmark problems
         - Multiplexer problem (XCS)
         - Real-multiplexer problem (XCSR)
-        - Checkerboard problem (XCS)
+        - Checkerboard problem (XCSR)
     - CSV dataset (XCS & XCSR)
 - Also can be used as a header-only library
 
@@ -36,6 +36,11 @@ $ ./xcsr --mux=6 --repr=obr
 ## 6-bit Real Multiplexer Problem (Unordered Bound Representation)
 ```
 $ ./xcsr --mux=6 --repr=ubr
+```
+
+## Checkerboard Problem (n=3, n_d=3, CSR)
+```
+$ ./xcsr --chk=3 --chk-div=3 --repr=csr
 ```
 
 ## From CSV
