@@ -11,7 +11,7 @@ Learning classifier systems (XCS & XCSR) written in C++14
 
 # Compilation
 ```
-$ git clone https://github.com/m4saka/xcs-xcsr.git && cd xcs-xcsr
+$ git clone https://github.com/m4saka/xxr.git && cd xxr
 $ git submodule update -i
 $ make
 ```
