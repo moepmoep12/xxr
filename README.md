@@ -25,17 +25,17 @@ $ ./xcs --mux=6
 
 ## 6-bit Real Multiplexer Problem (Center-Spread Representation)
 ```
-$ ./xcsr --mux=6 --repr=cs
+$ ./xcsr --mux=6 --repr=csr
 ```
 
-## 6-bit Real Multiplexer Problem (Lower-Upper Representation)
+## 6-bit Real Multiplexer Problem (Ordered Bound Representation)
 ```
-$ ./xcsr --mux=6 --repr=lu
+$ ./xcsr --mux=6 --repr=obr
 ```
 
 ## 6-bit Real Multiplexer Problem (Unordered Bound Representation)
 ```
-$ ./xcsr --mux=6 --repr=ub
+$ ./xcsr --mux=6 --repr=ubr
 ```
 
 ## From CSV
