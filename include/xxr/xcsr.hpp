@@ -8,6 +8,10 @@
 namespace xxr
 {
 
+    constexpr auto CSR = xcsr_impl::Repr::CSR;
+    constexpr auto OBR = xcsr_impl::Repr::OBR;
+    constexpr auto UBR = xcsr_impl::Repr::UBR;
+
     // XCSR Classifier System
     template <xcsr_impl::Repr R, typename T = int, typename Action = int>
     using XCSR = typename xcsr_impl::repr_to_experiment<R, T, Action>::type;

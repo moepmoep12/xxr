@@ -65,7 +65,7 @@ namespace xxr { namespace xcs_impl
 
         // epsilon
         //   The prediction error epsilon estimates the errors made in the predictions.
-        double predictionError;
+        double epsilon;
 
         // F
         //   The fitness F denotes the classifier's fitness.
@@ -104,7 +104,7 @@ namespace xxr { namespace xcs_impl
         Classifier(const Classifier & obj) :
             ConditionActionPair(obj.condition, obj.action),
             prediction(obj.prediction),
-            predictionError(obj.predictionError),
+            epsilon(obj.epsilon),
             fitness(obj.fitness),
             experience(obj.experience),
             timeStamp(obj.timeStamp),
@@ -117,7 +117,7 @@ namespace xxr { namespace xcs_impl
         Classifier(const Condition & condition, Action action, uint64_t timeStamp, Constants & constants) :
             ConditionActionPair(condition, action),
             prediction(constants.initialPrediction),
-            predictionError(constants.initialPredictionError),
+            epsilon(constants.initialEpsilon),
             fitness(constants.initialFitness),
             experience(0),
             timeStamp(timeStamp),
@@ -143,7 +143,7 @@ namespace xxr { namespace xcs_impl
         // COULD SUBSUME
         virtual bool isSubsumer() const
         {
-            return experience > m_constants.thetaSub && predictionError < m_constants.predictionErrorThreshold;
+            return experience > m_constants.thetaSub && epsilon < m_constants.epsilonZero;
         }
 
         // DOES SUBSUME
@@ -154,13 +154,13 @@ namespace xxr { namespace xcs_impl
 
         virtual double accuracy() const
         {
-            if (predictionError < m_constants.predictionErrorThreshold)
+            if (epsilon < m_constants.epsilonZero)
             {
                 return 1.0;
             }
             else
             {
-                return m_constants.alpha * pow(predictionError / m_constants.predictionErrorThreshold, -m_constants.nu);
+                return m_constants.alpha * pow(epsilon / m_constants.epsilonZero, -m_constants.nu);
             }
         }
     };

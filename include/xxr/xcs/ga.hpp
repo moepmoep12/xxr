@@ -27,7 +27,7 @@ namespace xxr { namespace xcs_impl
             }
 
             std::size_t selectedIdx;
-            if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
+            if (m_constants.tau > 0.0 && m_constants.tau <= 1.0)
             {
                 // Tournament selection
                 std::vector<std::pair<double, std::size_t>> fitnesses;
@@ -36,7 +36,7 @@ namespace xxr { namespace xcs_impl
                 {
                     fitnesses.emplace_back(cl->fitness, cl->numerosity);
                 }
-                selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tournamentSize);
+                selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tau);
             }
             else
             {
@@ -78,7 +78,7 @@ namespace xxr { namespace xcs_impl
 
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
-                if (Random::nextDouble() < m_constants.mutationProbability)
+                if (Random::nextDouble() < m_constants.mu)
                 {
                     if (cl.condition[i].isDontCare())
                     {
@@ -91,7 +91,7 @@ namespace xxr { namespace xcs_impl
                 }
             }
 
-            if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mutationProbability) && (m_availableActions.size() >= 2))
+            if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mu) && (m_availableActions.size() >= 2))
             {
                 std::unordered_set<Action> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);
@@ -126,15 +126,15 @@ namespace xxr { namespace xcs_impl
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;
 
-            if (Random::nextDouble() < m_constants.crossoverProbability)
+            if (Random::nextDouble() < m_constants.chi)
             {
                 crossover(child1, child2);
 
                 child1.prediction =
                     child2.prediction = (parent1->prediction + parent2->prediction) / 2;
 
-                child1.predictionError =
-                    child2.predictionError = (parent1->predictionError + parent2->predictionError) / 2;
+                child1.epsilon =
+                    child2.epsilon = (parent1->epsilon + parent2->epsilon) / 2;
 
                 child1.fitness =
                     child2.fitness = (parent1->fitness + parent2->fitness) / 2 * 0.1;

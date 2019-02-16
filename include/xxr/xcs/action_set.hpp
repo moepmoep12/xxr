@@ -32,7 +32,7 @@ namespace xxr { namespace xcs_impl
 
             for (auto && cl : m_set)
             {
-                cl->fitness += m_constants.learningRate * (cl->accuracy() * cl->numerosity / accuracySum - cl->fitness);
+                cl->fitness += m_constants.beta * (cl->accuracy() * cl->numerosity / accuracySum - cl->fitness);
             }
         }
 
@@ -153,25 +153,25 @@ namespace xxr { namespace xcs_impl
                 ++cl->experience;
 
                 // Update prediction, prediction error
-                if (m_constants.useMAM && cl->experience < 1.0 / m_constants.learningRate)
+                if (m_constants.useMAM && cl->experience < 1.0 / m_constants.beta)
                 {
                     cl->prediction += (p - cl->prediction) / cl->experience;
-                    cl->predictionError += (fabs(p - cl->prediction) - cl->predictionError) / cl->experience;
+                    cl->epsilon += (fabs(p - cl->prediction) - cl->epsilon) / cl->experience;
                 }
                 else
                 {
-                    cl->prediction += m_constants.learningRate * (p - cl->prediction);
-                    cl->predictionError += m_constants.learningRate * (fabs(p - cl->prediction) - cl->predictionError);
+                    cl->prediction += m_constants.beta * (p - cl->prediction);
+                    cl->epsilon += m_constants.beta * (fabs(p - cl->prediction) - cl->epsilon);
                 }
 
                 // Update action set size estimate
-                if (cl->experience < 1.0 / m_constants.learningRate)
+                if (cl->experience < 1.0 / m_constants.beta)
                 {
                     cl->actionSetSize += (numerositySum - cl->actionSetSize) / cl->experience;
                 }
                 else
                 {
-                    cl->actionSetSize += m_constants.learningRate * (numerositySum - cl->actionSetSize);
+                    cl->actionSetSize += m_constants.beta * (numerositySum - cl->actionSetSize);
                 }
             }
 

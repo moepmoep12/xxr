@@ -47,22 +47,22 @@ int main(int argc, char *argv[])
         ("exploit-upd", "Whether to update classifier parameters in test mode (\"auto\": false for single-step & true for multi-step)", cxxopts::value<std::string>()->default_value("auto"), "auto/true/false")
         ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
-        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.maxPopulationClassifierCount)), "COUNT")
+        ("N,max-population", "The maximum size of the population", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.n)), "COUNT")
         ("alpha", "The fall of rate in the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "ALPHA")
-        ("beta", "The learning rate for updating fitness, prediction, prediction error, and action set size estimate in XCS's classifiers", cxxopts::value<double>()->default_value(std::to_string(constants.learningRate)), "BETA")
+        ("beta", "The learning rate for updating fitness, prediction, prediction error, and action set size estimate in XCS's classifiers", cxxopts::value<double>()->default_value(std::to_string(constants.beta)), "BETA")
         ("epsilon-0", "The error threshold under which the accuracy of a classifier is set to one", cxxopts::value<double>()->default_value(std::to_string(constants.alpha)), "EPSILON_0")
         ("nu", "The exponent in the power function for the fitness evaluation", cxxopts::value<double>()->default_value(std::to_string(constants.nu)), "NU")
         ("gamma", "The discount rate in multi-step problems", cxxopts::value<double>()->default_value(std::to_string(constants.gamma)), "GAMMA")
         ("theta-ga", "The threshold for the GA application in an action set", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.thetaGA)), "THETA_GA")
-        ("chi", "The probability of applying crossover", cxxopts::value<double>()->default_value(std::to_string(constants.crossoverProbability)), "CHI")
-        ("mu", "The probability of mutating one allele and the action", cxxopts::value<double>()->default_value(std::to_string(constants.mutationProbability)), "MU")
+        ("chi", "The probability of applying crossover", cxxopts::value<double>()->default_value(std::to_string(constants.chi)), "CHI")
+        ("mu", "The probability of mutating one allele and the action", cxxopts::value<double>()->default_value(std::to_string(constants.mu)), "MU")
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
         ("theta-sub", "The experience of a classifier required to be a subsumer", cxxopts::value<double>()->default_value(std::to_string(constants.thetaSub)), "THETA_SUB")
-        ("tau", "The tournament size for selection [Butz et al., 2003] (set \"0\" to use the roulette-wheel selection)", cxxopts::value<double>()->default_value(std::to_string(constants.tournamentSize)), "TAU")
-        ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>()->default_value(std::to_string(constants.generalizeProbability)), "P_SHARP")
+        ("tau", "The tournament size for selection [Butz et al., 2003] (set \"0\" to use the roulette-wheel selection)", cxxopts::value<double>()->default_value(std::to_string(constants.tau)), "TAU")
+        ("s,p-sharp", "The probability of using a don't care symbol in an allele when covering", cxxopts::value<double>()->default_value(std::to_string(constants.dontCareProbability)), "P_SHARP")
         ("initial-prediction", "The initial prediction value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPrediction)), "P_I")
-        ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialPredictionError)), "EPSILON_I")
+        ("initial-prediction-error", "The initial prediction error value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialEpsilon)), "EPSILON_I")
         ("initial-fitness", "The initial fitness value when generating a new classifier", cxxopts::value<double>()->default_value(std::to_string(constants.initialFitness)), "F_I")
         ("p-explr", "The probability during action selection of choosing the action uniform randomly", cxxopts::value<double>()->default_value(std::to_string(constants.exploreProbability)), "P_EXPLR")
         ("theta-mna", "The minimal number of actions that must be present in a match set [M], or else covering will occur. Use \"0\" to set automatically.", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.thetaMna)), "THETA_MNA")
@@ -76,13 +76,13 @@ int main(int argc, char *argv[])
 
     // Set constants
     if (result.count("max-population"))
-        constants.maxPopulationClassifierCount = result["max-population"].as<uint64_t>();
+        constants.n = result["max-population"].as<uint64_t>();
     if (result.count("alpha"))
         constants.alpha = result["alpha"].as<double>();
     if (result.count("beta"))
-        constants.learningRate = result["beta"].as<double>();
+        constants.beta = result["beta"].as<double>();
     if (result.count("epsilon-0"))
-        constants.predictionErrorThreshold = result["epsilon-0"].as<double>();
+        constants.epsilonZero = result["epsilon-0"].as<double>();
     if (result.count("nu"))
         constants.nu = result["nu"].as<double>();
     if (result.count("gamma"))
@@ -90,9 +90,9 @@ int main(int argc, char *argv[])
     if (result.count("theta-ga"))
         constants.thetaGA = result["theta-ga"].as<uint64_t>();
     if (result.count("chi"))
-        constants.crossoverProbability = result["chi"].as<double>();
+        constants.chi = result["chi"].as<double>();
     if (result.count("mu"))
-        constants.mutationProbability = result["mu"].as<double>();
+        constants.mu = result["mu"].as<double>();
     if (result.count("theta-del"))
         constants.thetaDel = result["theta-del"].as<double>();
     if (result.count("delta"))
@@ -100,13 +100,13 @@ int main(int argc, char *argv[])
     if (result.count("theta-sub"))
         constants.thetaSub = result["theta-sub"].as<double>();
     if (result.count("tau"))
-        constants.tournamentSize = result["tau"].as<double>();
+        constants.tau = result["tau"].as<double>();
     if (result.count("p-sharp"))
-        constants.generalizeProbability = result["p-sharp"].as<double>();
+        constants.dontCareProbability = result["p-sharp"].as<double>();
     if (result.count("initial-prediction"))
         constants.initialPrediction = result["initial-prediction"].as<double>();
     if (result.count("initial-prediction-error"))
-        constants.initialPredictionError = result["initial-prediction-error"].as<double>();
+        constants.initialEpsilon = result["initial-prediction-error"].as<double>();
     if (result.count("initial-fitness"))
         constants.initialFitness = result["initial-fitness"].as<double>();
     if (result.count("p-explr"))
@@ -154,22 +154,22 @@ int main(int argc, char *argv[])
     {
         // Output parameters
         std::cout << "[ XCS General Parameters ]" << std::endl;
-        std::cout << "               N = " << constants.maxPopulationClassifierCount << std::endl;
-        std::cout << "            beta = " << constants.learningRate << std::endl;
+        std::cout << "               N = " << constants.n << std::endl;
+        std::cout << "            beta = " << constants.beta << std::endl;
         std::cout << "           alpha = " << constants.alpha << std::endl;
-        std::cout << "       epsilon_0 = " << constants.predictionErrorThreshold << std::endl;
+        std::cout << "       epsilon_0 = " << constants.epsilonZero << std::endl;
         std::cout << "              nu = " << constants.nu << std::endl;
         std::cout << "           alpha = " << constants.alpha << std::endl;
         std::cout << "           gamma = " << constants.gamma << std::endl;
         std::cout << "        theta_GA = " << constants.thetaGA << std::endl;
-        std::cout << "             chi = " << constants.crossoverProbability << std::endl;
-        std::cout << "              mu = " << constants.mutationProbability << std::endl;
+        std::cout << "             chi = " << constants.chi << std::endl;
+        std::cout << "              mu = " << constants.mu << std::endl;
         std::cout << "       theta_del = " << constants.thetaDel << std::endl;
         std::cout << "           delta = " << constants.delta << std::endl;
         std::cout << "       theta_sub = " << constants.thetaSub << std::endl;
-        std::cout << "             P_# = " << constants.generalizeProbability << std::endl;
+        std::cout << "             P_# = " << constants.dontCareProbability << std::endl;
         std::cout << "             p_I = " << constants.initialPrediction << std::endl;
-        std::cout << "       epsilon_I = " << constants.initialPredictionError << std::endl;
+        std::cout << "       epsilon_I = " << constants.initialEpsilon << std::endl;
         std::cout << "             F_I = " << constants.initialFitness << std::endl;
         std::cout << "         p_explr = " << constants.exploreProbability << std::endl;
         if (constants.thetaMna != 0) std::cout << "       theta_mna = " << constants.thetaMna << std::endl;
@@ -179,8 +179,8 @@ int main(int argc, char *argv[])
 
         // Output optional settings
         std::stringstream ss;
-        if (constants.tournamentSize > 0.0 && constants.tournamentSize <= 1.0)
-            ss << "             tau = " << constants.tournamentSize << std::endl;
+        if (constants.tau > 0.0 && constants.tau <= 1.0)
+            ss << "             tau = " << constants.tau << std::endl;
         if (!constants.doActionMutation)
             ss << "doActionMutation = false" << std::endl;
         if (!constants.useMAM)
@@ -209,7 +209,7 @@ int main(int argc, char *argv[])
             environments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
         }
 
-        run<Experiment<bool, bool>>(
+        run<XCS<bool, bool>>(
             seedCount,
             constants,
             iterationCount,

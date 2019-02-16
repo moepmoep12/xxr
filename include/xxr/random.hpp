@@ -121,14 +121,14 @@ namespace xxr
         }
 
         template <typename T>
-        static std::size_t tournamentSelection(const std::vector<T> & container, double proportionalTournamentSize)
+        static std::size_t tournamentSelection(const std::vector<T> & container, double tau)
         {
             std::size_t selectedIdx = container.size() - 1;
             T best = std::numeric_limits<T>::lowest();
 
             for (std::size_t i = 0; i < container.size(); ++i)
             {
-                if (nextDouble() < proportionalTournamentSize && best < container[i])
+                if (nextDouble() < tau && best < container[i])
                 {
                     best = container[i];
                     selectedIdx = i;
@@ -146,7 +146,7 @@ namespace xxr
         }
 
         template <typename T>
-        static std::size_t tournamentSelectionMicroClassifier(const std::vector<std::pair<T, std::size_t>> & container, double proportionalTournamentSize)
+        static std::size_t tournamentSelectionMicroClassifier(const std::vector<std::pair<T, std::size_t>> & container, double tau)
         {
             std::size_t selectedIdx = container.size() - 1;
             T best = std::numeric_limits<T>::lowest();
@@ -157,7 +157,7 @@ namespace xxr
                 {
                     for (std::size_t j = 0; j < container[i].second /*numerosity*/; ++j)
                     {
-                        if (nextDouble() < proportionalTournamentSize)
+                        if (nextDouble() < tau)
                         {
                             best = container[i].first / container[i].second;
                             selectedIdx = i;

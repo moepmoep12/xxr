@@ -221,7 +221,7 @@ namespace xxr { namespace xcs_impl
                 ss  << cl->condition << ","
                     << cl->action << ","
                     << cl->prediction << ","
-                    << cl->predictionError << ","
+                    << cl->epsilon << ","
                     << cl->fitness << ","
                     << cl->experience << ","
                     << cl->timeStamp << ","

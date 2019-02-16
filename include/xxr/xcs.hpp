@@ -12,4 +12,6 @@ namespace xxr
     template <typename T = int, typename Action = int>
     using XCS = xcs_impl::Experiment<T, Action>;
 
+    using XCSConstants = xcs_impl::Constants;
+
 }

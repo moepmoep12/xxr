@@ -47,7 +47,7 @@ namespace xxr { namespace xcsr_impl
         // Destructor
         virtual ~Condition() = default;
 
-        virtual void randomGeneralize(double generalizeProbability) override
+        virtual void randomGeneralize(double dontCareProbability) override
         {
             assert(false);
         }

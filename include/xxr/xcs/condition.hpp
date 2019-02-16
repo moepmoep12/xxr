@@ -118,11 +118,11 @@ namespace xxr { namespace xcs_impl
             return m_symbols.cend();
         }
 
-        virtual void randomGeneralize(double generalizeProbability)
+        virtual void randomGeneralize(double dontCareProbability)
         {
             for (auto && symbol : m_symbols)
             {
-                if (Random::nextDouble() < generalizeProbability)
+                if (Random::nextDouble() < dontCareProbability)
                 {
                     symbol.generalize();
                 }

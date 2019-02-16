@@ -1,7 +1,7 @@
 #include <iostream>
+#include <xxr/environment/checkerboard_environment.hpp>
 
 #include "unit_test.hpp"
-#include "../environment/checkerboard_environment.hpp"
 
 using namespace xxr;
 

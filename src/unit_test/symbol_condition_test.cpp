@@ -1,12 +1,12 @@
 #include <iostream>
+#include <xxr/xcs/condition.hpp>
+#include <xxr/xcs/symbol.hpp>
+#include <xxr/xcsr/condition.hpp>
+#include <xxr/xcsr/csr/symbol.hpp>
+#include <xxr/xcsr/obr/symbol.hpp>
+#include <xxr/xcsr/ubr/symbol.hpp>
 
 #include "unit_test.hpp"
-#include "../xcs/condition.hpp"
-#include "../xcs/symbol.hpp"
-#include "../xcsr/condition.hpp"
-#include "../xcsr/csr/symbol.hpp"
-#include "../xcsr/obr/symbol.hpp"
-#include "../xcsr/ubr/symbol.hpp"
 
 using namespace xxr;
 

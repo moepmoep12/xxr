@@ -61,7 +61,7 @@ namespace xxr { namespace xcs_impl
             }
 
             // Return if the sum of numerosity has not met its maximum limit
-            if (numerositySum < m_constants.maxPopulationClassifierCount)
+            if (numerositySum < m_constants.n)
             {
                 return;
             }
@@ -77,7 +77,7 @@ namespace xxr { namespace xcs_impl
 
             std::size_t selectedIdx;
             // Note: not using tournament selection in deletion
-            /*if (m_constants.tournamentSize > 0.0 && m_constants.tournamentSize <= 1.0)
+            /*if (m_constants.tau > 0.0 && m_constants.tau <= 1.0)
             {
                 // Tournament selection
                 std::vector<std::pair<double, std::size_t>> votes;
@@ -86,7 +86,7 @@ namespace xxr { namespace xcs_impl
                 {
                     votes.emplace_back(deletionVote(*c, averageFitness), c->numerosity);
                 }
-                selectedIdx = Random::tournamentSelection(votes, m_constants.tournamentSize);
+                selectedIdx = Random::tournamentSelection(votes, m_constants.tau);
             }
             else
             {*/

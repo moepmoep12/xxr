@@ -48,7 +48,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
             // Mutate p or q
             for (std::size_t i = 0; i < cl.condition.size(); ++i)
             {
-                if (Random::nextDouble() < m_constants.mutationProbability)
+                if (Random::nextDouble() < m_constants.mu)
                 {
                     if (Random::nextDouble() < 0.5)
                     {
@@ -69,7 +69,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
                 }
             }
 
-            if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mutationProbability) && (m_availableActions.size() >= 2))
+            if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mu) && (m_availableActions.size() >= 2))
             {
                 std::unordered_set<Action> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);

@@ -74,7 +74,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
                 ss  << cl->condition << ","
                     << cl->action << ","
                     << cl->prediction << ","
-                    << cl->predictionError << ","
+                    << cl->epsilon << ","
                     << cl->fitness << ","
                     << cl->experience << ","
                     << cl->timeStamp << ","

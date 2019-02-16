@@ -11,13 +11,13 @@ namespace xxr { namespace xcs_impl
         //   The maximum size of the population
         //   (the sum of the classifier numerosities in micro-classifiers)
         //   Recommended: large enough
-        uint64_t maxPopulationClassifierCount = 400;
+        uint64_t n = 400;
 
         // beta
         //   The learning rate for updating fitness, prediction, prediction error, and
         //   action set size estimate in XCS's classifiers
         //   Recommended: 0.1-0.2
-        double learningRate = 0.2;
+        double beta = 0.2;
 
         // alpha
         //   The fall of rate in the fitness evaluation
@@ -27,7 +27,7 @@ namespace xxr { namespace xcs_impl
         // epsilon_0
         //   The error threshold under which the accuracy of a classifier is set to one
         //   Recommended: 1% of the maximum reward
-        double predictionErrorThreshold = 10;
+        double epsilonZero = 10;
 
         // nu
         //   The exponent in the power function for the fitness evaluation
@@ -47,12 +47,12 @@ namespace xxr { namespace xcs_impl
         // chi
         //   The probability of applying crossover
         //   Recommended: 0.5-1.0
-        double crossoverProbability = 0.8;
+        double chi = 0.8;
 
         // mu
         //   The probability of mutating one allele and the action
         //   Recommended: 0.01-0.05
-        double mutationProbability = 0.04;
+        double mu = 0.04;
 
         // theta_del
         //   The experience threshold over which the fitness of a classifier may be
@@ -74,12 +74,12 @@ namespace xxr { namespace xcs_impl
         // tau
         //   The tournament size for selection [Butz et al., 2003]
         //   (set "0" to use the roulette-wheel selection)
-        double tournamentSize = 0.0;
+        double tau = 0.0;
 
         // P_sharp
         //   The probability of using a don't care symbol in an allele when covering
         //   Recommended: 0.33
-        double generalizeProbability = 0.33;
+        double dontCareProbability = 0.33;
 
         // p_I
         //   The initial prediction value when generating a new classifier
@@ -89,7 +89,7 @@ namespace xxr { namespace xcs_impl
         // epsilon_I
         //   The initial prediction error value when generating a new classifier
         //   Recommended: very small (essentially zero)
-        double initialPredictionError = 0.01;
+        double initialEpsilon = 0.01;
 
         // F_I
         //   The initial fitness value when generating a new classifier

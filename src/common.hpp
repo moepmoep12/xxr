@@ -17,15 +17,15 @@
 template <class Constants>
 void switchToCondensationMode(Constants & constants)
 {
-    constants.crossoverProbability = 0.0;
-    constants.mutationProbability = 0.0;
+    constants.chi = 0.0;
+    constants.mu = 0.0;
 }
 
 template <>
 void switchToCondensationMode(xxr::xcsr_impl::Constants & constants)
 {
-    constants.crossoverProbability = 0.0;
-    constants.mutationProbability = 0.0;
+    constants.chi = 0.0;
+    constants.mu = 0.0;
     constants.subsumptionTolerance = 0.0;
 }
 
