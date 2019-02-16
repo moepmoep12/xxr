@@ -1,13 +1,22 @@
-# XCS &amp; XCSR
-XCS &amp; XCSR implementation in C++14
+# **xxr** : XCS &amp; XCSR Application / C++ Library
+Learning classifier systems (XCS & XCSR) written in C++14
 
+- Full implementation of XCS and XCSR (XCS for real values)
+    - Built-in benchmark problems
+        - Multiplexer problem (XCS)
+        - Real-multiplexer problem (XCSR)
+        - Checkerboard problem (XCS)
+    - CSV dataset (XCS & XCSR)
+- Also can be used as a header-only library
+
+# Compilation
 ```
 $ git clone https://github.com/m4saka/xcs-xcsr.git && cd xcs-xcsr
 $ git submodule update -i
 $ make
 ```
 
-# Examples
+# Usage
 
 ## 6-bit Multiplexer Problem
 ```
@@ -47,11 +56,46 @@ $ ./xcs --help
 $ ./xcsr --help
 ```
 
+# Use as a C++ library
+```cpp
+#include <iostream>
+#include "include/xxr/xcs.hpp"
+
+using namespace xxr;
+
+int main()
+{
+    // XCS Parameters
+    auto constants = XCSConstants();
+    constants.n = 1200; // N (max number of classifiers)
+
+    auto xcs = XCS<>({ 0, 1 } /* Available actions */, constants);
+
+    while (/* Termination criteria */)
+    {
+        int action = xcs.explore(/* Input (std::vector<int>) */);
+
+        // ... (Evaluate the action here!)
+
+        xcs.reward(/* Reward (int) */);
+    }
+
+    // Show acquired rules
+    std::cout << xcs.dumpPopulation();
+
+    // Use "xcs.exploit(input)" to get the most desirable action
+    // chosen by using acquired rules
+
+    return 0;
+}
+
+```
+
 # Reference
 
 - S. W. Wilson, "Classifier Fitness Based on Accuracy," Evolutionary Computation, Vol.3, No.2, pp.149-175, June 1995. https://doi.org/10.1162/evco.1995.3.2.149
     - The original paper of XCS.
-- M. V. Butz, S. W. Wilson, "An algorithmic description of XCS," S. Soft Computing, Volume 6, Issue 3–4, pp 144–153, June 2002. https://doi.org/10.1007/s005000100111
+- M. V. Butz, S. W. Wilson, "An algorithmic description of XCS," S. Soft Computing, Volume 6, Issue 3-4, pp 144-153, June 2002. https://doi.org/10.1007/s005000100111
     - The tutorial for the XCS implementation.
 - S. W. Wilson, "Get Real! XCS with Continuous-Valued Inputs," Learning Classifier Systems, IWLCS 1999, Lecture Notes in Computer Science, vol 1813, pp 209-219, July 2000. https://doi.org/10.1007/3-540-45027-0_11
     - The original paper of XCSR.
