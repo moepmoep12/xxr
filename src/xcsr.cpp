@@ -38,7 +38,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     {
         return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
             dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-                run<csr::Experiment<T, Action>>(
+                run<XCSR<Repr::CSR, T, Action>>(
                     seedCount,
                     constants,
                     iterationCount,
@@ -63,7 +63,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     {
         return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
             dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-                run<obr::Experiment<T, Action>>(
+                run<XCSR<Repr::OBR, T, Action>>(
                     seedCount,
                     constants,
                     iterationCount,
@@ -88,7 +88,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     {
         return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
             dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-                run<ubr::Experiment<T, Action>>(
+                run<XCSR<Repr::UBR, T, Action>>(
                     seedCount,
                     constants,
                     iterationCount,
