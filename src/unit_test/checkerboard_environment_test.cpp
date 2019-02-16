@@ -1,13 +1,15 @@
 #include <iostream>
 
-#include "unit_test.h"
-#include "../environment/checkerboard_environment.h"
+#include "unit_test.hpp"
+#include "../environment/checkerboard_environment.hpp"
+
+using namespace xxr;
 
 int main()
 {
     std::cout << "chk(2, 2):" << std::endl;
     {
-        XCSR::CheckerboardEnvironment env(2, 2);
+        CheckerboardEnvironment env(2, 2);
         expect("(0.0, 0.0)", env.getAnswer({ 0.0, 0.0 }) == 0);
         expect("(1.0, 0.0)", env.getAnswer({ 1.0, 0.0 }) == 1);
         expect("(0.0, 1.0)", env.getAnswer({ 0.0, 1.0 }) == 1);
@@ -29,7 +31,7 @@ int main()
 
     std::cout << "chk(2, 5):" << std::endl;
     {
-        XCSR::CheckerboardEnvironment env(2, 5);
+        CheckerboardEnvironment env(2, 5);
         expect("(0.0, 0.0)", env.getAnswer({ 0.0, 0.0 }) == 0);
         expect("(0.21, 0.0)", env.getAnswer({ 0.21, 0.0 }) == 1);
         expect("(0.0, 0.21)", env.getAnswer({ 0.0, 0.21 }) == 1);
@@ -57,7 +59,7 @@ int main()
 
     std::cout << "chk(3, 3):" << std::endl;
     {
-        XCSR::CheckerboardEnvironment env(3, 3);
+        CheckerboardEnvironment env(3, 3);
         expect("(0.0, 0.0, 0.0)", env.getAnswer({ 0.0, 0.0, 0.0 }) == 0);
         expect("(0.5, 0.0, 0.0)", env.getAnswer({ 0.5, 0.0, 0.0 }) == 1);
         expect("(0.0, 0.5, 0.0)", env.getAnswer({ 0.0, 0.5, 0.0 }) == 1);

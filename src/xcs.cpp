@@ -6,15 +6,13 @@
 #include <unordered_set>
 #include <cstddef>
 
+#include <xxr/xcs.hpp>
 #include <cxxopts.hpp>
 
-#include "common.h"
-#include "XCS/experiment.h"
-#include "environment/multiplexer_environment.h"
-#include "environment/block_world_environment.h"
-#include "environment/csv_environment.h"
+#include "common.hpp"
 
-using namespace XCS;
+using namespace xxr;
+using namespace xxr::xcs_impl;
 
 int main(int argc, char *argv[])
 {

@@ -1,5 +1,5 @@
 CC       = g++
-CXXFLAGS = -Wall -O2 -std=c++14 -Isrc/third_party/cxxopts/include
+CXXFLAGS = -Wall -O2 -std=c++14 -Iinclude -Isrc/third_party/cxxopts/include
 LDFLAGS  = 
 
 all: xcs xcsr

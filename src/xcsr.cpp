@@ -6,21 +6,17 @@
 #include <unordered_set>
 #include <cstddef>
 
+#include <xxr/xcsr.hpp>
 #include <cxxopts.hpp>
 
-#include "common.h"
-#include "XCSR_CS/experiment.h"
-#include "XCSR_LU/experiment.h"
-#include "XCSR_UB/experiment.h"
-#include "environment/real_multiplexer_environment.h"
-#include "environment/checkerboard_environment.h"
-#include "environment/csv_environment.h"
+#include "common.hpp"
 
-using namespace XCSR;
+using namespace xxr;
+using namespace xxr::xcsr_impl;
 
 template <typename T, typename Action, class Constants, class Environment>
-std::unique_ptr<XCS::Experiment<T, Action>> runXCSR(
-    std::string representation,
+std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
+    std::string repr,
     std::size_t seedCount,
     const Constants & constants,
     std::size_t iterationCount,
@@ -38,11 +34,11 @@ std::unique_ptr<XCS::Experiment<T, Action>> runXCSR(
     std::function<void(Environment &)> explorationCallback = [](Environment &){},
     std::function<void(Environment &)> exploitationCallback = [](Environment &){})
 {
-    if (representation == "cs")
+    if (repr == "csr" || repr == "cs")
     {
-        return std::unique_ptr<XCS::Experiment<T, Action>>(
-            dynamic_cast<XCS::Experiment<T, Action> *>(
-                run<XCSR_CS::Experiment<T, Action>>(
+        return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
+            dynamic_cast<xcs_impl::Experiment<T, Action> *>(
+                run<csr::Experiment<T, Action>>(
                     seedCount,
                     constants,
                     iterationCount,
@@ -63,11 +59,11 @@ std::unique_ptr<XCS::Experiment<T, Action>> runXCSR(
             )
         );
     }
-    else if (representation == "lu")
+    else if (repr == "obr" || repr == "lu")
     {
-        return std::unique_ptr<XCS::Experiment<T, Action>>(
-            dynamic_cast<XCS::Experiment<T, Action> *>(
-                run<XCSR_LU::Experiment<T, Action>>(
+        return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
+            dynamic_cast<xcs_impl::Experiment<T, Action> *>(
+                run<obr::Experiment<T, Action>>(
                     seedCount,
                     constants,
                     iterationCount,
@@ -88,11 +84,11 @@ std::unique_ptr<XCS::Experiment<T, Action>> runXCSR(
             )
         );
     }
-    else if (representation == "ub")
+    else if (repr == "ubr" || repr == "ub")
     {
-        return std::unique_ptr<XCS::Experiment<T, Action>>(
-            dynamic_cast<XCS::Experiment<T, Action> *>(
-                run<XCSR_UB::Experiment<T, Action>>(
+        return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
+            dynamic_cast<xcs_impl::Experiment<T, Action> *>(
+                run<ubr::Experiment<T, Action>>(
                     seedCount,
                     constants,
                     iterationCount,
@@ -115,14 +111,14 @@ std::unique_ptr<XCS::Experiment<T, Action>> runXCSR(
     }
     else
     {
-        std::cerr << "Error: Unknown representation (" << representation << ")" << std::endl;
+        std::cerr << "Error: Unknown representation (" << repr << ")" << std::endl;
         exit(1);
     }
 }
 
 int main(int argc, char *argv[])
 {
-    XCSR::Constants constants;
+    xcsr_impl::Constants constants;
 
     // Parse command line arguments
     cxxopts::Options options(argv[0], "XCSR Classifier System");
@@ -175,8 +171,8 @@ int main(int argc, char *argv[])
         ("do-ga-subsumption", "Whether offspring are to be tested for possible logical subsumption by parents", cxxopts::value<bool>()->default_value(constants.doGASubsumption ? "true" : "false"), "true/false")
         ("do-action-set-subsumption", "Whether action sets are to be tested for subsuming classifiers", cxxopts::value<bool>()->default_value(constants.doActionSetSubsumption ? "true" : "false"), "true/false")
         ("do-action-mutation", "Whether to apply mutation to the action", cxxopts::value<bool>()->default_value(constants.doActionMutation ? "true" : "false"), "true/false")
-        ("do-range-restriction", "Whether to restrict the range of the condition to the interval [min-value, max-value) in the covering and mutation operator (ignored when --repr=cs)", cxxopts::value<bool>()->default_value(constants.doRangeRestriction ? "true" : "false"), "true/false")
-        ("do-covering-random-range-truncation", "Whether to truncate the covering random range before generating random intervals if the interval [x-s_0, x+s_0) is not contained in [min-value, max-value).  \"false\" is common for this option, but the covering operator can generate too many maximum-range intervals if s_0 is larger than (max-value - min-value) / 2.  Choose \"true\" to avoid the random bias in this situation.  (ignored when --repr=cs)", cxxopts::value<bool>()->default_value(constants.doCoveringRandomRangeTruncation ? "true" : "false"), "true/false")
+        ("do-range-restriction", "Whether to restrict the range of the condition to the interval [min-value, max-value) in the covering and mutation operator (ignored when --repr=csr)", cxxopts::value<bool>()->default_value(constants.doRangeRestriction ? "true" : "false"), "true/false")
+        ("do-covering-random-range-truncation", "Whether to truncate the covering random range before generating random intervals if the interval [x-s_0, x+s_0) is not contained in [min-value, max-value).  \"false\" is common for this option, but the covering operator can generate too many maximum-range intervals if s_0 is larger than (max-value - min-value) / 2.  Choose \"true\" to avoid the random bias in this situation.  (ignored when --repr=csr)", cxxopts::value<bool>()->default_value(constants.doCoveringRandomRangeTruncation ? "true" : "false"), "true/false")
         ("mam", "Whether to use the moyenne adaptive modifee (MAM) for updating the prediction and the prediction error of classifiers", cxxopts::value<bool>()->default_value(constants.useMAM ? "true" : "false"), "true/false")
         ("h,help", "Show this help");
 
@@ -331,10 +327,10 @@ int main(int argc, char *argv[])
     // Use multiplexer problem
     if (result.count("mux"))
     {
-        std::vector<std::unique_ptr<XCSR::RealMultiplexerEnvironment>> environments;
+        std::vector<std::unique_ptr<RealMultiplexerEnvironment>> environments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            environments.push_back(std::make_unique<XCSR::RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
+            environments.push_back(std::make_unique<RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
         }
 
         runXCSR<double, bool>(
@@ -365,10 +361,10 @@ int main(int argc, char *argv[])
             std::cerr << "Error: The division in the checkerboard problem (--chk-div) is not specified." << std::endl;
             exit(1);
         }
-        std::vector<std::unique_ptr<XCSR::CheckerboardEnvironment>> environments;
+        std::vector<std::unique_ptr<CheckerboardEnvironment>> environments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            environments.push_back(std::make_unique<XCSR::CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
+            environments.push_back(std::make_unique<CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
         }
 
         runXCSR<double, bool>(
@@ -424,15 +420,15 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        std::vector<std::unique_ptr<XCS::CSVEnvironment<double, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<CSVEnvironment<double, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            explorationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(filename, availableActions, result["csv-random"].as<bool>()));
+            explorationEnvironments.push_back(std::make_unique<CSVEnvironment<double, int>>(filename, availableActions, result["csv-random"].as<bool>()));
         }
-        std::vector<std::unique_ptr<XCS::CSVEnvironment<double, int>>> exploitationEnvironments;
+        std::vector<std::unique_ptr<CSVEnvironment<double, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            exploitationEnvironments.push_back(std::make_unique<XCS::CSVEnvironment<double, int>>(evaluationCsvFilename, availableActions, result["csv-random"].as<bool>()));
+            exploitationEnvironments.push_back(std::make_unique<CSVEnvironment<double, int>>(evaluationCsvFilename, availableActions, result["csv-random"].as<bool>()));
         }
 
         runXCSR<double, int>(
