@@ -64,7 +64,7 @@ $ ./xcsr --help
 # Use as a C++ library
 ```cpp
 #include <iostream>
-#include "include/xxr/xcs.hpp"
+#include <xxr/xcs.hpp>
 
 using namespace xxr;
 
