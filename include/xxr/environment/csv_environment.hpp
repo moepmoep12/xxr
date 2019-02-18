@@ -18,7 +18,8 @@ namespace xxr
     class CSVEnvironment : public AbstractEnvironment<T, Action>
     {
     protected:
-        std::vector<std::pair<std::vector<T>, Action> > m_dataSet;
+        std::vector<std::vector<T>> m_situations;
+        std::vector<Action> m_actions;
         std::vector<T> m_situation;
         Action m_answer;
         std::size_t m_nextIdx;
@@ -29,15 +30,15 @@ namespace xxr
         {
             if (m_chooseRandom)
             {
-                auto sample = Random::chooseFrom(m_dataSet);
-                m_situation = sample.first;
-                m_answer = sample.second;
+                auto idx = Random::nextInt<std::size_t>(0UL, m_situations.size() - 1UL);
+                m_situation = m_situations[idx];
+                m_answer = m_actions[idx];
             }
             else
             {
-                m_situation = m_dataSet[m_nextIdx].first;
-                m_answer = m_dataSet[m_nextIdx].second;
-                if (++m_nextIdx >= m_dataSet.size())
+                m_situation = m_situations[m_nextIdx];
+                m_answer = m_actions[m_nextIdx];
+                if (++m_nextIdx >= m_situations.size())
                 {
                     m_nextIdx = 0;
                 }
@@ -69,13 +70,15 @@ namespace xxr
                 assert(!std::isnan(fieldValue));
 
                 // Last field is action
-                Action answer = static_cast<Action>(fieldValue);
+                m_actions.push_back(static_cast<Action>(fieldValue));
                 situation.pop_back();
 
-                m_dataSet.emplace_back(situation, answer);
+                m_situations.push_back(situation);
             }
 
-            assert(!m_dataSet.empty());
+            assert(!m_situations.empty());
+            assert(!m_actions.empty());
+            assert(m_situations.size() == m_actions.size());
 
             loadNext();
         }
