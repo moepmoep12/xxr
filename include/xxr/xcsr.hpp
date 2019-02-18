@@ -16,4 +16,7 @@ namespace xxr
     template <xcsr_impl::Repr R, typename T = int, typename Action = int>
     using XCSR = typename xcsr_impl::repr_to_experiment<R, T, Action>::type;
 
+    using XCSRRepr = xcsr_impl::Repr;
+    using XCSConstants = xcs_impl::Constants;
+
 }
