@@ -111,9 +111,6 @@ std::unique_ptr<Experiment> run(
                 {
                     do
                     {
-                        // Get situation from environment
-                        auto situation = exploitationEnvironments[j]->situation();
-
                         // Choose action
                         int action = experiments[j]->exploit(exploitationEnvironments[j]->situation(), updateInExploitation);
 
