@@ -67,10 +67,12 @@ namespace xxr
         // Returns the answer for the current situation
         bool getAnswer() const
         {
+#ifndef NDEBUG
             for (auto && value : m_situation)
             {
                 assert(value >= 0.0 && value < 1.0 + std::numeric_limits<double>::epsilon());
             }
+#endif
             return getAnswer(m_situation);
         }
 
