@@ -29,7 +29,7 @@ void switchToCondensationMode(xxr::xcsr_impl::Constants & constants)
     constants.subsumptionTolerance = 0.0;
 }
 
-template <class Experiment, class Constants, class Environment>
+template <class Experiment, class Constants, class Environment, class... Args>
 std::unique_ptr<Experiment> run(
     std::size_t seedCount,
     const Constants & constants,
@@ -46,7 +46,8 @@ std::unique_ptr<Experiment> run(
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
     std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
     std::function<void(Environment &)> explorationCallback = [](Environment &){},
-    std::function<void(Environment &)> exploitationCallback = [](Environment &){})
+    std::function<void(Environment &)> exploitationCallback = [](Environment &){},
+    Args && ... args)
 {
     assert(explorationEnvironments.size() == seedCount);
     assert(exploitationEnvironments.size() == seedCount);
@@ -54,7 +55,13 @@ std::unique_ptr<Experiment> run(
     std::vector<std::unique_ptr<Experiment>> experiments;
     for (std::size_t i = 0; i < seedCount; ++i)
     {
-        experiments.push_back(std::make_unique<Experiment>(explorationEnvironments[i]->availableActions, constants));
+        experiments.push_back(
+            std::make_unique<Experiment>(
+                std::forward<Args>(args)...,
+                explorationEnvironments[i]->availableActions,
+                constants
+            )
+        );
     }
 
     SimpleMovingAverage<double> sma(smaWidth);
