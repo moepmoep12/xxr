@@ -152,32 +152,8 @@ namespace xxr { namespace xcs_impl
         }
 
         // Run without exploration
-        virtual Action exploit(const std::vector<T> & situation)// const /* TODO: use const */
-        {
-            // Create new match set as sandbox /*(because of const member function)*/
-            MatchSet matchSet(constants, m_availableActions);
-            for (auto && cl : m_population)
-            {
-                if (cl->condition.matches(situation))
-                {
-                    matchSet.insert(cl);
-                }
-            }
-
-            if (!matchSet.empty())
-            {
-                GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet> predictionArray(matchSet);
-                return predictionArray.selectAction();
-            }
-            else
-            {
-                return Random::chooseFrom(m_availableActions);
-            }
-        }
-
-        // Run without exploration (for testing multi-step problems)
-        // (Make sure to call reward() after this if update is true)
-        virtual Action exploit(const std::vector<T> & situation, bool update)
+        // (Set update to true when testing multi-step problems. If update is true, make sure to call reward() after this.)
+        virtual Action exploit(const std::vector<T> & situation, bool update = false)
         {
             if (update)
             {
@@ -208,7 +184,25 @@ namespace xxr { namespace xcs_impl
             }
             else
             {
-                return exploit(situation);
+                // Create new match set as sandbox /*(because of const member function)*/
+                MatchSet matchSet(constants, m_availableActions);
+                for (auto && cl : m_population)
+                {
+                    if (cl->condition.matches(situation))
+                    {
+                        matchSet.insert(cl);
+                    }
+                }
+
+                if (!matchSet.empty())
+                {
+                    GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet> predictionArray(matchSet);
+                    return predictionArray.selectAction();
+                }
+                else
+                {
+                    return Random::chooseFrom(m_availableActions);
+                }
             }
         }
 
