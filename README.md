@@ -64,18 +64,20 @@ $ ./xcsr --help
 # Use as a C++ library
 ```cpp
 #include <iostream>
-#include "include/xxr/xcs.hpp"
+#include <xxr/xcs.hpp>
 
 using namespace xxr;
 
 int main()
 {
-    // XCS Parameters
+    // XCS parameters
     auto constants = XCSConstants();
     constants.n = 1200; // N (max number of classifiers)
 
+    // XCS classifier system
     auto xcs = XCS<>({ 0, 1 } /* Available actions */, constants);
 
+    // Learning iterations
     while (/* Termination criteria */)
     {
         int action = xcs.explore(/* Input (std::vector<int>) */);
