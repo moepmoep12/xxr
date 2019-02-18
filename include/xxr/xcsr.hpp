@@ -13,10 +13,10 @@ namespace xxr
     constexpr auto UBR = xcsr_impl::Repr::UBR;
 
     // XCSR Classifier System
-    template <xcsr_impl::Repr R, typename T = int, typename Action = int>
+    template <xcsr_impl::Repr R, typename T = double, typename Action = int>
     using XCSR = typename xcsr_impl::repr_to_experiment<R, T, Action>::type;
 
     using XCSRRepr = xcsr_impl::Repr;
-    using XCSConstants = xcs_impl::Constants;
+    using XCSRConstants = xcs_impl::Constants;
 
 }
