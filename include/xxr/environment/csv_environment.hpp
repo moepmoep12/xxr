@@ -45,7 +45,7 @@ namespace xxr
         }
 
     public:
-        CSVEnvironment(std::string filename, const std::unordered_set<Action> & availableActions, bool chooseRandom = true) :
+        CSVEnvironment(const std::string & filename, const std::unordered_set<Action> & availableActions, bool chooseRandom = true) :
             AbstractEnvironment<T, Action>(availableActions),
             m_nextIdx(0),
             m_chooseRandom(chooseRandom),
