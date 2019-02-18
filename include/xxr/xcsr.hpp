@@ -17,6 +17,6 @@ namespace xxr
     using XCSR = typename xcsr_impl::repr_to_experiment<R, T, Action>::type;
 
     using XCSRRepr = xcsr_impl::Repr;
-    using XCSRConstants = xcs_impl::Constants;
+    using XCSRConstants = xcsr_impl::Constants;
 
 }
