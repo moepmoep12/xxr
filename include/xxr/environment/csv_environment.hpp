@@ -15,9 +15,9 @@ namespace xxr
 {
 
     template <typename T, typename Action>
-    class CSVEnvironment final : public AbstractEnvironment<T, Action>
+    class CSVEnvironment : public AbstractEnvironment<T, Action>
     {
-    private:
+    protected:
         std::vector<std::pair<std::vector<T>, Action> > m_dataSet;
         std::vector<T> m_situation;
         Action m_answer;
@@ -25,7 +25,7 @@ namespace xxr
         const bool m_chooseRandom;
         bool m_isEndOfProblem;
 
-        void loadNext()
+        virtual void loadNext()
         {
             if (m_chooseRandom)
             {
@@ -80,7 +80,7 @@ namespace xxr
             loadNext();
         }
 
-        ~CSVEnvironment() = default;
+        virtual ~CSVEnvironment() = default;
 
         virtual std::vector<T> situation() const override
         {
@@ -105,7 +105,7 @@ namespace xxr
         }
 
         // Returns the answer
-        Action getAnswer() const
+        virtual Action getAnswer() const
         {
             return m_answer;
         }
