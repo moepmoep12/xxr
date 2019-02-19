@@ -4,7 +4,6 @@
 #include "../condition.hpp"
 #include "symbol.hpp"
 #include "../classifier.hpp"
-#include "classifier.hpp"
 #include "../constants.hpp"
 #include "match_set.hpp"
 #include "ga.hpp"
@@ -18,7 +17,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
         typename Action,
         class Symbol = Symbol<T>,
         class Condition = xcsr_impl::Condition<T, Symbol>,
-        class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
+        class ConditionActionPair = xcsr_impl::ConditionActionPair<T, Action, Symbol, Condition>,
         class Constants = xcsr_impl::Constants,
         class Classifier = xcsr_impl::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
         class ClassifierPtrSet = xcs_impl::ClassifierPtrSet<Action, Classifier, Constants>,
@@ -49,8 +48,8 @@ namespace xxr { namespace xcsr_impl { namespace obr
                 {
                     ss << "|";
 
-                    auto normalizedLowerLimit = (symbol.lower - constants.minValue) / (constants.maxValue - constants.minValue);
-                    auto normalizedUpperLimit = (symbol.upper - constants.minValue) / (constants.maxValue - constants.minValue);
+                    auto normalizedLowerLimit = (symbol.lower() - constants.minValue) / (constants.maxValue - constants.minValue);
+                    auto normalizedUpperLimit = (symbol.upper() - constants.minValue) / (constants.maxValue - constants.minValue);
 
                     for (int i = 0; i < 10; ++i)
                     {

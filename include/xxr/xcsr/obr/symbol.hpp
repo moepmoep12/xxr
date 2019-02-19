@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xcs/symbol.hpp"
+#include "../symbol.hpp"
 #include <sstream>
 #include <iomanip>
 #include <string>
@@ -11,15 +11,15 @@ namespace xxr { namespace xcsr_impl { namespace obr
 
     // The standard symbol for XCSR_LU (without "don't care")
     template <typename T>
-    class Symbol : public xcs_impl::AbstractSymbol<T>
+    class Symbol : public xcsr_impl::AbstractSymbol<T>
     {
     public:
-        T lower;
-        T upper;
+        T l;
+        T u;
 
         // Constructor
-        constexpr Symbol(T value) : lower(value), upper(value) {}
-        constexpr Symbol(T l, T u) : lower(l), upper(u) {}
+        constexpr explicit Symbol(T value) : l(value), u(value) {}
+        constexpr Symbol(T l, T u) : l(l), u(u) {}
 
         // Destructor
         virtual ~Symbol() = default;
@@ -27,43 +27,35 @@ namespace xxr { namespace xcsr_impl { namespace obr
         virtual std::string toString() const override
         {
             std::ostringstream stream;
-            stream << std::setprecision(3) << lower << ";" << upper << " ";
+            stream << std::setprecision(3) << l << ";" << u << " ";
             return stream.str();
         }
 
         friend bool operator== (const Symbol & lhs, const Symbol & rhs)
         {
-            return lhs.lower == rhs.lower && lhs.upper == rhs.upper;
+            return lhs.l == rhs.l && lhs.u == rhs.u;
         }
 
         friend bool operator!= (const Symbol & lhs, const Symbol & rhs)
         {
-            return lhs.lower != rhs.lower || lhs.upper != rhs.upper;
+            return lhs.l != rhs.l || lhs.u != rhs.u;
         }
 
         virtual Symbol & operator= (const Symbol & obj)
         {
-            lower = obj.lower;
-            upper = obj.upper;
+            l = obj.l;
+            u = obj.u;
             return *this;
         }
 
-        virtual bool isDontCare() const override
+        virtual T lower() const override
         {
-            assert(false);
-
-            return false;
+            return l;
         }
 
-        // DOES MATCH
-        virtual bool matches(T value) const noexcept override
+        virtual T upper() const override
         {
-            return lower - std::numeric_limits<double>::epsilon() <= value && value < upper + std::numeric_limits<double>::epsilon();
-        }
-
-        virtual void generalize() override
-        {
-            assert(false);
+            return u;
         }
     };
 

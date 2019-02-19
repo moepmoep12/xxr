@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xcs/symbol.hpp"
+#include "../symbol.hpp"
 #include <sstream>
 #include <iomanip>
 #include <string>
@@ -11,14 +11,14 @@ namespace xxr { namespace xcsr_impl { namespace ubr
 
     // The standard symbol for XCSR_UB (without "don't care")
     template <typename T>
-    class Symbol : public xcs_impl::AbstractSymbol<T>
+    class Symbol : public xcsr_impl::AbstractSymbol<T>
     {
     public:
         T p;
         T q;
 
         // Constructor
-        constexpr Symbol(T value) : p(value), q(value) {}
+        constexpr explicit Symbol(T value) : p(value), q(value) {}
         constexpr Symbol(T p, T q) : p(p), q(q) {}
 
         // Destructor
@@ -55,25 +55,14 @@ namespace xxr { namespace xcsr_impl { namespace ubr
             return false;
         }
 
-        // DOES MATCH
-        virtual bool matches(T value) const noexcept override
-        {
-            return lower() - std::numeric_limits<double>::epsilon() <= value && value < upper() + std::numeric_limits<double>::epsilon();
-        }
-
-        virtual void generalize() override
-        {
-            assert(false);
-        }
-
-        virtual double upper() const
-        {
-            return std::max(p, q);
-        }
-
-        virtual double lower() const
+        virtual T lower() const override
         {
             return std::min(p, q);
+        }
+
+        virtual T upper() const override
+        {
+            return std::max(p, q);
         }
     };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../xcs/symbol.hpp"
+#include "../symbol.hpp"
 #include <sstream>
 #include <iomanip>
 #include <string>
@@ -10,14 +10,14 @@ namespace xxr { namespace xcsr_impl { namespace csr
 
     // The standard symbol for XCSR (without "don't care")
     template <typename T>
-    class Symbol : public xcs_impl::AbstractSymbol<T>
+    class Symbol : public xcsr_impl::AbstractSymbol<T>
     {
     public:
         T center;
         T spread;
 
         // Constructor
-        constexpr Symbol(T c, T s = 0.0) : center(c), spread(s) {}
+        constexpr explicit Symbol(T c, T s = 0.0) : center(c), spread(s) {}
 
         // Destructor
         virtual ~Symbol() = default;
@@ -46,22 +46,14 @@ namespace xxr { namespace xcsr_impl { namespace csr
             return *this;
         }
 
-        virtual bool isDontCare() const override
+        virtual T lower() const override
         {
-            assert(false);
-
-            return false;
+            return center - spread;
         }
 
-        // DOES MATCH
-        virtual bool matches(T value) const noexcept override
+        virtual T upper() const override
         {
-            return (center - spread) <= value && value < (center + spread);
-        }
-
-        virtual void generalize() override
-        {
-            assert(false);
+            return center + spread;
         }
     };
 

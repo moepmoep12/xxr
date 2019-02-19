@@ -31,25 +31,25 @@ namespace xxr { namespace xcsr_impl { namespace obr
             {
                 if (i % 2 == 0)
                 {
-                    std::swap(cl1.condition[i / 2].lower, cl2.condition[i / 2].lower);
+                    std::swap(cl1.condition[i / 2].l, cl2.condition[i / 2].l);
                 }
                 else
                 {
-                    std::swap(cl1.condition[i / 2].upper, cl2.condition[i / 2].upper);
+                    std::swap(cl1.condition[i / 2].u, cl2.condition[i / 2].u);
                 }
             }
 
             // Fix lower and upper order
             for (std::size_t i = (x + 1) / 2; i < y / 2; ++i)
             {
-                if (cl1.condition[i].lower > cl1.condition[i].upper)
+                if (cl1.condition[i].l > cl1.condition[i].u)
                 {
-                    std::swap(cl1.condition[i].lower, cl1.condition[i].upper);
+                    std::swap(cl1.condition[i].l, cl1.condition[i].u);
                 }
 
-                if (cl2.condition[i].lower > cl2.condition[i].upper)
+                if (cl2.condition[i].l > cl2.condition[i].u)
                 {
-                    std::swap(cl2.condition[i].lower, cl2.condition[i].upper);
+                    std::swap(cl2.condition[i].l, cl2.condition[i].u);
                 }
             }
         }
@@ -66,25 +66,25 @@ namespace xxr { namespace xcsr_impl { namespace obr
                 {
                     if (Random::nextDouble() < 0.5)
                     {
-                        cl.condition[i].lower += Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        cl.condition[i].l += Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
                         if (m_constants.doRangeRestriction)
                         {
-                            cl.condition[i].lower = std::min(std::max(m_constants.minValue, cl.condition[i].lower), m_constants.maxValue);
+                            cl.condition[i].l = std::min(std::max(m_constants.minValue, cl.condition[i].l), m_constants.maxValue);
                         }
                     }
                     else
                     {
-                        cl.condition[i].upper += Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
+                        cl.condition[i].u += Random::nextDouble(-m_constants.mutationMaxChange, m_constants.mutationMaxChange);
                         if (m_constants.doRangeRestriction)
                         {
-                            cl.condition[i].upper = std::min(std::max(m_constants.minValue, cl.condition[i].upper), m_constants.maxValue);
+                            cl.condition[i].u = std::min(std::max(m_constants.minValue, cl.condition[i].u), m_constants.maxValue);
                         }
                     }
                 }
 
-                if (cl.condition[i].lower > cl.condition[i].upper)
+                if (cl.condition[i].l > cl.condition[i].u)
                 {
-                    std::swap(cl.condition[i].lower, cl.condition[i].upper);
+                    std::swap(cl.condition[i].l, cl.condition[i].u);
                 }
             }
 

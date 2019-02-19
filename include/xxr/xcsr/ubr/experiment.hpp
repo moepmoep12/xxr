@@ -4,7 +4,6 @@
 #include "../condition.hpp"
 #include "symbol.hpp"
 #include "../classifier.hpp"
-#include "classifier.hpp"
 #include "../constants.hpp"
 #include "match_set.hpp"
 #include "ga.hpp"
@@ -18,7 +17,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         typename Action,
         class Symbol = Symbol<T>,
         class Condition = xcsr_impl::Condition<T, Symbol>,
-        class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
+        class ConditionActionPair = xcsr_impl::ConditionActionPair<T, Action, Symbol, Condition>,
         class Constants = xcsr_impl::Constants,
         class Classifier = xcsr_impl::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
         class ClassifierPtrSet = xcs_impl::ClassifierPtrSet<Action, Classifier, Constants>,
