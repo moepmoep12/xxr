@@ -42,6 +42,17 @@ namespace xxr { namespace xcs_impl
     class Experiment
     {
     public:
+        using SymbolType = Symbol;
+        using ConditionType = Condition;
+        using ConditionActionPairType = ConditionActionPair;
+        using ConstantsType = Constants;
+        using ClassifierType = Classifier;
+        using ClassifierPtrSetType = ClassifierPtrSet;
+        using PopulationType = Population;
+        using MatchSetType = MatchSet;
+        using PredictionArrayType = PredictionArray;
+        using GAType = GA;
+        using ActionSetType = ActionSet;
         Constants constants;
 
     protected:
