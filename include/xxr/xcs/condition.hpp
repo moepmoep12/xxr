@@ -26,7 +26,7 @@ namespace xxr { namespace xcs_impl
 
         Condition(const std::vector<T> & symbols) : m_symbols(symbols.begin(), symbols.end()) {}
 
-        Condition(const std::string & symbols)
+        explicit Condition(const std::string & symbols)
         {
             for (const char symbol : symbols)
             {

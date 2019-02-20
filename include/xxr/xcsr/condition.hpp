@@ -26,7 +26,7 @@ namespace xxr { namespace xcsr_impl
 
         Condition(const std::vector<T> & symbols) : xcs_impl::Condition<T, Symbol>(symbols) {}
 
-        Condition(const std::string & symbols)
+        explicit Condition(const std::string & symbols)
         {
             std::istringstream iss(symbols);
             std::string symbol;
