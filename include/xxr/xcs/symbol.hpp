@@ -39,6 +39,8 @@ namespace xxr { namespace xcs_impl
 
     public:
         // Constructor
+        constexpr Symbol() : m_isDontCare(true) {}
+
         constexpr explicit Symbol(T value) : m_value(value), m_isDontCare(false) {}
 
         constexpr explicit Symbol(char c);
