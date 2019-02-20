@@ -17,9 +17,15 @@ namespace xxr
     private:
         static std::random_device m_device;
 
+        static auto && device()
+        {
+            static std::random_device device;
+            return device;
+        }
+
         static auto && engine()
         {
-            static std::mt19937 engine(m_device());
+            static std::mt19937 engine(device()());
             return engine;
         }
 
@@ -177,7 +183,5 @@ namespace xxr
             }
         }
     };
-
-    std::random_device Random::m_device;
 
 }

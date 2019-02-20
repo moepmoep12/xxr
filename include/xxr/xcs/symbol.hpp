@@ -100,7 +100,4 @@ namespace xxr { namespace xcs_impl
         }
     };
 
-    template <>
-    Symbol<bool>::Symbol(char c) : m_value(c != '0'), m_isDontCare(c == '#') {}
-
 }}

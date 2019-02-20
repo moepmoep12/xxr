@@ -42,8 +42,17 @@ namespace xxr
         bool m_threeBitMode;
         bool m_isEndOfProblem;
 
-        static constexpr int s_xDiffs[] = {  0, +1, +1, +1,  0, -1, -1, -1 };
-        static constexpr int s_yDiffs[] = { -1, -1,  0, +1, +1, +1,  0, -1 };
+        static constexpr int xDiff(std::size_t idx)
+        {
+            constexpr int xDiffs[] = { 0, +1, +1, +1,  0, -1, -1, -1 };
+            return xDiffs[idx];
+        }
+
+        static constexpr int yDiff(std::size_t idx)
+        {
+            constexpr int yDiffs[] = { -1, -1,  0, +1, +1, +1,  0, -1 };
+            return yDiffs[idx];
+        }
 
         enum Direction
         {
@@ -268,9 +277,9 @@ namespace xxr
         virtual std::vector<bool> situation(int x, int y) const
         {
             std::vector<bool> situation;
-            for (std::size_t i = 0; i < sizeof(s_xDiffs) / sizeof(int); ++i)
+            for (std::size_t i = 0; i < 8ULL; ++i)
             {
-                auto block = getBlock(x + s_xDiffs[i], y + s_yDiffs[i]);
+                auto block = getBlock(x + xDiff(i), y + yDiff(i));
                 for (auto && bit : charToBits(block))
                 {
                     situation.push_back(bit);
@@ -292,8 +301,8 @@ namespace xxr
             m_lastInitialY = m_initialY;
 
             // The coordinates after performing the action
-            int x = (m_currentX + s_xDiffs[action] + m_worldWidth) % static_cast<int>(m_worldWidth);
-            int y = (m_currentY + s_yDiffs[action] + m_worldHeight) % static_cast<int>(m_worldHeight);
+            int x = (m_currentX + xDiff(action) + m_worldWidth) % static_cast<int>(m_worldWidth);
+            int y = (m_currentY + yDiff(action) + m_worldHeight) % static_cast<int>(m_worldHeight);
 
             double reward;
             if (isFood(x, y))
@@ -361,8 +370,5 @@ namespace xxr
             return os << obj.toString();
         }
     };
-
-    constexpr int BlockWorldEnvironment::s_xDiffs[];
-    constexpr int BlockWorldEnvironment::s_yDiffs[];
 
 }
