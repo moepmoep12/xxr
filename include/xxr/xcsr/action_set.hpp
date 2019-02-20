@@ -5,17 +5,28 @@
 namespace xxr { namespace xcsr_impl
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
-    class ActionSet : public xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
+    template <class GA>
+    class ActionSet : public xcs_impl::ActionSet<GA>
     {
+    public:
+        using typename xcs_impl::ActionSet<GA>::type;
+        using typename xcs_impl::ActionSet<GA>::SymbolType;
+        using typename xcs_impl::ActionSet<GA>::ConditionType;
+        using typename xcs_impl::ActionSet<GA>::ActionType;
+        using typename xcs_impl::ActionSet<GA>::ConstantsType;
+        using typename xcs_impl::ActionSet<GA>::ClassifierType;
+        using typename xcs_impl::ActionSet<GA>::ClassifierPtrSetType;
+        using typename xcs_impl::ActionSet<GA>::PopulationType;
+        using typename xcs_impl::ActionSet<GA>::GAType;
+
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
-        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_set;
-        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_constants;
-        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_availableActions;
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using xcs_impl::ActionSet<GA>::m_set;
+        using xcs_impl::ActionSet<GA>::m_constants;
+        using xcs_impl::ActionSet<GA>::m_availableActions;
 
         // DO ACTION SET SUBSUMPTION
-        virtual void doSubsumption(Population & population) override
+        virtual void doSubsumption(PopulationType & population) override
         {
             ClassifierPtr cl;
 
@@ -52,7 +63,7 @@ namespace xxr { namespace xcsr_impl
 
     public:
         // Constructor
-        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::ActionSet;
+        using xcs_impl::ActionSet<GA>::ActionSet;
 
         // Destructor
         virtual ~ActionSet() = default;

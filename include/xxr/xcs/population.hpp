@@ -5,17 +5,26 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet>
+    template <class ClassifierPtrSet>
     class Population : public ClassifierPtrSet
     {
+    public:
+        using typename ClassifierPtrSet::type;
+        using typename ClassifierPtrSet::SymbolType;
+        using typename ClassifierPtrSet::ConditionType;
+        using typename ClassifierPtrSet::ActionType;
+        using typename ClassifierPtrSet::ConstantsType;
+        using typename ClassifierPtrSet::ClassifierType;
+        using ClassifierPtrSetType = ClassifierPtrSet;
+
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
         using ClassifierPtrSet::m_set;
         using ClassifierPtrSet::m_constants;
         using ClassifierPtrSet::m_availableActions;
 
         // DELETION VOTE
-        virtual double deletionVote(const Classifier & cl, double averageFitness) const
+        virtual double deletionVote(const ClassifierType & cl, double averageFitness) const
         {
             double vote = cl.actionSetSize * cl.numerosity;
 

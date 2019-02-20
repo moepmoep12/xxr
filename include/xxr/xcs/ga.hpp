@@ -8,17 +8,27 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
+    template <class Population>
     class GA
     {
-    protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
+    public:
+        using type = typename Population::type;
+        using SymbolType = typename Population::SymbolType;
+        using ConditionType = typename Population::ConditionType;
+        using ActionType = typename Population::ActionType;
+        using ConstantsType = typename Population::ConstantsType;
+        using ClassifierType = typename Population::ClassifierType;
+        using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;
+        using PopulationType = Population;
 
-        Constants & m_constants;
-        const std::unordered_set<Action> & m_availableActions;
+    protected:
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+
+        ConstantsType & m_constants;
+        const std::unordered_set<ActionType> & m_availableActions;
 
         // SELECT OFFSPRING
-        virtual ClassifierPtr selectOffspring(const ClassifierPtrSet & actionSet) const
+        virtual ClassifierPtr selectOffspring(const ClassifierPtrSetType & actionSet) const
         {
             std::vector<const ClassifierPtr *> targets;
             for (auto && cl : actionSet)
@@ -53,7 +63,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // APPLY CROSSOVER
-        virtual void crossover(Classifier & cl1, Classifier & cl2) const
+        virtual void crossover(ClassifierType & cl1, ClassifierType & cl2) const
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
@@ -72,7 +82,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // APPLY MUTATION
-        virtual void mutate(Classifier & cl, const std::vector<typename Symbol::type> & situation) const
+        virtual void mutate(ClassifierType & cl, const std::vector<type> & situation) const
         {
             assert(cl.condition.size() == situation.size());
 
@@ -82,7 +92,7 @@ namespace xxr { namespace xcs_impl
                 {
                     if (cl.condition[i].isDontCare())
                     {
-                        cl.condition[i] = Symbol(situation.at(i));
+                        cl.condition[i] = SymbolType(situation.at(i));
                     }
                     else
                     {
@@ -93,7 +103,7 @@ namespace xxr { namespace xcs_impl
 
             if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mu) && (m_availableActions.size() >= 2))
             {
-                std::unordered_set<Action> otherPossibleActions(m_availableActions);
+                std::unordered_set<ActionType> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);
                 cl.action = Random::chooseFrom(otherPossibleActions);
             }
@@ -101,7 +111,7 @@ namespace xxr { namespace xcs_impl
 
     public:
         // Constructor
-        GA(Constants & constants, const std::unordered_set<Action> & availableActions) :
+        GA(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
             m_constants(constants),
             m_availableActions(availableActions)
         {
@@ -111,15 +121,15 @@ namespace xxr { namespace xcs_impl
         virtual ~GA() = default;
 
         // RUN GA (refer to ActionSet::runGA() for the former part)
-        virtual void run(ClassifierPtrSet & actionSet, const std::vector<typename Symbol::type> & situation, Population & population) const
+        virtual void run(ClassifierPtrSetType & actionSet, const std::vector<type> & situation, PopulationType & population) const
         {
             auto parent1 = selectOffspring(actionSet);
             auto parent2 = selectOffspring(actionSet);
 
             assert(parent1->condition.size() == parent2->condition.size());
 
-            Classifier child1(*parent1);
-            Classifier child2(*parent2);
+            ClassifierType child1(*parent1);
+            ClassifierType child2(*parent2);
 
             child1.fitness /= parent1->numerosity;
             child2.fitness /= parent2->numerosity;
@@ -156,12 +166,12 @@ namespace xxr { namespace xcs_impl
                     }
                     else
                     {
-                        population.insertOrIncrementNumerosity(std::make_shared<Classifier>(*child));
+                        population.insertOrIncrementNumerosity(std::make_shared<ClassifierType>(*child));
                     }
                 }
                 else
                 {
-                    population.insertOrIncrementNumerosity(std::make_shared<Classifier>(*child));
+                    population.insertOrIncrementNumerosity(std::make_shared<ClassifierType>(*child));
                 }
 
                 population.deleteExtraClassifiers();

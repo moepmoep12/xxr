@@ -15,12 +15,14 @@ namespace xxr { namespace xcsr_impl
     template <class Symbol>
     class Condition : public xcs_impl::Condition<Symbol>
     {
+    public:
+        using typename xcs_impl::Condition<Symbol>::type;
+        using typename xcs_impl::Condition<Symbol>::SymbolType;
+
     protected:
         using xcs_impl::Condition<Symbol>::m_symbols;
 
     public:
-        using typename xcs_impl::Condition<Symbol>::type;
-
         // Constructor
         Condition() = default;
 

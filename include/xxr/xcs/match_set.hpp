@@ -7,19 +7,29 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
-    class MatchSet : public ClassifierPtrSet
+    template <class Population>
+    class MatchSet : public Population::ClassifierPtrSetType
     {
+    public:
+        using type = typename Population::type;
+        using SymbolType = typename Population::SymbolType;
+        using ConditionType = typename Population::ConditionType;
+        using ActionType = typename Population::ActionType;
+        using ConstantsType = typename Population::ConstantsType;
+        using ClassifierType = typename Population::ClassifierType;
+        using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;
+        using PopulationType = Population;
+
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
-        using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_availableActions;
-        using ClassifierPtrSet::m_set;
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using Population::ClassifierPtrSetType::m_constants;
+        using Population::ClassifierPtrSetType::m_availableActions;
+        using Population::ClassifierPtrSetType::m_set;
 
         // GENERATE COVERING CLASSIFIER
-        virtual ClassifierPtr generateCoveringClassifier(const std::vector<typename Symbol::type> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
+        virtual ClassifierPtr generateCoveringClassifier(const std::vector<type> & situation, const std::unordered_set<ActionType> & unselectedActions, uint64_t timeStamp) const
         {
-            auto cl = std::make_shared<Classifier>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+            auto cl = std::make_shared<ClassifierType>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
             cl->condition.randomGeneralize(m_constants.dontCareProbability);
 
             return cl;
@@ -27,10 +37,10 @@ namespace xxr { namespace xcs_impl
 
     public:
         // Constructor
-        using ClassifierPtrSet::ClassifierPtrSet;
+        using ClassifierPtrSetType::ClassifierPtrSetType;
 
-        MatchSet(Population & population, const std::vector<typename Symbol::type> & situation, uint64_t timeStamp, Constants & constants, const std::unordered_set<Action> & availableActions) :
-            ClassifierPtrSet(constants, availableActions)
+        MatchSet(Population & population, const std::vector<type> & situation, uint64_t timeStamp, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
+            ClassifierPtrSetType(constants, availableActions)
         {
             regenerate(population, situation, timeStamp);
         }
@@ -39,7 +49,7 @@ namespace xxr { namespace xcs_impl
         virtual ~MatchSet() = default;
 
         // GENERATE MATCH SET
-        virtual void regenerate(Population & population, const std::vector<typename Symbol::type> & situation, uint64_t timeStamp)
+        virtual void regenerate(Population & population, const std::vector<type> & situation, uint64_t timeStamp)
         {
             // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
             auto thetaMna = (m_constants.thetaMna == 0) ? m_availableActions.size() : m_constants.thetaMna;

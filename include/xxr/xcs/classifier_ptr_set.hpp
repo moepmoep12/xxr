@@ -5,26 +5,34 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Classifier, class Constants>
+    template <class Classifier>
     class ClassifierPtrSet
     {
+    public:
+        using type = typename Classifier::type;
+        using SymbolType = typename Classifier::SymbolType;
+        using ConditionType = typename Classifier::ConditionType;
+        using ActionType = typename Classifier::ActionType;
+        using ConstantsType = typename Classifier::ConstantsType;
+        using ClassifierType = Classifier;
+
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
 
-        Constants & m_constants;
-        const std::unordered_set<Action> m_availableActions;
+        ConstantsType & m_constants;
+        const std::unordered_set<ActionType> m_availableActions;
 
         std::unordered_set<ClassifierPtr> m_set;
 
     public:
         // Constructor
-        ClassifierPtrSet(Constants & constants, const std::unordered_set<Action> availableActions) :
+        ClassifierPtrSet(ConstantsType & constants, const std::unordered_set<ActionType> availableActions) :
             m_constants(constants),
             m_availableActions(availableActions)
         {
         }
 
-        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, Constants & constants, const std::unordered_set<Action> availableActions) :
+        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, ConstantsType & constants, const std::unordered_set<ActionType> availableActions) :
             m_set(set),
             m_constants(constants),
             m_availableActions(availableActions)

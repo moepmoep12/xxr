@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <vector>
 #include <unordered_map>
 #include <random>
@@ -10,30 +11,41 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
+    template <class MatchSet>
     class AbstractPredictionArray
     {
+    public:
+        using type = typename MatchSet::type;
+        using SymbolType = typename MatchSet::SymbolType;
+        using ConditionType = typename MatchSet::ConditionType;
+        using ActionType = typename MatchSet::ActionType;
+        using ConstantsType = typename MatchSet::ConstantsType;
+        using ClassifierType = typename MatchSet::ClassifierType;
+        using ClassifierPtrSetType = typename MatchSet::ClassifierPtrSetType;
+        using PopulationType = typename MatchSet::PopulationType;
+        using MatchSetType = MatchSet;
+
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
 
         // PA (Prediction Array)
-        std::unordered_map<Action, double> m_pa;
+        std::unordered_map<ActionType, double> m_pa;
 
         // Array of PA keys (for random action selection)
-        std::vector<Action> m_paActions;
+        std::vector<ActionType> m_paActions;
 
         // The maximum value of PA
         double m_maxPA;
 
         // The best actions of PA
-        std::vector<Action> m_maxPAActions;
+        std::vector<ActionType> m_maxPAActions;
 
     public:
         // GENERATE PREDICTION ARRAY
         explicit AbstractPredictionArray(const MatchSet & matchSet)
         {
             // FSA (Fitness Sum Array)
-            std::unordered_map<Action, double> fsa;
+            std::unordered_map<ActionType, double> fsa;
 
             for (auto && cl : matchSet)
             {
@@ -77,20 +89,30 @@ namespace xxr { namespace xcs_impl
         }
 
         // SELECT ACTION
-        virtual Action selectAction() const = 0;
+        virtual ActionType selectAction() const = 0;
     };
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
-    class GreedyPredictionArray final : public AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>
+    template <class MatchSet>
+    class GreedyPredictionArray final : public AbstractPredictionArray<MatchSet>
     {
+    public:
+        using typename AbstractPredictionArray<MatchSet>::type;
+        using typename AbstractPredictionArray<MatchSet>::SymbolType;
+        using typename AbstractPredictionArray<MatchSet>::ConditionType;
+        using typename AbstractPredictionArray<MatchSet>::ActionType;
+        using typename AbstractPredictionArray<MatchSet>::ConstantsType;
+        using typename AbstractPredictionArray<MatchSet>::ClassifierType;
+        using typename AbstractPredictionArray<MatchSet>::ClassifierPtrSetType;
+        using typename AbstractPredictionArray<MatchSet>::PopulationType;
+
     private:
-        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
+        using AbstractPredictionArray<MatchSet>::m_maxPAActions;
 
     public:
         // Constructor
-        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::AbstractPredictionArray;
+        using AbstractPredictionArray<MatchSet>::AbstractPredictionArray;
 
-        Action selectAction() const override
+        ActionType selectAction() const override
         {
             // Choose best action
             assert(!m_maxPAActions.empty());
@@ -98,20 +120,30 @@ namespace xxr { namespace xcs_impl
         }
     };
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
-    class EpsilonGreedyPredictionArray final : public AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>
+    template <class MatchSet>
+    class EpsilonGreedyPredictionArray final : public AbstractPredictionArray<MatchSet>
     {
+    public:
+        using typename AbstractPredictionArray<MatchSet>::type;
+        using typename AbstractPredictionArray<MatchSet>::SymbolType;
+        using typename AbstractPredictionArray<MatchSet>::ConditionType;
+        using typename AbstractPredictionArray<MatchSet>::ActionType;
+        using typename AbstractPredictionArray<MatchSet>::ConstantsType;
+        using typename AbstractPredictionArray<MatchSet>::ClassifierType;
+        using typename AbstractPredictionArray<MatchSet>::ClassifierPtrSetType;
+        using typename AbstractPredictionArray<MatchSet>::PopulationType;
+
     private:
-        double m_epsilon;
-        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::m_paActions;
-        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
+        const double m_epsilon;
+        using AbstractPredictionArray<MatchSet>::m_paActions;
+        using AbstractPredictionArray<MatchSet>::m_maxPAActions;
 
     public:
         // Constructor
         EpsilonGreedyPredictionArray(const MatchSet & matchSet, double epsilon)
-            : AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>(matchSet), m_epsilon(epsilon) {}
+            : AbstractPredictionArray<MatchSet>(matchSet), m_epsilon(epsilon) {}
 
-        Action selectAction() const override
+        ActionType selectAction() const override
         {
             if (Random::nextDouble() < m_epsilon)
             {

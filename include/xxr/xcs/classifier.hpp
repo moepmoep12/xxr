@@ -10,9 +10,15 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Symbol, class Condition>
+    template <class Condition, typename Action>
     struct ConditionActionPair
     {
+    public:
+        using type = typename Condition::type;
+        using SymbolType = typename Condition::SymbolType;
+        using ConditionType = Condition;
+        using ActionType = Action;
+
         // C
         //   The condition specifies the input states (sensory situations)
         //   in which the classifier can be applied (matches).
@@ -32,7 +38,7 @@ namespace xxr { namespace xcs_impl
         virtual ~ConditionActionPair() = default;
 
         // IS MORE GENERAL
-        virtual bool isMoreGeneral(const ConditionActionPair<Action, Symbol, Condition> & cl) const
+        virtual bool isMoreGeneral(const ConditionActionPair<Condition, Action> & cl) const
         {
             assert(condition.size() == cl.condition.size());
 
@@ -52,15 +58,23 @@ namespace xxr { namespace xcs_impl
             return true;
         }
 
-        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Action, Symbol, Condition> & obj)
+        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Condition, Action> & obj)
         {
             return os << obj.condition << ":" << obj.action;
         }
     };
 
-    template <typename Action, class Symbol, class Condition, class ConditionActionPair, class Constants>
+    template <class ConditionActionPair, class Constants>
     struct Classifier : ConditionActionPair
     {
+    public:
+        using typename ConditionActionPair::type;
+        using typename ConditionActionPair::SymbolType;
+        using typename ConditionActionPair::ConditionType;
+        using typename ConditionActionPair::ActionType;
+        using ConditionActionPairType = ConditionActionPair;
+        using ConstantsType = Constants;
+
         // p
         //   The prediction p estimates (keeps an average of) the payoff expected if the
         //   classifier matches and its action is taken by the system.
@@ -117,7 +131,7 @@ namespace xxr { namespace xcs_impl
         {
         }
 
-        Classifier(const Condition & condition, Action action, uint64_t timeStamp, Constants & constants) :
+        Classifier(const ConditionType & condition, ActionType action, uint64_t timeStamp, Constants & constants) :
             ConditionActionPair(condition, action),
             prediction(constants.initialPrediction),
             epsilon(constants.initialEpsilon),
@@ -156,13 +170,13 @@ namespace xxr { namespace xcs_impl
         {
         }
 
-        Classifier(const std::vector<typename Symbol::type> & situation, Action action, uint64_t timeStamp, Constants & constants) :
-            Classifier(Condition(situation), action, timeStamp, constants)
+        Classifier(const std::vector<type> & situation, ActionType action, uint64_t timeStamp, Constants & constants) :
+            Classifier(ConditionType(situation), action, timeStamp, constants)
         {
         }
 
-        Classifier(const std::string & condition, Action action, uint64_t timeStamp, Constants & constants) :
-            Classifier(Condition(condition), action, timeStamp, constants)
+        Classifier(const std::string & condition, ActionType action, uint64_t timeStamp, Constants & constants) :
+            Classifier(ConditionType(condition), action, timeStamp, constants)
         {
         }
 
@@ -176,7 +190,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DOES SUBSUME
-        virtual bool subsumes(const Classifier<Action, Symbol, Condition, ConditionActionPair, Constants> & cl) const
+        virtual bool subsumes(const Classifier<ConditionActionPair, Constants> & cl) const
         {
             return action == cl.action && isSubsumer() && isMoreGeneral(cl);
         }

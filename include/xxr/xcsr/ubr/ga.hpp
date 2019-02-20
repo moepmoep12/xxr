@@ -6,16 +6,26 @@
 
 namespace xxr { namespace xcsr_impl { namespace ubr
 {
-    
-    template <typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
-    class GA : public xcs_impl::GA<Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>
+
+    template <class Population>
+    class GA : public xcs_impl::GA<Population>
     {
+    public:
+        using typename xcs_impl::GA<Population>::type;
+        using typename xcs_impl::GA<Population>::SymbolType;
+        using typename xcs_impl::GA<Population>::ConditionType;
+        using typename xcs_impl::GA<Population>::ActionType;
+        using typename xcs_impl::GA<Population>::ConstantsType;
+        using typename xcs_impl::GA<Population>::ClassifierType;
+        using typename xcs_impl::GA<Population>::ClassifierPtrSetType;
+        using typename xcs_impl::GA<Population>::PopulationType;
+
     protected:
-        using xcs_impl::GA<Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_constants;
-        using xcs_impl::GA<Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::m_availableActions;
+        using xcs_impl::GA<Population>::m_constants;
+        using xcs_impl::GA<Population>::m_availableActions;
 
         // APPLY CROSSOVER
-        virtual void crossover(Classifier & cl1, Classifier & cl2) const override
+        virtual void crossover(ClassifierType & cl1, ClassifierType & cl2) const override
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
@@ -41,7 +51,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         }
 
         // APPLY MUTATION
-        virtual void mutate(Classifier & cl, const std::vector<typename Symbol::type> & situation) const override
+        virtual void mutate(ClassifierType & cl, const std::vector<type> & situation) const override
         {
             assert(cl.condition.size() == situation.size());
 
@@ -71,7 +81,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
 
             if (m_constants.doActionMutation && (Random::nextDouble() < m_constants.mu) && (m_availableActions.size() >= 2))
             {
-                std::unordered_set<Action> otherPossibleActions(m_availableActions);
+                std::unordered_set<ActionType> otherPossibleActions(m_availableActions);
                 otherPossibleActions.erase(cl.action);
                 cl.action = Random::chooseFrom(otherPossibleActions);
             }
@@ -79,7 +89,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
 
     public:
         // Constructor
-        using xcs_impl::GA<Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>::GA;
+        using xcs_impl::GA<Population>::GA;
 
         // Destructor
         virtual ~GA() = default;

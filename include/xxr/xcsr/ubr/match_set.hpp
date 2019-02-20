@@ -5,19 +5,29 @@
 namespace xxr { namespace xcsr_impl { namespace ubr
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
-    class MatchSet : public xcs_impl::MatchSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>
+    template <class Population>
+    class MatchSet : public xcs_impl::MatchSet<Population>
     {
+    public:
+        using typename xcs_impl::MatchSet<Population>::type;
+        using typename xcs_impl::MatchSet<Population>::SymbolType;
+        using typename xcs_impl::MatchSet<Population>::ConditionType;
+        using typename xcs_impl::MatchSet<Population>::ActionType;
+        using typename xcs_impl::MatchSet<Population>::ConstantsType;
+        using typename xcs_impl::MatchSet<Population>::ClassifierType;
+        using typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;
+        using typename xcs_impl::MatchSet<Population>::PopulationType;
+
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
-        using ClassifierPtrSet::m_set;
-        using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_availableActions;
+        using typename xcs_impl::MatchSet<Population>::ClassifierPtr;
+        using xcs_impl::MatchSet<Population>::m_set;
+        using xcs_impl::MatchSet<Population>::m_constants;
+        using xcs_impl::MatchSet<Population>::m_availableActions;
 
         // GENERATE COVERING CLASSIFIER
-        virtual ClassifierPtr generateCoveringClassifier(const std::vector<typename Symbol::type> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const override
+        virtual ClassifierPtr generateCoveringClassifier(const std::vector<type> & situation, const std::unordered_set<ActionType> & unselectedActions, uint64_t timeStamp) const override
         {
-            std::vector<Symbol> symbols;
+            std::vector<SymbolType> symbols;
             for (auto && symbol : situation)
             {
                 double lowerMin = symbol - m_constants.coveringMaxSpread;
@@ -46,12 +56,12 @@ namespace xxr { namespace xcsr_impl { namespace ubr
                 }
             }
 
-            return std::make_shared<Classifier>(symbols, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+            return std::make_shared<ClassifierType>(symbols, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
         }
 
     public:
         // Constructor
-        using xcs_impl::MatchSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>::MatchSet;
+        using xcs_impl::MatchSet<Population>::MatchSet;
 
         // Destructor
         virtual ~MatchSet() = default;

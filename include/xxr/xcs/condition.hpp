@@ -15,12 +15,14 @@ namespace xxr { namespace xcs_impl
     template <class Symbol>
     class Condition
     {
+    public:
+        using type = typename Symbol::type;
+        using SymbolType = Symbol;
+
     protected:
         std::vector<Symbol> m_symbols;
 
     public:
-        using type = typename Symbol::type;
-
         // Constructor
         Condition() = default;
 

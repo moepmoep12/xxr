@@ -9,14 +9,25 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
-    class ActionSet : public ClassifierPtrSet
+    template <class GA>
+    class ActionSet : public GA::ClassifierPtrSetType
     {
+    public:
+        using type = typename GA::type;
+        using SymbolType = typename GA::SymbolType;
+        using ConditionType = typename GA::ConditionType;
+        using ActionType = typename GA::ActionType;
+        using ConstantsType = typename GA::ConstantsType;
+        using ClassifierType = typename GA::ClassifierType;
+        using ClassifierPtrSetType = typename GA::ClassifierPtrSetType;
+        using PopulationType = typename GA::PopulationType;
+        using GAType = GA;
+
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
-        using ClassifierPtrSet::m_set;
-        using ClassifierPtrSet::m_constants;
-        using ClassifierPtrSet::m_availableActions;
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using ClassifierPtrSetType::m_set;
+        using ClassifierPtrSetType::m_constants;
+        using ClassifierPtrSetType::m_availableActions;
 
         GA m_ga;
 
@@ -37,7 +48,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DO ACTION SET SUBSUMPTION
-        virtual void doSubsumption(Population & population)
+        virtual void doSubsumption(PopulationType & population)
         {
             ClassifierPtr cl;
 
@@ -78,14 +89,15 @@ namespace xxr { namespace xcs_impl
 
     public:
         // Constructor
-        ActionSet(Constants & constants, const std::unordered_set<Action> & availableActions) :
-            ClassifierPtrSet(constants, availableActions),
+        ActionSet(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
+            ClassifierPtrSetType(constants, availableActions),
             m_ga(constants, availableActions)
         {
         }
 
-        ActionSet(const MatchSet & matchSet, Action action, Constants & constants, const std::unordered_set<Action> & availableActions) :
-            ClassifierPtrSet(constants, availableActions),
+        template <class MatchSet>
+        ActionSet(const MatchSet & matchSet, ActionType action, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
+            ClassifierPtrSetType(constants, availableActions),
             m_ga(constants, availableActions)
         {
             regenerate(matchSet, action);
@@ -95,7 +107,8 @@ namespace xxr { namespace xcs_impl
         virtual ~ActionSet() = default;
 
         // GENERATE ACTION SET
-        virtual void regenerate(const MatchSet & matchSet, Action action)
+        template <class MatchSet>
+        void regenerate(const MatchSet & matchSet, ActionType action)
         {
             m_set.clear();
 
@@ -108,13 +121,13 @@ namespace xxr { namespace xcs_impl
             }
         }
 
-        virtual void copyTo(ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA> & dest)
+        virtual void copyTo(ActionSet<GA> & dest)
         {
             dest.m_set = m_set; // don't copy m_ga since it contains const parameters
         }
 
         // RUN GA (refer to GA::run() for the latter part)
-        virtual void runGA(const std::vector<typename Symbol::type> & situation, Population & population, uint64_t timeStamp)
+        virtual void runGA(const std::vector<type> & situation, PopulationType & population, uint64_t timeStamp)
         {
             uint64_t timeStampNumerositySum = 0;
             uint64_t numerositySum = 0;
@@ -139,7 +152,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // UPDATE SET
-        virtual void update(double p, Population & population)
+        virtual void update(double p, PopulationType & population)
         {
             // Calculate numerosity sum used for updating action set size estimate
             uint64_t numerositySum = 0;
