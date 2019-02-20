@@ -1,7 +1,8 @@
 #pragma once
 
-#include <unordered_set>
 #include <string>
+#include <unordered_set>
+#include <memory>
 #include <cstdint>
 #include <cstddef>
 #include <cassert>
@@ -23,7 +24,9 @@ namespace xxr { namespace xcs_impl
         Action action;
 
         // Constructor
-        ConditionActionPair(Condition condition, Action action) : condition(condition), action(action) {}
+        ConditionActionPair(const Condition & condition, Action action) : condition(condition), action(action) {}
+
+        ConditionActionPair(Condition && condition, Action action) : condition(std::move(condition)), action(action) {}
 
         // Destructor
         virtual ~ConditionActionPair() = default;
@@ -116,6 +119,32 @@ namespace xxr { namespace xcs_impl
 
         Classifier(const Condition & condition, Action action, uint64_t timeStamp, Constants & constants) :
             ConditionActionPair(condition, action),
+            prediction(constants.initialPrediction),
+            epsilon(constants.initialEpsilon),
+            fitness(constants.initialFitness),
+            experience(0),
+            timeStamp(timeStamp),
+            actionSetSize(1),
+            numerosity(1),
+            m_constants(constants)
+        {
+        }
+
+        Classifier(const ConditionActionPair & conditionActionPair, uint64_t timeStamp, Constants & constants) :
+            ConditionActionPair(conditionActionPair),
+            prediction(constants.initialPrediction),
+            epsilon(constants.initialEpsilon),
+            fitness(constants.initialFitness),
+            experience(0),
+            timeStamp(timeStamp),
+            actionSetSize(1),
+            numerosity(1),
+            m_constants(constants)
+        {
+        }
+
+        Classifier(ConditionActionPair && conditionActionPair, uint64_t timeStamp, Constants & constants) :
+            ConditionActionPair(std::move(conditionActionPair)),
             prediction(constants.initialPrediction),
             epsilon(constants.initialEpsilon),
             fitness(constants.initialFitness),
