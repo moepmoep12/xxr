@@ -15,25 +15,38 @@ namespace xxr { namespace xcsr_impl { namespace ubr
     template <
         typename T,
         typename Action,
-        class Symbol = Symbol<T>,
-        class Condition = xcsr_impl::Condition<Symbol>,
-        class ConditionActionPair = xcsr_impl::ConditionActionPair<Condition, Action>,
-        class Constants = xcsr_impl::Constants,
-        class Classifier = xcsr_impl::Classifier<ConditionActionPair, Constants>,
-        class ClassifierPtrSet = xcs_impl::ClassifierPtrSet<Classifier>,
-        class Population = xcs_impl::Population<ClassifierPtrSet>,
-        class MatchSet = MatchSet<Population>,
-        class PredictionArray = xcs_impl::EpsilonGreedyPredictionArray<MatchSet>,
-        class GA = GA<Population>,
-        class ActionSet = xcsr_impl::ActionSet<GA>
+        class PredictionArray = xcs_impl::EpsilonGreedyPredictionArray<
+            MatchSet<
+                xcs_impl::Population<
+                    xcs_impl::ClassifierPtrSet<
+                        xcsr_impl::Classifier<
+                            xcsr_impl::ConditionActionPair<xcsr_impl::Condition<Symbol<T>>, Action>,
+                            xcsr_impl::Constants
+                        >
+                    >
+                >
+            >
+        >,
+        class ActionSet = xcsr_impl::ActionSet<
+            GA<
+                xcs_impl::Population<
+                    xcs_impl::ClassifierPtrSet<
+                        xcsr_impl::Classifier<
+                            xcsr_impl::ConditionActionPair<xcsr_impl::Condition<Symbol<T>>, Action>,
+                            xcsr_impl::Constants
+                        >
+                    >
+                >
+            >
+        >
     >
-    class Experiment : public xcs_impl::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
+    class Experiment : public xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>
     {
     public:
-        using xcs_impl::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::constants;
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::constants;
 
         // Constructor
-        using xcs_impl::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>::Experiment;
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::Experiment;
 
         virtual std::string dumpPopulation() const override
         {

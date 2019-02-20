@@ -4,6 +4,7 @@
 #include <sstream>
 #include <algorithm>
 #include <memory>
+#include <type_traits>
 #include <vector>
 #include <cstdint>
 #include <cstddef>
@@ -28,45 +29,76 @@ namespace xxr { namespace xcs_impl
     template <
         typename T,
         typename Action,
-        class Symbol = Symbol<T>,
-        class Condition = Condition<Symbol>,
-        class ConditionActionPair = ConditionActionPair<Condition, Action>,
-        class Constants = Constants,
-        class Classifier = Classifier<ConditionActionPair, Constants>,
-        class ClassifierPtrSet = ClassifierPtrSet<Classifier>,
-        class Population = Population<ClassifierPtrSet>,
-        class MatchSet = MatchSet<Population>,
-        class PredictionArray = EpsilonGreedyPredictionArray<MatchSet>,
-        class GA = GA<Population>,
-        class ActionSet = ActionSet<GA>
+        class PredictionArray = EpsilonGreedyPredictionArray<
+            MatchSet<
+                Population<
+                    ClassifierPtrSet<
+                        Classifier<
+                            ConditionActionPair<Condition<Symbol<T>>, Action>,
+                            Constants
+                        >
+                    >
+                >
+            >
+        >,
+        class ActionSet = ActionSet<
+            GA<
+                Population<
+                    ClassifierPtrSet<
+                        Classifier<
+                            ConditionActionPair<Condition<Symbol<T>>, Action>,
+                            Constants
+                        >
+                    >
+                >
+            >
+        >
     >
     class Experiment : public AbstractExperiment<T, Action>
     {
     public:
-        using SymbolType = Symbol;
-        using ConditionType = Condition;
-        using ConditionActionPairType = ConditionActionPair;
-        using ConstantsType = Constants;
-        using ClassifierType = Classifier;
-        using ClassifierPtrSetType = ClassifierPtrSet;
-        using PopulationType = Population;
-        using MatchSetType = MatchSet;
+        static_assert(
+            std::is_same<typename PredictionArray::PopulationType, typename ActionSet::PopulationType>::value,
+            "PredictionArray::PopulationType and ActionSet::PopulationType must not be different");
+        static_assert(
+            std::is_same<T, typename PredictionArray::type>::value,
+            "Experiment::type and PredictionArray::type must not be different");
+        static_assert(
+            std::is_same<T, typename ActionSet::type>::value,
+            "Experiment::type and ActionSet::type must not be different");
+        static_assert(
+            std::is_same<Action, typename PredictionArray::ActionType>::value,
+            "Experiment::ActionType and PredictionArray::ActionType must not be different");
+        static_assert(
+            std::is_same<Action, typename ActionSet::ActionType>::value,
+            "Experiment::ActionType and ActionSet::ActionType must not be different");
+
+        using type = T;
+        using SymbolType = typename PredictionArray::SymbolType;
+        using ConditionType = typename PredictionArray::ConditionType;
+        using ConditionActionPairType = typename PredictionArray::ConditionActionPairType;
+        using ConstantsType = typename PredictionArray::ConstantsType;
+        using ClassifierType = typename PredictionArray::ClassifierType;
+        using ClassifierPtrSetType = typename PredictionArray::ClassifierPtrSetType;
+        using PopulationType = typename PredictionArray::PopulationType;
+        using MatchSetType = typename PredictionArray::MatchSetType;
         using PredictionArrayType = PredictionArray;
-        using GAType = GA;
+        using GAType = typename ActionSet::GAType;
         using ActionSetType = ActionSet;
-        Constants constants;
+
+        ConstantsType constants;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtr = std::shared_ptr<ClassifierType>;
 
         // [P]
         //   The population [P] consists of all classifier that exist in XCS at any time.
-        Population m_population;
+        PopulationType m_population;
 
         // [M]
         //   The match set [M] is formed out of the current [P].
         //   It includes all classifiers that match the current situation.
-        MatchSet m_matchSet;
+        MatchSetType m_matchSet;
 
         // [A]
         //   The action set [A] is formed out of the current [M].
@@ -91,7 +123,7 @@ namespace xxr { namespace xcs_impl
 
     public:
         // Constructor
-        Experiment(const std::unordered_set<Action> & availableActions, const Constants & constants) :
+        Experiment(const std::unordered_set<Action> & availableActions, const ConstantsType & constants) :
             constants(constants),
             m_population(this->constants, availableActions),
             m_matchSet(this->constants, availableActions),
@@ -173,7 +205,7 @@ namespace xxr { namespace xcs_impl
 
                 m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
-                GreedyPredictionArray<MatchSet> predictionArray(m_matchSet);
+                GreedyPredictionArray<MatchSetType> predictionArray(m_matchSet);
 
                 Action action = predictionArray.selectAction();
 
@@ -197,7 +229,7 @@ namespace xxr { namespace xcs_impl
             else
             {
                 // Create new match set as sandbox /*(because of const member function)*/
-                MatchSet matchSet(constants, m_availableActions);
+                MatchSetType matchSet(constants, m_availableActions);
                 for (auto && cl : m_population)
                 {
                     if (cl->condition.matches(situation))
@@ -208,7 +240,7 @@ namespace xxr { namespace xcs_impl
 
                 if (!matchSet.empty())
                 {
-                    GreedyPredictionArray<MatchSet> predictionArray(matchSet);
+                    GreedyPredictionArray<MatchSetType> predictionArray(matchSet);
                     return predictionArray.selectAction();
                 }
                 else

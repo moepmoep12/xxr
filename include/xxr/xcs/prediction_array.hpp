@@ -18,6 +18,7 @@ namespace xxr { namespace xcs_impl
         using type = typename MatchSet::type;
         using SymbolType = typename MatchSet::SymbolType;
         using ConditionType = typename MatchSet::ConditionType;
+        using ConditionActionPairType = typename MatchSet::ConditionActionPairType;
         using ActionType = typename MatchSet::ActionType;
         using ConstantsType = typename MatchSet::ConstantsType;
         using ClassifierType = typename MatchSet::ClassifierType;

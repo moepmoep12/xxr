@@ -15,6 +15,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
         using typename xcs_impl::GA<Population>::SymbolType;
         using typename xcs_impl::GA<Population>::ConditionType;
         using typename xcs_impl::GA<Population>::ActionType;
+        using typename xcs_impl::GA<Population>::ConditionActionPairType;
         using typename xcs_impl::GA<Population>::ConstantsType;
         using typename xcs_impl::GA<Population>::ClassifierType;
         using typename xcs_impl::GA<Population>::ClassifierPtrSetType;

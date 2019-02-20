@@ -13,6 +13,7 @@ namespace xxr { namespace xcs_impl
         using SymbolType = typename Classifier::SymbolType;
         using ConditionType = typename Classifier::ConditionType;
         using ActionType = typename Classifier::ActionType;
+        using ConditionActionPairType = typename Classifier::ConditionActionPairType;
         using ConstantsType = typename Classifier::ConstantsType;
         using ClassifierType = Classifier;
 

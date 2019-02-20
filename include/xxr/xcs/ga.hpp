@@ -16,6 +16,7 @@ namespace xxr { namespace xcs_impl
         using SymbolType = typename Population::SymbolType;
         using ConditionType = typename Population::ConditionType;
         using ActionType = typename Population::ActionType;
+        using ConditionActionPairType = typename Population::ConditionActionPairType;
         using ConstantsType = typename Population::ConstantsType;
         using ClassifierType = typename Population::ClassifierType;
         using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;

@@ -13,6 +13,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         using typename xcs_impl::MatchSet<Population>::SymbolType;
         using typename xcs_impl::MatchSet<Population>::ConditionType;
         using typename xcs_impl::MatchSet<Population>::ActionType;
+        using typename xcs_impl::MatchSet<Population>::ConditionActionPairType;
         using typename xcs_impl::MatchSet<Population>::ConstantsType;
         using typename xcs_impl::MatchSet<Population>::ClassifierType;
         using typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;

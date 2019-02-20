@@ -13,6 +13,7 @@ namespace xxr { namespace xcsr_impl
         using typename xcs_impl::ActionSet<GA>::SymbolType;
         using typename xcs_impl::ActionSet<GA>::ConditionType;
         using typename xcs_impl::ActionSet<GA>::ActionType;
+        using typename xcs_impl::ActionSet<GA>::ConditionActionPairType;
         using typename xcs_impl::ActionSet<GA>::ConstantsType;
         using typename xcs_impl::ActionSet<GA>::ClassifierType;
         using typename xcs_impl::ActionSet<GA>::ClassifierPtrSetType;

@@ -13,6 +13,7 @@ namespace xxr { namespace xcs_impl
         using typename ClassifierPtrSet::SymbolType;
         using typename ClassifierPtrSet::ConditionType;
         using typename ClassifierPtrSet::ActionType;
+        using typename ClassifierPtrSet::ConditionActionPairType;
         using typename ClassifierPtrSet::ConstantsType;
         using typename ClassifierPtrSet::ClassifierType;
         using ClassifierPtrSetType = ClassifierPtrSet;
