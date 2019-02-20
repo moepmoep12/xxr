@@ -19,17 +19,20 @@ namespace xxr { namespace xcsr_impl
     {
     protected:
         std::unique_ptr<AbstractExperiment<T, Action>> m_experiment;
+        const Repr m_repr;
 
     public:
         // Constructor
         template <Repr R, class... Args>
         Experiment(Args && ... args)
             : m_experiment(std::make_unique<typename repr_to_experiment<R, T, Action>::type>(std::forward<Args>(args)...))
+            , m_repr(R)
         {
         }
 
         template <class... Args>
         explicit Experiment(Repr repr, Args && ... args)
+            : m_repr(repr)
         {
             switch(repr)
             {
@@ -84,6 +87,11 @@ namespace xxr { namespace xcsr_impl
         virtual void switchToCondensationMode() noexcept override
         {
             m_experiment->switchToCondensationMode();
+        }
+
+        virtual Repr repr() noexcept
+        {
+            return m_repr;
         }
     };
 

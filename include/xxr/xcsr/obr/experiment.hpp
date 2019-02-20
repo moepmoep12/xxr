@@ -62,6 +62,13 @@ namespace xxr { namespace xcsr_impl { namespace obr
         // Constructor
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::Experiment;
 
+        // Destructor
+        virtual ~Experiment() = default;
+
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::explore;
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::reward;
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::exploit;
+
         virtual std::string dumpPopulation() const override
         {
             std::stringstream ss;
@@ -119,8 +126,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
             constants.subsumptionTolerance = 0.0;
         }
 
-        // Destructor
-        virtual ~Experiment() = default;
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::populationSize;
     };
 
 }}}
