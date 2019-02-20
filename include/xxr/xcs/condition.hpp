@@ -128,7 +128,7 @@ namespace xxr { namespace xcs_impl
             {
                 if (Random::nextDouble() < dontCareProbability)
                 {
-                    symbol.generalize();
+                    symbol.setDontCare();
                 }
             }
         }

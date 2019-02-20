@@ -97,7 +97,7 @@ namespace xxr { namespace xcs_impl
                     }
                     else
                     {
-                        cl.condition[i].generalize();
+                        cl.condition[i].setDontCare();
                     }
                 }
             }

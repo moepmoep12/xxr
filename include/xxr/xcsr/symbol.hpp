@@ -24,7 +24,7 @@ namespace xxr { namespace xcsr_impl
             return false;
         }
 
-        virtual void generalize() override
+        virtual void setDontCare() override
         {
             assert(false);
         }

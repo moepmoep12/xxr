@@ -28,7 +28,7 @@ namespace xxr { namespace xcs_impl
 
         virtual bool matches(T symbol) const = 0;
 
-        virtual void generalize() = 0;
+        virtual void setDontCare() = 0;
     };
 
     // The standard symbol for XCS (with "don't care")
@@ -94,7 +94,7 @@ namespace xxr { namespace xcs_impl
             return isDontCare() || this->value() == value;
         }
 
-        virtual void generalize() override
+        virtual void setDontCare() override
         {
             m_isDontCare = true;
         }
