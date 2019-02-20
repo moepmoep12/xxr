@@ -31,7 +31,7 @@ namespace xxr { namespace xcs_impl
         virtual ClassifierPtr generateCoveringClassifier(const std::vector<type> & situation, const std::unordered_set<ActionType> & unselectedActions, uint64_t timeStamp) const
         {
             auto cl = std::make_shared<ClassifierType>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
-            cl->condition.randomGeneralize(m_constants.dontCareProbability);
+            cl->condition.setDontCareAtRandom(m_constants.dontCareProbability);
 
             return cl;
         }

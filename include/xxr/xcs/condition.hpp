@@ -122,7 +122,7 @@ namespace xxr { namespace xcs_impl
             return m_symbols.cend();
         }
 
-        virtual void randomGeneralize(double dontCareProbability)
+        virtual void setDontCareAtRandom(double dontCareProbability)
         {
             for (auto && symbol : m_symbols)
             {
