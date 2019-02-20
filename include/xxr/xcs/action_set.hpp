@@ -9,7 +9,7 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
+    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
     class ActionSet : public ClassifierPtrSet
     {
     protected:
@@ -108,13 +108,13 @@ namespace xxr { namespace xcs_impl
             }
         }
 
-        virtual void copyTo(ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA> & dest)
+        virtual void copyTo(ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA> & dest)
         {
             dest.m_set = m_set; // don't copy m_ga since it contains const parameters
         }
 
         // RUN GA (refer to GA::run() for the latter part)
-        virtual void runGA(const std::vector<T> & situation, Population & population, uint64_t timeStamp)
+        virtual void runGA(const std::vector<typename Symbol::type> & situation, Population & population, uint64_t timeStamp)
         {
             uint64_t timeStampNumerositySum = 0;
             uint64_t numerositySum = 0;

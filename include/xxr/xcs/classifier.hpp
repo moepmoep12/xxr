@@ -10,7 +10,7 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition>
+    template <typename Action, class Symbol, class Condition>
     struct ConditionActionPair
     {
         // C
@@ -32,7 +32,7 @@ namespace xxr { namespace xcs_impl
         virtual ~ConditionActionPair() = default;
 
         // IS MORE GENERAL
-        virtual bool isMoreGeneral(const ConditionActionPair<T, Action, Symbol, Condition> & cl) const
+        virtual bool isMoreGeneral(const ConditionActionPair<Action, Symbol, Condition> & cl) const
         {
             assert(condition.size() == cl.condition.size());
 
@@ -52,13 +52,13 @@ namespace xxr { namespace xcs_impl
             return true;
         }
 
-        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<T, Action, Symbol, Condition> & obj)
+        friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Action, Symbol, Condition> & obj)
         {
             return os << obj.condition << ":" << obj.action;
         }
     };
 
-    template <typename T, typename Action, class Symbol, class Condition, class ConditionActionPair, class Constants>
+    template <typename Action, class Symbol, class Condition, class ConditionActionPair, class Constants>
     struct Classifier : ConditionActionPair
     {
         // p
@@ -156,7 +156,7 @@ namespace xxr { namespace xcs_impl
         {
         }
 
-        Classifier(const std::vector<T> & situation, Action action, uint64_t timeStamp, Constants & constants) :
+        Classifier(const std::vector<typename Symbol::type> & situation, Action action, uint64_t timeStamp, Constants & constants) :
             Classifier(Condition(situation), action, timeStamp, constants)
         {
         }
@@ -176,7 +176,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DOES SUBSUME
-        virtual bool subsumes(const Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants> & cl) const
+        virtual bool subsumes(const Classifier<Action, Symbol, Condition, ConditionActionPair, Constants> & cl) const
         {
             return action == cl.action && isSubsumer() && isMoreGeneral(cl);
         }

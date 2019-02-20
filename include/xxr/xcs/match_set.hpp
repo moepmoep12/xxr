@@ -7,7 +7,7 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
+    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
     class MatchSet : public ClassifierPtrSet
     {
     protected:
@@ -17,7 +17,7 @@ namespace xxr { namespace xcs_impl
         using ClassifierPtrSet::m_set;
 
         // GENERATE COVERING CLASSIFIER
-        virtual ClassifierPtr generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
+        virtual ClassifierPtr generateCoveringClassifier(const std::vector<typename Symbol::type> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const
         {
             auto cl = std::make_shared<Classifier>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
             cl->condition.randomGeneralize(m_constants.dontCareProbability);
@@ -29,7 +29,7 @@ namespace xxr { namespace xcs_impl
         // Constructor
         using ClassifierPtrSet::ClassifierPtrSet;
 
-        MatchSet(Population & population, const std::vector<T> & situation, uint64_t timeStamp, Constants & constants, const std::unordered_set<Action> & availableActions) :
+        MatchSet(Population & population, const std::vector<typename Symbol::type> & situation, uint64_t timeStamp, Constants & constants, const std::unordered_set<Action> & availableActions) :
             ClassifierPtrSet(constants, availableActions)
         {
             regenerate(population, situation, timeStamp);
@@ -39,7 +39,7 @@ namespace xxr { namespace xcs_impl
         virtual ~MatchSet() = default;
 
         // GENERATE MATCH SET
-        virtual void regenerate(Population & population, const std::vector<T> & situation, uint64_t timeStamp)
+        virtual void regenerate(Population & population, const std::vector<typename Symbol::type> & situation, uint64_t timeStamp)
         {
             // Set theta_mna (the minimal number of actions) to the number of action choices if theta_mna is 0
             auto thetaMna = (m_constants.thetaMna == 0) ? m_availableActions.size() : m_constants.thetaMna;

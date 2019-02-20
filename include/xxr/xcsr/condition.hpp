@@ -12,19 +12,21 @@
 namespace xxr { namespace xcsr_impl
 {
 
-    template <typename T, class Symbol>
-    class Condition : public xcs_impl::Condition<T, Symbol>
+    template <class Symbol>
+    class Condition : public xcs_impl::Condition<Symbol>
     {
     protected:
-        using xcs_impl::Condition<T, Symbol>::m_symbols;
+        using xcs_impl::Condition<Symbol>::m_symbols;
 
     public:
+        using typename xcs_impl::Condition<Symbol>::type;
+
         // Constructor
         Condition() = default;
 
-        Condition(const std::vector<Symbol> & symbols) : xcs_impl::Condition<T, Symbol>(symbols) {}
+        Condition(const std::vector<Symbol> & symbols) : xcs_impl::Condition<Symbol>(symbols) {}
 
-        Condition(const std::vector<T> & symbols) : xcs_impl::Condition<T, Symbol>(symbols) {}
+        Condition(const std::vector<type> & symbols) : xcs_impl::Condition<Symbol>(symbols) {}
 
         explicit Condition(const std::string & symbols)
         {

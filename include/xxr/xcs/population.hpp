@@ -5,7 +5,7 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet>
+    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet>
     class Population : public ClassifierPtrSet
     {
     protected:

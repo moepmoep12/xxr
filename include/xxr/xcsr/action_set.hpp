@@ -5,14 +5,14 @@
 namespace xxr { namespace xcsr_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
-    class ActionSet : public xcs_impl::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
+    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population, class MatchSet, class GA>
+    class ActionSet : public xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
-        using xcs_impl::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_set;
-        using xcs_impl::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_constants;
-        using xcs_impl::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_availableActions;
+        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_set;
+        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_constants;
+        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::m_availableActions;
 
         // DO ACTION SET SUBSUMPTION
         virtual void doSubsumption(Population & population) override
@@ -52,7 +52,7 @@ namespace xxr { namespace xcsr_impl
 
     public:
         // Constructor
-        using xcs_impl::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::ActionSet;
+        using xcs_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>::ActionSet;
 
         // Destructor
         virtual ~ActionSet() = default;

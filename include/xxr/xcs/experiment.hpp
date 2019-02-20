@@ -29,16 +29,16 @@ namespace xxr { namespace xcs_impl
         typename T,
         typename Action,
         class Symbol = Symbol<T>,
-        class Condition = Condition<T, Symbol>,
-        class ConditionActionPair = ConditionActionPair<T, Action, Symbol, Condition>,
+        class Condition = Condition<Symbol>,
+        class ConditionActionPair = ConditionActionPair<Action, Symbol, Condition>,
         class Constants = Constants,
-        class Classifier = Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
+        class Classifier = Classifier<Action, Symbol, Condition, ConditionActionPair, Constants>,
         class ClassifierPtrSet = ClassifierPtrSet<Action, Classifier, Constants>,
-        class Population = Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
-        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
-        class PredictionArray = EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
-        class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
-        class ActionSet = ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
+        class Population = Population<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
+        class MatchSet = MatchSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
+        class PredictionArray = EpsilonGreedyPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>,
+        class GA = GA<Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
+        class ActionSet = ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
     class Experiment : public AbstractExperiment<T, Action>
     {
@@ -173,7 +173,7 @@ namespace xxr { namespace xcs_impl
 
                 m_matchSet.regenerate(m_population, situation, m_timeStamp);
 
-                GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet> predictionArray(m_matchSet);
+                GreedyPredictionArray<Action, Symbol, Condition, Classifier, MatchSet> predictionArray(m_matchSet);
 
                 Action action = predictionArray.selectAction();
 
@@ -208,7 +208,7 @@ namespace xxr { namespace xcs_impl
 
                 if (!matchSet.empty())
                 {
-                    GreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet> predictionArray(matchSet);
+                    GreedyPredictionArray<Action, Symbol, Condition, Classifier, MatchSet> predictionArray(matchSet);
                     return predictionArray.selectAction();
                 }
                 else

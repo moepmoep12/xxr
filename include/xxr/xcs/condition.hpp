@@ -12,19 +12,21 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, class Symbol>
+    template <class Symbol>
     class Condition
     {
     protected:
         std::vector<Symbol> m_symbols;
 
     public:
+        using type = typename Symbol::type;
+
         // Constructor
         Condition() = default;
 
         Condition(const std::vector<Symbol> & symbols) : m_symbols(symbols) {}
 
-        Condition(const std::vector<T> & symbols) : m_symbols(symbols.begin(), symbols.end()) {}
+        Condition(const std::vector<type> & symbols) : m_symbols(symbols.begin(), symbols.end()) {}
 
         explicit Condition(const std::string & symbols)
         {
@@ -73,7 +75,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DOES MATCH
-        virtual bool matches(const std::vector<T> & situation) const
+        virtual bool matches(const std::vector<type> & situation) const
         {
             assert(m_symbols.size() == situation.size());
 

@@ -16,16 +16,16 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         typename T,
         typename Action,
         class Symbol = Symbol<T>,
-        class Condition = xcsr_impl::Condition<T, Symbol>,
-        class ConditionActionPair = xcsr_impl::ConditionActionPair<T, Action, Symbol, Condition>,
+        class Condition = xcsr_impl::Condition<Symbol>,
+        class ConditionActionPair = xcsr_impl::ConditionActionPair<Action, Symbol, Condition>,
         class Constants = xcsr_impl::Constants,
-        class Classifier = xcsr_impl::Classifier<T, Action, Symbol, Condition, ConditionActionPair, Constants>,
+        class Classifier = xcsr_impl::Classifier<Action, Symbol, Condition, ConditionActionPair, Constants>,
         class ClassifierPtrSet = xcs_impl::ClassifierPtrSet<Action, Classifier, Constants>,
-        class Population = xcs_impl::Population<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
-        class MatchSet = MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
-        class PredictionArray = xcs_impl::EpsilonGreedyPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>,
-        class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
-        class ActionSet = xcsr_impl::ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
+        class Population = xcs_impl::Population<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet>,
+        class MatchSet = MatchSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>,
+        class PredictionArray = xcs_impl::EpsilonGreedyPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>,
+        class GA = GA<Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
+        class ActionSet = xcsr_impl::ActionSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
     class Experiment : public xcs_impl::Experiment<T, Action, Symbol, Condition, ConditionActionPair, Constants, Classifier, ClassifierPtrSet, Population, MatchSet, PredictionArray, GA, ActionSet>
     {

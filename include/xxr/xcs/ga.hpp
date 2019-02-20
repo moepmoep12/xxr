@@ -8,7 +8,7 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
+    template <typename Action, class Symbol, class Condition, class Classifier, class Population, class Constants, class ClassifierPtrSet>
     class GA
     {
     protected:
@@ -72,7 +72,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // APPLY MUTATION
-        virtual void mutate(Classifier & cl, const std::vector<T> & situation) const
+        virtual void mutate(Classifier & cl, const std::vector<typename Symbol::type> & situation) const
         {
             assert(cl.condition.size() == situation.size());
 
@@ -111,7 +111,7 @@ namespace xxr { namespace xcs_impl
         virtual ~GA() = default;
 
         // RUN GA (refer to ActionSet::runGA() for the former part)
-        virtual void run(ClassifierPtrSet & actionSet, const std::vector<T> & situation, Population & population) const
+        virtual void run(ClassifierPtrSet & actionSet, const std::vector<typename Symbol::type> & situation, Population & population) const
         {
             auto parent1 = selectOffspring(actionSet);
             auto parent2 = selectOffspring(actionSet);

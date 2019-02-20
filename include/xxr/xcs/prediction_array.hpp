@@ -10,7 +10,7 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
+    template <typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
     class AbstractPredictionArray
     {
     protected:
@@ -80,15 +80,15 @@ namespace xxr { namespace xcs_impl
         virtual Action selectAction() const = 0;
     };
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
-    class GreedyPredictionArray final : public AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>
+    template <typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
+    class GreedyPredictionArray final : public AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>
     {
     private:
-        using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
+        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
 
     public:
         // Constructor
-        using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::AbstractPredictionArray;
+        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::AbstractPredictionArray;
 
         Action selectAction() const override
         {
@@ -98,18 +98,18 @@ namespace xxr { namespace xcs_impl
         }
     };
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
-    class EpsilonGreedyPredictionArray final : public AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>
+    template <typename Action, class Symbol, class Condition, class Classifier, class MatchSet>
+    class EpsilonGreedyPredictionArray final : public AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>
     {
     private:
         double m_epsilon;
-        using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::m_paActions;
-        using AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
+        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::m_paActions;
+        using AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>::m_maxPAActions;
 
     public:
         // Constructor
         EpsilonGreedyPredictionArray(const MatchSet & matchSet, double epsilon)
-            : AbstractPredictionArray<T, Action, Symbol, Condition, Classifier, MatchSet>(matchSet), m_epsilon(epsilon) {}
+            : AbstractPredictionArray<Action, Symbol, Condition, Classifier, MatchSet>(matchSet), m_epsilon(epsilon) {}
 
         Action selectAction() const override
         {

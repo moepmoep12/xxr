@@ -13,6 +13,8 @@ namespace xxr { namespace xcs_impl
     class AbstractSymbol
     {
     public:
+        using type = T;
+
         virtual ~AbstractSymbol() = default;
 
         virtual std::string toString() const = 0;

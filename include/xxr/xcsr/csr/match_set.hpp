@@ -5,8 +5,8 @@
 namespace xxr { namespace xcsr_impl { namespace csr
 {
 
-    template <typename T, typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
-    class MatchSet : public xcs_impl::MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>
+    template <typename Action, class Symbol, class Condition, class Classifier, class Constants, class ClassifierPtrSet, class Population>
+    class MatchSet : public xcs_impl::MatchSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>
     {
     protected:
         using ClassifierPtr = std::shared_ptr<Classifier>;
@@ -15,7 +15,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
         using ClassifierPtrSet::m_availableActions;
 
         // GENERATE COVERING CLASSIFIER
-        virtual ClassifierPtr generateCoveringClassifier(const std::vector<T> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const override
+        virtual ClassifierPtr generateCoveringClassifier(const std::vector<typename Symbol::type> & situation, const std::unordered_set<Action> & unselectedActions, uint64_t timeStamp) const override
         {
             std::vector<Symbol> symbols;
             for (auto && symbol : situation)
@@ -28,7 +28,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
 
     public:
         // Constructor
-        using xcs_impl::MatchSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>::MatchSet;
+        using xcs_impl::MatchSet<Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population>::MatchSet;
 
         // Destructor
         virtual ~MatchSet() = default;
