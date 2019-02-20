@@ -76,6 +76,7 @@ namespace xxr { namespace xcs_impl
         using type = T;
         using SymbolType = typename PredictionArray::SymbolType;
         using ConditionType = typename PredictionArray::ConditionType;
+        using ActionType = Action;
         using ConditionActionPairType = typename PredictionArray::ConditionActionPairType;
         using ConstantsType = typename PredictionArray::ConstantsType;
         using ClassifierType = typename PredictionArray::ClassifierType;
@@ -94,11 +95,6 @@ namespace xxr { namespace xcs_impl
         // [P]
         //   The population [P] consists of all classifier that exist in XCS at any time.
         PopulationType m_population;
-
-        // [M]
-        //   The match set [M] is formed out of the current [P].
-        //   It includes all classifiers that match the current situation.
-        MatchSetType m_matchSet;
 
         // [A]
         //   The action set [A] is formed out of the current [M].
@@ -126,7 +122,6 @@ namespace xxr { namespace xcs_impl
         Experiment(const std::unordered_set<Action> & availableActions, const ConstantsType & constants) :
             constants(constants),
             m_population(this->constants, availableActions),
-            m_matchSet(this->constants, availableActions),
             m_actionSet(this->constants, availableActions),
             m_prevActionSet(this->constants, availableActions),
             m_availableActions(availableActions),
@@ -145,13 +140,16 @@ namespace xxr { namespace xcs_impl
         {
             assert(!m_expectsReward);
 
-            m_matchSet.regenerate(m_population, situation, m_timeStamp);
+            // [M]
+            //   The match set [M] is formed out of the current [P].
+            //   It includes all classifiers that match the current situation.
+            const MatchSetType matchSet(m_population, situation, m_timeStamp, this->constants, m_availableActions);
 
-            PredictionArray predictionArray(m_matchSet, constants.exploreProbability);
+            const PredictionArray predictionArray(matchSet, constants.exploreProbability);
 
             Action action = predictionArray.selectAction();
 
-            m_actionSet.regenerate(m_matchSet, action);
+            m_actionSet.regenerate(matchSet, action);
 
             m_expectsReward = true;
             m_isPrevModeExplore = true;
@@ -203,13 +201,16 @@ namespace xxr { namespace xcs_impl
             {
                 assert(!m_expectsReward);
 
-                m_matchSet.regenerate(m_population, situation, m_timeStamp);
+                // [M]
+                //   The match set [M] is formed out of the current [P].
+                //   It includes all classifiers that match the current situation.
+                const MatchSetType matchSet(m_population, situation, m_timeStamp, this->constants, m_availableActions);
 
-                GreedyPredictionArray<MatchSetType> predictionArray(m_matchSet);
+                const GreedyPredictionArray<MatchSetType> predictionArray(matchSet);
 
                 Action action = predictionArray.selectAction();
 
-                m_actionSet.regenerate(m_matchSet, action);
+                m_actionSet.regenerate(matchSet, action);
 
                 m_expectsReward = true;
                 m_isPrevModeExplore = false;
@@ -228,7 +229,7 @@ namespace xxr { namespace xcs_impl
             }
             else
             {
-                // Create new match set as sandbox /*(because of const member function)*/
+                // Create new match set as sandbox
                 MatchSetType matchSet(constants, m_availableActions);
                 for (auto && cl : m_population)
                 {

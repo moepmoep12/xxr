@@ -40,8 +40,8 @@ namespace xxr { namespace xcs_impl
         // Constructor
         using ClassifierPtrSetType::ClassifierPtrSetType;
 
-        MatchSet(Population & population, const std::vector<type> & situation, uint64_t timeStamp, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
-            ClassifierPtrSetType(constants, availableActions)
+        MatchSet(Population & population, const std::vector<type> & situation, uint64_t timeStamp, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : ClassifierPtrSetType(constants, availableActions)
         {
             regenerate(population, situation, timeStamp);
         }

@@ -13,6 +13,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
         using typename xcs_impl::MatchSet<Population>::SymbolType;
         using typename xcs_impl::MatchSet<Population>::ConditionType;
         using typename xcs_impl::MatchSet<Population>::ActionType;
+        using typename xcs_impl::MatchSet<Population>::ConditionActionPairType;
         using typename xcs_impl::MatchSet<Population>::ConstantsType;
         using typename xcs_impl::MatchSet<Population>::ClassifierType;
         using typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;
@@ -38,7 +39,16 @@ namespace xxr { namespace xcsr_impl { namespace csr
 
     public:
         // Constructor
-        using xcs_impl::MatchSet<Population>::MatchSet;
+        MatchSet(ConstantsType & constants, const std::unordered_set<ActionType> availableActions)
+            : xcs_impl::MatchSet<Population>(constants, availableActions)
+        {
+        }
+
+        MatchSet(Population & population, const std::vector<type> & situation, uint64_t timeStamp, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : MatchSet(constants, availableActions)
+        {
+            this->regenerate(population, situation, timeStamp);
+        }
 
         // Destructor
         virtual ~MatchSet() = default;

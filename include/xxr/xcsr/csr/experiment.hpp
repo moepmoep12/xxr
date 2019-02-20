@@ -43,6 +43,20 @@ namespace xxr { namespace xcsr_impl { namespace csr
     class Experiment : public xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>
     {
     public:
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::type;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::SymbolType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ConditionType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ActionType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ConditionActionPairType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ConstantsType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierPtrSetType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::MatchSetType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PredictionArrayType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::GAType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ActionSetType;
+
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::constants;
 
         // Constructor
