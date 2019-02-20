@@ -64,7 +64,17 @@ namespace xxr { namespace xcsr_impl
 
     public:
         // Constructor
-        using xcs_impl::ActionSet<GA>::ActionSet;
+        ActionSet(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
+            xcs_impl::ActionSet<GA>(constants, availableActions)
+        {
+        }
+
+        template <class MatchSet>
+        ActionSet(const MatchSet & matchSet, ActionType action, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
+            ActionSet(constants, availableActions)
+        {
+            this->regenerate(matchSet, action);
+        }
 
         // Destructor
         virtual ~ActionSet() = default;

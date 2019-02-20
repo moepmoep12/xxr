@@ -147,7 +147,7 @@ namespace xxr { namespace xcs_impl
 
             const PredictionArray predictionArray(matchSet, constants.exploreProbability);
 
-            Action action = predictionArray.selectAction();
+            const Action action = predictionArray.selectAction();
 
             m_actionSet.regenerate(matchSet, action);
 
@@ -208,7 +208,7 @@ namespace xxr { namespace xcs_impl
 
                 const GreedyPredictionArray<MatchSetType> predictionArray(matchSet);
 
-                Action action = predictionArray.selectAction();
+                const Action action = predictionArray.selectAction();
 
                 m_actionSet.regenerate(matchSet, action);
 
