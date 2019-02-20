@@ -85,6 +85,13 @@ namespace xxr { namespace xcsr_impl { namespace csr
             return ss.str();
         }
 
+        virtual void switchToCondensationMode() noexcept override
+        {
+            constants.chi = 0.0;
+            constants.mu = 0.0;
+            constants.subsumptionTolerance = 0.0;
+        }
+
         // Destructor
         virtual ~Experiment() = default;
     };

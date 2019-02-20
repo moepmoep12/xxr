@@ -16,7 +16,7 @@ using namespace xxr::xcsr_impl;
 
 template <typename T, typename Action, class Constants, class Environment>
 std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
-    std::string repr,
+    const std::string & reprStr,
     std::size_t seedCount,
     const Constants & constants,
     std::size_t iterationCount,
@@ -34,86 +34,48 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     std::function<void(Environment &)> explorationCallback = [](Environment &){},
     std::function<void(Environment &)> exploitationCallback = [](Environment &){})
 {
-    if (repr == "csr" || repr == "cs")
+    xxr::XCSRRepr repr;
+    if (reprStr == "csr" || reprStr == "cs")
     {
-        return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
-            dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-                run<XCSR<Repr::CSR, T, Action>>(
-                    seedCount,
-                    constants,
-                    iterationCount,
-                    condensationIterationCount,
-                    explorationCount,
-                    exploitationCount,
-                    updateInExploitation,
-                    classifierLogFilename,
-                    rewardLogFilename,
-                    populationSizeLogFilename,
-                    stepCountLogFilename,
-                    smaWidth,
-                    explorationEnvironments,
-                    exploitationEnvironments,
-                    explorationCallback,
-                    exploitationCallback
-                ).release()
-            )
-        );
+        repr = xxr::CSR;
     }
-    else if (repr == "obr" || repr == "lu")
+    else if (reprStr == "obr" || reprStr == "lu")
     {
-        return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
-            dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-                run<XCSR<Repr::OBR, T, Action>>(
-                    seedCount,
-                    constants,
-                    iterationCount,
-                    condensationIterationCount,
-                    explorationCount,
-                    exploitationCount,
-                    updateInExploitation,
-                    classifierLogFilename,
-                    rewardLogFilename,
-                    populationSizeLogFilename,
-                    stepCountLogFilename,
-                    smaWidth,
-                    explorationEnvironments,
-                    exploitationEnvironments,
-                    explorationCallback,
-                    exploitationCallback
-                ).release()
-            )
-        );
+        repr = xxr::OBR;
     }
-    else if (repr == "ubr" || repr == "ub")
+    else if (reprStr == "ubr" || reprStr == "ub")
     {
-        return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
-            dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-                run<XCSR<Repr::UBR, T, Action>>(
-                    seedCount,
-                    constants,
-                    iterationCount,
-                    condensationIterationCount,
-                    explorationCount,
-                    exploitationCount,
-                    updateInExploitation,
-                    classifierLogFilename,
-                    rewardLogFilename,
-                    populationSizeLogFilename,
-                    stepCountLogFilename,
-                    smaWidth,
-                    explorationEnvironments,
-                    exploitationEnvironments,
-                    explorationCallback,
-                    exploitationCallback
-                ).release()
-            )
-        );
+        repr = xxr::UBR;
     }
     else
     {
-        std::cerr << "Error: Unknown representation (" << repr << ")" << std::endl;
+        std::cerr << "Error: Unknown representation (" << reprStr << ")" << std::endl;
         exit(1);
     }
+
+    return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
+        dynamic_cast<xcs_impl::Experiment<T, Action> *>(
+            run<XCSR<T, Action>>(
+                seedCount,
+                constants,
+                iterationCount,
+                condensationIterationCount,
+                explorationCount,
+                exploitationCount,
+                updateInExploitation,
+                classifierLogFilename,
+                rewardLogFilename,
+                populationSizeLogFilename,
+                stepCountLogFilename,
+                smaWidth,
+                explorationEnvironments,
+                exploitationEnvironments,
+                explorationCallback,
+                exploitationCallback,
+                repr
+            ).release()
+        )
+    );
 }
 
 int main(int argc, char *argv[])

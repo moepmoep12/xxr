@@ -14,21 +14,6 @@
 
 #include "util/simple_moving_average.hpp"
 
-template <class Constants>
-void switchToCondensationMode(Constants & constants)
-{
-    constants.chi = 0.0;
-    constants.mu = 0.0;
-}
-
-template <>
-void switchToCondensationMode(xxr::xcsr_impl::Constants & constants)
-{
-    constants.chi = 0.0;
-    constants.mu = 0.0;
-    constants.subsumptionTolerance = 0.0;
-}
-
 template <class Experiment, class Constants, class Environment, class... Args>
 std::unique_ptr<Experiment> run(
     std::size_t seedCount,
@@ -96,7 +81,7 @@ std::unique_ptr<Experiment> run(
         {
             for (std::size_t j = 0; j < seedCount; ++j)
             {
-                switchToCondensationMode(experiments[j]->constants);
+                experiments[j]->switchToCondensationMode();
             }
         }
 

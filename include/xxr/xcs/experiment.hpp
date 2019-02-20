@@ -9,6 +9,7 @@
 #include <cstddef>
 #include <cmath>
 
+#include "../experiment.hpp"
 #include "constants.hpp"
 #include "symbol.hpp"
 #include "condition.hpp"
@@ -39,7 +40,7 @@ namespace xxr { namespace xcs_impl
         class GA = GA<T, Action, Symbol, Condition, Classifier, Population, Constants, ClassifierPtrSet>,
         class ActionSet = ActionSet<T, Action, Symbol, Condition, Classifier, Constants, ClassifierPtrSet, Population, MatchSet, GA>
     >
-    class Experiment
+    class Experiment : public AbstractExperiment<T, Action>
     {
     public:
         using SymbolType = Symbol;
@@ -108,7 +109,7 @@ namespace xxr { namespace xcs_impl
         virtual ~Experiment() = default;
 
         // Run with exploration
-        virtual Action explore(const std::vector<T> & situation)
+        virtual Action explore(const std::vector<T> & situation) override
         {
             assert(!m_expectsReward);
 
@@ -135,7 +136,7 @@ namespace xxr { namespace xcs_impl
             return action;
         }
 
-        virtual void reward(double value, bool isEndOfProblem = true)
+        virtual void reward(double value, bool isEndOfProblem = true) override
         {
             assert(m_expectsReward);
 
@@ -164,7 +165,7 @@ namespace xxr { namespace xcs_impl
 
         // Run without exploration
         // (Set update to true when testing multi-step problems. If update is true, make sure to call reward() after this.)
-        virtual Action exploit(const std::vector<T> & situation, bool update = false)
+        virtual Action exploit(const std::vector<T> & situation, bool update = false) override
         {
             if (update)
             {
@@ -217,7 +218,7 @@ namespace xxr { namespace xcs_impl
             }
         }
 
-        virtual std::string dumpPopulation() const
+        virtual std::string dumpPopulation() const override
         {
             std::stringstream ss;
             ss << "Condition,Action,prediction,epsilon,F,exp,ts,as,n,acc\n";
@@ -237,9 +238,15 @@ namespace xxr { namespace xcs_impl
             return ss.str();
         }
 
-        virtual std::size_t populationSize() const
+        virtual std::size_t populationSize() const override
         {
             return m_population.size();
+        }
+
+        virtual void switchToCondensationMode() noexcept override
+        {
+            constants.chi = 0.0;
+            constants.mu = 0.0;
         }
     };
 
