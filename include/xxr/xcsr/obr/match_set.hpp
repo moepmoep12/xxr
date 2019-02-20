@@ -55,7 +55,16 @@ namespace xxr { namespace xcsr_impl { namespace obr
 
     public:
         // Constructor
-        using xcs_impl::MatchSet<Population>::MatchSet;
+        MatchSet(ConstantsType & constants, const std::unordered_set<ActionType> availableActions)
+            : xcs_impl::MatchSet<Population>(constants, availableActions)
+        {
+        }
+
+        MatchSet(Population & population, const std::vector<type> & situation, uint64_t timeStamp, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : MatchSet(constants, availableActions)
+        {
+            this->regenerate(population, situation, timeStamp);
+        }
 
         // Destructor
         virtual ~MatchSet() = default;
