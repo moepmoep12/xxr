@@ -4,6 +4,7 @@ Learning classifier systems (XCS & XCSR) written in C++14
 - Full implementation of XCS and XCSR (XCS for real values)
     - Built-in benchmark problems
         - Multiplexer problem (XCS)
+        - Block world (maze/woods) problem (XCS)
         - Real-multiplexer problem (XCSR)
         - Checkerboard problem (XCSR)
     - CSV dataset (XCS & XCSR)
