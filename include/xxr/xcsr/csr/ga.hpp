@@ -19,6 +19,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
         using typename xcs_impl::GA<Population>::ConstantsType;
         using typename xcs_impl::GA<Population>::ClassifierType;
         using typename xcs_impl::GA<Population>::StoredClassifierType;
+        using typename xcs_impl::GA<Population>::ClassifierPtr;
         using typename xcs_impl::GA<Population>::ClassifierPtrSetType;
         using typename xcs_impl::GA<Population>::PopulationType;
 

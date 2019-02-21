@@ -23,13 +23,12 @@ namespace xxr { namespace xcs_impl
         using ConstantsType = typename MatchSet::ConstantsType;
         using ClassifierType = typename MatchSet::ClassifierType;
         using StoredClassifierType = typename MatchSet::StoredClassifierType;
+        using ClassifierPtr = typename MatchSet::ClassifierPtr;
         using ClassifierPtrSetType = typename MatchSet::ClassifierPtrSetType;
         using PopulationType = typename MatchSet::PopulationType;
         using MatchSetType = MatchSet;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
-
         // PA (Prediction Array)
         std::unordered_map<ActionType, double> m_pa;
 
@@ -105,6 +104,7 @@ namespace xxr { namespace xcs_impl
         using typename AbstractPredictionArray<MatchSet>::ConstantsType;
         using typename AbstractPredictionArray<MatchSet>::ClassifierType;
         using typename AbstractPredictionArray<MatchSet>::StoredClassifierType;
+        using typename AbstractPredictionArray<MatchSet>::ClassifierPtr;
         using typename AbstractPredictionArray<MatchSet>::ClassifierPtrSetType;
         using typename AbstractPredictionArray<MatchSet>::PopulationType;
 

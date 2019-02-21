@@ -81,6 +81,7 @@ namespace xxr { namespace xcs_impl
         using ConstantsType = typename PredictionArray::ConstantsType;
         using ClassifierType = typename PredictionArray::ClassifierType;
         using StoredClassifierType = typename PredictionArray::StoredClassifierType;
+        using ClassifierPtr = typename PredictionArray::ClassifierPtr;
         using ClassifierPtrSetType = typename PredictionArray::ClassifierPtrSetType;
         using PopulationType = typename PredictionArray::PopulationType;
         using MatchSetType = typename PredictionArray::MatchSetType;
@@ -91,8 +92,6 @@ namespace xxr { namespace xcs_impl
         ConstantsType constants;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
-
         // [P]
         //   The population [P] consists of all classifier that exist in XCS at any time.
         PopulationType m_population;

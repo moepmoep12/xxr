@@ -20,12 +20,11 @@ namespace xxr { namespace xcs_impl
         using ConstantsType = typename Population::ConstantsType;
         using ClassifierType = typename Population::ClassifierType;
         using StoredClassifierType = typename Population::StoredClassifierType;
+        using ClassifierPtr = typename Population::ClassifierPtr;
         using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;
         using PopulationType = Population;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
-
         ConstantsType & m_constants;
         const std::unordered_set<ActionType> & m_availableActions;
 

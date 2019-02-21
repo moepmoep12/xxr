@@ -17,11 +17,11 @@ namespace xxr { namespace xcsr_impl { namespace obr
         using typename xcs_impl::MatchSet<Population>::ConstantsType;
         using typename xcs_impl::MatchSet<Population>::ClassifierType;
         using typename xcs_impl::MatchSet<Population>::StoredClassifierType;
+        using typename xcs_impl::MatchSet<Population>::ClassifierPtr;
         using typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;
         using typename xcs_impl::MatchSet<Population>::PopulationType;
 
     protected:
-        using typename xcs_impl::MatchSet<Population>::ClassifierPtr;
         using xcs_impl::MatchSet<Population>::m_set;
         using xcs_impl::MatchSet<Population>::m_constants;
         using xcs_impl::MatchSet<Population>::m_availableActions;

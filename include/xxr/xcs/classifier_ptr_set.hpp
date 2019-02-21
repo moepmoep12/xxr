@@ -17,10 +17,9 @@ namespace xxr { namespace xcs_impl
         using ConstantsType = typename StoredClassifier::ConstantsType;
         using ClassifierType = typename StoredClassifier::ClassifierType;
         using StoredClassifierType = StoredClassifier;
-
-    protected:
         using ClassifierPtr = std::shared_ptr<StoredClassifier>;
 
+    protected:
         ConstantsType & m_constants;
         const std::unordered_set<ActionType> m_availableActions;
 

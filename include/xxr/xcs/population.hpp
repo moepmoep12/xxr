@@ -17,10 +17,10 @@ namespace xxr { namespace xcs_impl
         using typename ClassifierPtrSet::ConstantsType;
         using typename ClassifierPtrSet::ClassifierType;
         using typename ClassifierPtrSet::StoredClassifierType;
+        using typename ClassifierPtrSet::ClassifierPtr;
         using ClassifierPtrSetType = ClassifierPtrSet;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
         using ClassifierPtrSet::m_set;
         using ClassifierPtrSet::m_constants;
         using ClassifierPtrSet::m_availableActions;

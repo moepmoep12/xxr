@@ -23,9 +23,9 @@ namespace xxr { namespace xcs_impl
         using ClassifierPtrSetType = typename GA::ClassifierPtrSetType;
         using PopulationType = typename GA::PopulationType;
         using GAType = GA;
+        using typename GA::ClassifierPtrSetType::ClassifierPtr;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
         using ClassifierPtrSetType::m_set;
         using ClassifierPtrSetType::m_constants;
         using ClassifierPtrSetType::m_availableActions;

@@ -17,12 +17,12 @@ namespace xxr { namespace xcsr_impl
         using typename xcs_impl::ActionSet<GA>::ConstantsType;
         using typename xcs_impl::ActionSet<GA>::ClassifierType;
         using typename xcs_impl::ActionSet<GA>::StoredClassifierType;
+        using typename xcs_impl::ActionSet<GA>::ClassifierPtr;
         using typename xcs_impl::ActionSet<GA>::ClassifierPtrSetType;
         using typename xcs_impl::ActionSet<GA>::PopulationType;
         using typename xcs_impl::ActionSet<GA>::GAType;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
         using xcs_impl::ActionSet<GA>::m_set;
         using xcs_impl::ActionSet<GA>::m_constants;
         using xcs_impl::ActionSet<GA>::m_availableActions;

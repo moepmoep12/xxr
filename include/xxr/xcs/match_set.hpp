@@ -21,9 +21,9 @@ namespace xxr { namespace xcs_impl
         using StoredClassifierType = typename Population::StoredClassifierType;
         using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;
         using PopulationType = Population;
+        using typename ClassifierPtrSetType::ClassifierPtr;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
         using Population::ClassifierPtrSetType::m_constants;
         using Population::ClassifierPtrSetType::m_availableActions;
         using Population::ClassifierPtrSetType::m_set;

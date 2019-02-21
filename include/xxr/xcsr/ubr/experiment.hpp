@@ -51,6 +51,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ConstantsType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::StoredClassifierType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierPtr;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierPtrSetType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::MatchSetType;
