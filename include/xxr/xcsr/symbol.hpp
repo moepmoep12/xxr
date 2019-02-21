@@ -14,8 +14,8 @@ namespace xxr { namespace xcsr_impl
         virtual ~AbstractSymbol() = default;
 
         // Lower/Upper bound of the interval
-        virtual T lower() const = 0;
-        virtual T upper() const = 0;
+        virtual T lower() const noexcept = 0;
+        virtual T upper() const noexcept = 0;
 
         virtual bool isDontCare() const override
         {

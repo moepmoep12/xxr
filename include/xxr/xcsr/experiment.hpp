@@ -79,7 +79,7 @@ namespace xxr { namespace xcsr_impl
             return m_experiment->dumpPopulation();
         }
 
-        virtual std::size_t populationSize() const override
+        virtual std::size_t populationSize() const noexcept override
         {
             return m_experiment->populationSize();
         }

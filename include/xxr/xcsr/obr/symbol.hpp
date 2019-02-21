@@ -48,12 +48,12 @@ namespace xxr { namespace xcsr_impl { namespace obr
             return *this;
         }
 
-        virtual T lower() const override
+        virtual T lower() const noexcept override
         {
             return l;
         }
 
-        virtual T upper() const override
+        virtual T upper() const noexcept override
         {
             return u;
         }

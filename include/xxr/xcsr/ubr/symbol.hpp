@@ -55,12 +55,12 @@ namespace xxr { namespace xcsr_impl { namespace ubr
             return false;
         }
 
-        virtual T lower() const override
+        virtual T lower() const noexcept override
         {
             return std::min(p, q);
         }
 
-        virtual T upper() const override
+        virtual T upper() const noexcept override
         {
             return std::max(p, q);
         }

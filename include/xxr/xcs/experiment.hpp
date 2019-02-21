@@ -271,7 +271,7 @@ namespace xxr { namespace xcs_impl
             return ss.str();
         }
 
-        virtual std::size_t populationSize() const override
+        virtual std::size_t populationSize() const noexcept override
         {
             return m_population.size();
         }

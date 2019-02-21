@@ -46,12 +46,12 @@ namespace xxr { namespace xcsr_impl { namespace csr
             return *this;
         }
 
-        virtual T lower() const override
+        virtual T lower() const noexcept override
         {
             return center - spread;
         }
 
-        virtual T upper() const override
+        virtual T upper() const noexcept override
         {
             return center + spread;
         }

@@ -237,7 +237,7 @@ namespace xxr { namespace xcs_impl
         virtual ~StoredClassifier() = default;
 
         // COULD SUBSUME
-        virtual bool isSubsumer() const
+        virtual bool isSubsumer() const noexcept
         {
             return experience > m_constants.thetaSub && epsilon < m_constants.epsilonZero;
         }
