@@ -18,11 +18,12 @@ namespace xxr { namespace xcs_impl
         using ConditionActionPairType = typename Population::ConditionActionPairType;
         using ConstantsType = typename Population::ConstantsType;
         using ClassifierType = typename Population::ClassifierType;
+        using StoredClassifierType = typename Population::StoredClassifierType;
         using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;
         using PopulationType = Population;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
         using Population::ClassifierPtrSetType::m_constants;
         using Population::ClassifierPtrSetType::m_availableActions;
         using Population::ClassifierPtrSetType::m_set;
@@ -30,7 +31,7 @@ namespace xxr { namespace xcs_impl
         // GENERATE COVERING CLASSIFIER
         virtual ClassifierPtr generateCoveringClassifier(const std::vector<type> & situation, const std::unordered_set<ActionType> & unselectedActions, uint64_t timeStamp) const
         {
-            auto cl = std::make_shared<ClassifierType>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+            auto cl = std::make_shared<StoredClassifierType>(situation, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
             cl->condition.setDontCareAtRandom(m_constants.dontCareProbability);
 
             return cl;

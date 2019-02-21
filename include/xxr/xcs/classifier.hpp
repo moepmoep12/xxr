@@ -30,6 +30,8 @@ namespace xxr { namespace xcs_impl
         Action action;
 
         // Constructor
+        ConditionActionPair(const ConditionActionPair &) = default;
+
         ConditionActionPair(const Condition & condition, Action action) : condition(condition), action(action) {}
 
         ConditionActionPair(Condition && condition, Action action) : condition(std::move(condition)), action(action) {}
@@ -64,7 +66,7 @@ namespace xxr { namespace xcs_impl
         }
     };
 
-    template <class ConditionActionPair, class Constants>
+    template <class ConditionActionPair>
     struct Classifier : ConditionActionPair
     {
     public:
@@ -73,7 +75,6 @@ namespace xxr { namespace xcs_impl
         using typename ConditionActionPair::ConditionType;
         using typename ConditionActionPair::ActionType;
         using ConditionActionPairType = ConditionActionPair;
-        using ConstantsType = Constants;
 
         // p
         //   The prediction p estimates (keeps an average of) the payoff expected if the
@@ -112,76 +113,128 @@ namespace xxr { namespace xcs_impl
         using ConditionActionPair::action;
         using ConditionActionPair::isMoreGeneral;
 
+        // Constructor
+        Classifier(const Classifier &) = default;
+
+        Classifier(const ConditionType & condition, ActionType action, double prediction, double epsilon, double fitness, uint64_t timeStamp)
+            : ConditionActionPair(condition, action)
+            , prediction(prediction)
+            , epsilon(epsilon)
+            , fitness(fitness)
+            , experience(0)
+            , timeStamp(timeStamp)
+            , actionSetSize(1)
+            , numerosity(1)
+        {
+        }
+
+        Classifier(const ConditionActionPair & conditionActionPair, double prediction, double epsilon, double fitness, uint64_t timeStamp)
+            : ConditionActionPair(conditionActionPair)
+            , prediction(prediction)
+            , epsilon(epsilon)
+            , fitness(fitness)
+            , experience(0)
+            , timeStamp(timeStamp)
+            , actionSetSize(1)
+            , numerosity(1)
+        {
+        }
+
+        Classifier(ConditionActionPair && conditionActionPair, double prediction, double epsilon, double fitness, uint64_t timeStamp)
+            : ConditionActionPair(std::move(conditionActionPair))
+            , prediction(prediction)
+            , epsilon(epsilon)
+            , fitness(fitness)
+            , experience(0)
+            , timeStamp(timeStamp)
+            , actionSetSize(1)
+            , numerosity(1)
+        {
+        }
+
+        Classifier(const std::vector<type> & situation, ActionType action, double prediction, double epsilon, double fitness, uint64_t timeStamp)
+            : Classifier(ConditionType(situation), action, prediction, epsilon, fitness, timeStamp)
+        {
+        }
+
+        Classifier(const std::string & condition, ActionType action, double prediction, double epsilon, double fitness, uint64_t timeStamp)
+            : Classifier(ConditionType(condition), action, prediction, epsilon, fitness, timeStamp)
+        {
+        }
+
+        // Destructor
+        virtual ~Classifier() = default;
+    };
+
+    // Classifier in [P] (have a reference to Constants)
+    template <class Classifier, class Constants>
+    struct StoredClassifier : Classifier
+    {
+    public:
+        using typename Classifier::type;
+        using typename Classifier::SymbolType;
+        using typename Classifier::ConditionType;
+        using typename Classifier::ActionType;
+        using typename Classifier::ConditionActionPairType;
+        using ClassifierType = Classifier;
+        using ConstantsType = Constants;
+
+        using Classifier::action;
+        using Classifier::isMoreGeneral;
+        using Classifier::prediction;
+        using Classifier::epsilon;
+        using Classifier::fitness;
+        using Classifier::experience;
+        using Classifier::timeStamp;
+        using Classifier::actionSetSize;
+        using Classifier::numerosity;
+
     protected:
         // Constants
         Constants & m_constants;
 
     public:
         // Constructor
-        Classifier(const Classifier & obj) :
-            ConditionActionPair(obj.condition, obj.action),
-            prediction(obj.prediction),
-            epsilon(obj.epsilon),
-            fitness(obj.fitness),
-            experience(obj.experience),
-            timeStamp(obj.timeStamp),
-            actionSetSize(obj.actionSetSize),
-            numerosity(obj.numerosity),
-            m_constants(obj.m_constants)
+        StoredClassifier(const StoredClassifier<Classifier, Constants> & obj) = default;
+
+        StoredClassifier(const Classifier & obj, Constants & constants)
+            : Classifier(obj)
+            , m_constants(constants)
         {
         }
 
-        Classifier(const ConditionType & condition, ActionType action, uint64_t timeStamp, Constants & constants) :
-            ConditionActionPair(condition, action),
-            prediction(constants.initialPrediction),
-            epsilon(constants.initialEpsilon),
-            fitness(constants.initialFitness),
-            experience(0),
-            timeStamp(timeStamp),
-            actionSetSize(1),
-            numerosity(1),
-            m_constants(constants)
+        StoredClassifier(const ConditionType & condition, ActionType action, uint64_t timeStamp, Constants & constants)
+            : Classifier(condition, action, constants.initialPrediction, constants.initialEpsilon, constants.initialFitness, timeStamp)
+            , m_constants(constants)
         {
         }
 
-        Classifier(const ConditionActionPair & conditionActionPair, uint64_t timeStamp, Constants & constants) :
-            ConditionActionPair(conditionActionPair),
-            prediction(constants.initialPrediction),
-            epsilon(constants.initialEpsilon),
-            fitness(constants.initialFitness),
-            experience(0),
-            timeStamp(timeStamp),
-            actionSetSize(1),
-            numerosity(1),
-            m_constants(constants)
+        StoredClassifier(const ConditionActionPairType & conditionActionPair, uint64_t timeStamp, Constants & constants)
+            : Classifier(conditionActionPair, constants.initialPrediction, constants.initialEpsilon, constants.initialFitness, timeStamp)
+            , m_constants(constants)
         {
         }
 
-        Classifier(ConditionActionPair && conditionActionPair, uint64_t timeStamp, Constants & constants) :
-            ConditionActionPair(std::move(conditionActionPair)),
-            prediction(constants.initialPrediction),
-            epsilon(constants.initialEpsilon),
-            fitness(constants.initialFitness),
-            experience(0),
-            timeStamp(timeStamp),
-            actionSetSize(1),
-            numerosity(1),
-            m_constants(constants)
+        StoredClassifier(ConditionActionPairType && conditionActionPair, uint64_t timeStamp, Constants & constants)
+            : Classifier(std::move(conditionActionPair), constants.initialPrediction, constants.initialEpsilon, constants.initialFitness, timeStamp)
+            , m_constants(constants)
         {
         }
 
-        Classifier(const std::vector<type> & situation, ActionType action, uint64_t timeStamp, Constants & constants) :
-            Classifier(ConditionType(situation), action, timeStamp, constants)
+        StoredClassifier(const std::vector<type> & situation, ActionType action, uint64_t timeStamp, Constants & constants)
+            : Classifier(situation, action, constants.initialPrediction, constants.initialEpsilon, constants.initialFitness, timeStamp)
+            , m_constants(constants)
         {
         }
 
-        Classifier(const std::string & condition, ActionType action, uint64_t timeStamp, Constants & constants) :
-            Classifier(ConditionType(condition), action, timeStamp, constants)
+        StoredClassifier(const std::string & condition, ActionType action, uint64_t timeStamp, Constants & constants)
+            : Classifier(condition, action, constants.initialPrediction, constants.initialEpsilon, constants.initialFitness, timeStamp)
+            , m_constants(constants)
         {
         }
 
         // Destructor
-        virtual ~Classifier() = default;
+        virtual ~StoredClassifier() = default;
 
         // COULD SUBSUME
         virtual bool isSubsumer() const
@@ -190,7 +243,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DOES SUBSUME
-        virtual bool subsumes(const Classifier<ConditionActionPair, Constants> & cl) const
+        virtual bool subsumes(const Classifier & cl) const
         {
             return action == cl.action && isSubsumer() && isMoreGeneral(cl);
         }

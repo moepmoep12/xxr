@@ -16,6 +16,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         using typename xcs_impl::MatchSet<Population>::ConditionActionPairType;
         using typename xcs_impl::MatchSet<Population>::ConstantsType;
         using typename xcs_impl::MatchSet<Population>::ClassifierType;
+        using typename xcs_impl::MatchSet<Population>::StoredClassifierType;
         using typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;
         using typename xcs_impl::MatchSet<Population>::PopulationType;
 
@@ -57,7 +58,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
                 }
             }
 
-            return std::make_shared<ClassifierType>(symbols, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
+            return std::make_shared<StoredClassifierType>(symbols, Random::chooseFrom(unselectedActions), timeStamp, m_constants);
         }
 
     public:

@@ -33,8 +33,8 @@ namespace xxr { namespace xcs_impl
             MatchSet<
                 Population<
                     ClassifierPtrSet<
-                        Classifier<
-                            ConditionActionPair<Condition<Symbol<T>>, Action>,
+                        StoredClassifier<
+                            Classifier<ConditionActionPair<Condition<Symbol<T>>, Action>>,
                             Constants
                         >
                     >
@@ -45,8 +45,8 @@ namespace xxr { namespace xcs_impl
             GA<
                 Population<
                     ClassifierPtrSet<
-                        Classifier<
-                            ConditionActionPair<Condition<Symbol<T>>, Action>,
+                        StoredClassifier<
+                            Classifier<ConditionActionPair<Condition<Symbol<T>>, Action>>,
                             Constants
                         >
                     >
@@ -80,6 +80,7 @@ namespace xxr { namespace xcs_impl
         using ConditionActionPairType = typename PredictionArray::ConditionActionPairType;
         using ConstantsType = typename PredictionArray::ConstantsType;
         using ClassifierType = typename PredictionArray::ClassifierType;
+        using StoredClassifierType = typename PredictionArray::StoredClassifierType;
         using ClassifierPtrSetType = typename PredictionArray::ClassifierPtrSetType;
         using PopulationType = typename PredictionArray::PopulationType;
         using MatchSetType = typename PredictionArray::MatchSetType;
@@ -90,7 +91,7 @@ namespace xxr { namespace xcs_impl
         ConstantsType constants;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
 
         // [P]
         //   The population [P] consists of all classifier that exist in XCS at any time.

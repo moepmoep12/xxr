@@ -64,27 +64,37 @@ namespace xxr { namespace xcsr_impl
         }
     };
 
-    template <class ConditionActionPair, class Constants>
-    struct Classifier : xcs_impl::Classifier<ConditionActionPair, Constants>
+    template <class Classifier, class Constants>
+    struct StoredClassifier : xcs_impl::StoredClassifier<Classifier, Constants>
     {
     public:
-        using typename xcs_impl::Classifier<ConditionActionPair, Constants>::type;
-        using typename xcs_impl::Classifier<ConditionActionPair, Constants>::SymbolType;
-        using typename xcs_impl::Classifier<ConditionActionPair, Constants>::ConditionType;
-        using typename xcs_impl::Classifier<ConditionActionPair, Constants>::ActionType;
+        using typename xcs_impl::StoredClassifier<Classifier, Constants>::type;
+        using typename xcs_impl::StoredClassifier<Classifier, Constants>::SymbolType;
+        using typename xcs_impl::StoredClassifier<Classifier, Constants>::ConditionType;
+        using typename xcs_impl::StoredClassifier<Classifier, Constants>::ActionType;
+        using typename xcs_impl::StoredClassifier<Classifier, Constants>::ClassifierType;
 
-        using xcs_impl::Classifier<ConditionActionPair, Constants>::action;
-        using xcs_impl::Classifier<ConditionActionPair, Constants>::isSubsumer;
-        using xcs_impl::Classifier<ConditionActionPair, Constants>::isMoreGeneral;
-        using xcs_impl::Classifier<ConditionActionPair, Constants>::m_constants;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::action;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::isSubsumer;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::isMoreGeneral;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::m_constants;
 
-        Classifier(const ConditionType & condition, ActionType action, uint64_t timeStamp, Constants & constants) :
-            xcs_impl::Classifier<ConditionActionPair, Constants>(condition, action, timeStamp, constants)
-        {
-        }
+        using xcs_impl::StoredClassifier<Classifier, Constants>::prediction;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::epsilon;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::fitness;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::experience;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::timeStamp;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::actionSetSize;
+        using xcs_impl::StoredClassifier<Classifier, Constants>::numerosity;
+
+        // Constructor
+        using xcs_impl::StoredClassifier<Classifier, Constants>::StoredClassifier;
+
+        // Destructor
+        virtual ~StoredClassifier() = default;
 
         // DOES SUBSUME
-        virtual bool subsumes(const xcs_impl::Classifier<ConditionActionPair, Constants> & cl) const override
+        virtual bool subsumes(const Classifier & cl) const override
         {
             return action == cl.action && isSubsumer() && isMoreGeneral(cl, m_constants.subsumptionTolerance);
         }

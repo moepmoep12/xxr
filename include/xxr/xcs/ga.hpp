@@ -19,11 +19,12 @@ namespace xxr { namespace xcs_impl
         using ConditionActionPairType = typename Population::ConditionActionPairType;
         using ConstantsType = typename Population::ConstantsType;
         using ClassifierType = typename Population::ClassifierType;
+        using StoredClassifierType = typename Population::StoredClassifierType;
         using ClassifierPtrSetType = typename Population::ClassifierPtrSetType;
         using PopulationType = Population;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
 
         ConstantsType & m_constants;
         const std::unordered_set<ActionType> & m_availableActions;
@@ -167,12 +168,12 @@ namespace xxr { namespace xcs_impl
                     }
                     else
                     {
-                        population.insertOrIncrementNumerosity(std::make_shared<ClassifierType>(*child));
+                        population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(*child, m_constants));
                     }
                 }
                 else
                 {
-                    population.insertOrIncrementNumerosity(std::make_shared<ClassifierType>(*child));
+                    population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(*child, m_constants));
                 }
 
                 population.deleteExtraClassifiers();

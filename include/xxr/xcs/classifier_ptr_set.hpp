@@ -5,20 +5,21 @@
 namespace xxr { namespace xcs_impl
 {
 
-    template <class Classifier>
+    template <class StoredClassifier>
     class ClassifierPtrSet
     {
     public:
-        using type = typename Classifier::type;
-        using SymbolType = typename Classifier::SymbolType;
-        using ConditionType = typename Classifier::ConditionType;
-        using ActionType = typename Classifier::ActionType;
-        using ConditionActionPairType = typename Classifier::ConditionActionPairType;
-        using ConstantsType = typename Classifier::ConstantsType;
-        using ClassifierType = Classifier;
+        using type = typename StoredClassifier::type;
+        using SymbolType = typename StoredClassifier::SymbolType;
+        using ConditionType = typename StoredClassifier::ConditionType;
+        using ActionType = typename StoredClassifier::ActionType;
+        using ConditionActionPairType = typename StoredClassifier::ConditionActionPairType;
+        using ConstantsType = typename StoredClassifier::ConstantsType;
+        using ClassifierType = typename StoredClassifier::ClassifierType;
+        using StoredClassifierType = StoredClassifier;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<Classifier>;
+        using ClassifierPtr = std::shared_ptr<StoredClassifier>;
 
         ConstantsType & m_constants;
         const std::unordered_set<ActionType> m_availableActions;

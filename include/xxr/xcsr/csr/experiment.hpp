@@ -19,8 +19,8 @@ namespace xxr { namespace xcsr_impl { namespace csr
             MatchSet<
                 xcs_impl::Population<
                     xcs_impl::ClassifierPtrSet<
-                        xcsr_impl::Classifier<
-                            xcsr_impl::ConditionActionPair<xcsr_impl::Condition<Symbol<T>>, Action>,
+                        xcsr_impl::StoredClassifier<
+                            xcs_impl::Classifier<xcsr_impl::ConditionActionPair<xcsr_impl::Condition<Symbol<T>>, Action>>,
                             xcsr_impl::Constants
                         >
                     >
@@ -31,8 +31,8 @@ namespace xxr { namespace xcsr_impl { namespace csr
             GA<
                 xcs_impl::Population<
                     xcs_impl::ClassifierPtrSet<
-                        xcsr_impl::Classifier<
-                            xcsr_impl::ConditionActionPair<xcsr_impl::Condition<Symbol<T>>, Action>,
+                        xcsr_impl::StoredClassifier<
+                            xcs_impl::Classifier<xcsr_impl::ConditionActionPair<xcsr_impl::Condition<Symbol<T>>, Action>>,
                             xcsr_impl::Constants
                         >
                     >
@@ -50,6 +50,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ConditionActionPairType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ConstantsType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierType;
+        using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::StoredClassifierType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::ClassifierPtrSetType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType;
         using typename xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::MatchSetType;

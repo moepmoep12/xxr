@@ -19,12 +19,13 @@ namespace xxr { namespace xcs_impl
         using ActionType = typename GA::ActionType;
         using ConstantsType = typename GA::ConstantsType;
         using ClassifierType = typename GA::ClassifierType;
+        using StoredClassifierType = typename GA::StoredClassifierType;
         using ClassifierPtrSetType = typename GA::ClassifierPtrSetType;
         using PopulationType = typename GA::PopulationType;
         using GAType = GA;
 
     protected:
-        using ClassifierPtr = std::shared_ptr<ClassifierType>;
+        using ClassifierPtr = std::shared_ptr<StoredClassifierType>;
         using ClassifierPtrSetType::m_set;
         using ClassifierPtrSetType::m_constants;
         using ClassifierPtrSetType::m_availableActions;
