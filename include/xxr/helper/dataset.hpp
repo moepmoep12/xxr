@@ -22,8 +22,6 @@ namespace xxr
                 value = (value - min) / (max - min);
             }
         }
-
-        return { min, max };
     }
 
     template <typename T>
