@@ -53,6 +53,7 @@ namespace xxr
     }
 
     // Denormalize data by min/max value
+    template <typename T>
     void denormalize(std::vector<std::vector<T>> & situations, T min, T max)
     {
         if (min != 0.0 || max != 1.0)
