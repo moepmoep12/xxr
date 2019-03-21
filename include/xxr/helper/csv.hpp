@@ -2,6 +2,7 @@
 #include <istream>
 #include <sstream>
 #include <vector>
+#include <cmath>
 
 #include "dataset.hpp"
 
@@ -11,7 +12,7 @@ namespace xxr
     namespace CSV
     {
         template <typename T, typename Action>
-        Dataset<T, Action> read(std::istream & is)
+        Dataset<T, Action> read(std::istream & is, bool rounds = false)
         {
             std::vector<std::vector<T>> situations;
             std::vector<Action> actions;
@@ -29,7 +30,7 @@ namespace xxr
                 while (std::getline(iss, field, ','))
                 {
                     fieldValue = std::stof(field);
-                    situation.push_back(static_cast<T>(fieldValue));
+                    situation.push_back(static_cast<T>(rounds ? std::round(fieldValue) : fieldValue));
                     empty = false;
                 }
 
@@ -49,10 +50,10 @@ namespace xxr
         }
 
         template <typename T, typename Action>
-        Dataset<T, Action> read(const std::string & filename)
+        Dataset<T, Action> read(const std::string & filename, bool rounds = false)
         {
             std::ifstream ifs(filename);
-            return read<T, Action>(ifs);
+            return read<T, Action>(ifs, rounds);
         }
     }
 
