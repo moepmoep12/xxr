@@ -10,17 +10,17 @@ namespace xxr
 
     template <typename T, typename Action>
     class
-    [[deprecated("please use CSV::read() helper function and DatasetEnvironment class")]]
+    [[deprecated("please use CSV::readDataset() helper function and DatasetEnvironment class")]]
     CSVEnvironment : public DatasetEnvironment<T, Action>
     {
     public:
         CSVEnvironment(std::istream & is, const std::unordered_set<Action> & availableActions, bool chooseRandom = true)
-            : DatasetEnvironment<T, Action>(CSV::read<T, Action>(is), availableActions, chooseRandom)
+            : DatasetEnvironment<T, Action>(CSV::readDataset<T, Action>(is), availableActions, chooseRandom)
         {
         }
 
         CSVEnvironment(const std::string & filename, const std::unordered_set<Action> & availableActions, bool chooseRandom = true)
-            : DatasetEnvironment<T, Action>(CSV::read<T, Action>(filename), availableActions, chooseRandom)
+            : DatasetEnvironment<T, Action>(CSV::readDataset<T, Action>(filename), availableActions, chooseRandom)
         {
         }
 

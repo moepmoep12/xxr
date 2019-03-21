@@ -431,12 +431,12 @@ int main(int argc, char *argv[])
         std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::read<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
+            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
         }
         std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::read<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
+            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
         }
 
         run<Experiment<int, int>>(

@@ -385,12 +385,12 @@ int main(int argc, char *argv[])
         std::vector<std::unique_ptr<DatasetEnvironment<double, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<double, int>>(CSV::read<double, int>(filename), availableActions, result["csv-random"].as<bool>()));
+            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<double, int>>(CSV::readDataset<double, int>(filename), availableActions, result["csv-random"].as<bool>()));
         }
         std::vector<std::unique_ptr<DatasetEnvironment<double, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<double, int>>(CSV::read<double, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
+            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<double, int>>(CSV::readDataset<double, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
         }
 
         runXCSR<double, int>(

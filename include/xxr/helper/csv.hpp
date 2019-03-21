@@ -12,7 +12,7 @@ namespace xxr
     namespace CSV
     {
         template <typename T, typename Action>
-        Dataset<T, Action> read(std::istream & is, bool rounds = false)
+        Dataset<T, Action> readDataset(std::istream & is, bool rounds = false)
         {
             std::vector<std::vector<T>> situations;
             std::vector<Action> actions;
@@ -50,10 +50,10 @@ namespace xxr
         }
 
         template <typename T, typename Action>
-        Dataset<T, Action> read(const std::string & filename, bool rounds = false)
+        Dataset<T, Action> readDataset(const std::string & filename, bool rounds = false)
         {
             std::ifstream ifs(filename);
-            return read<T, Action>(ifs, rounds);
+            return readDataset<T, Action>(ifs, rounds);
         }
     }
 
