@@ -15,6 +15,8 @@ namespace xxr
     template <typename T>
     void normalize(std::vector<std::vector<T>> & situations, T min, T max)
     {
+        assert(min != max);
+
         for (auto && situation : situations)
         {
             for (auto && value : situation)
@@ -34,8 +36,13 @@ namespace xxr
     template <typename T>
     std::pair<T, T> normalize(std::vector<std::vector<T>> & situations)
     {
-        T min;
-        T max;
+        if (situations.empty())
+        {
+            return { 0.0, 1.0 };
+        }
+
+        T min = situations[0][0];
+        T max = situations[0][0];
         for (auto && situation : situations)
         {
             for (auto && value : situation)
