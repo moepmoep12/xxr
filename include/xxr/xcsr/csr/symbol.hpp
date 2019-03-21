@@ -25,7 +25,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
         virtual std::string toString() const override
         {
             std::ostringstream stream;
-            stream << std::setprecision(3) << center << ";" << spread << " ";
+            stream << std::setprecision(3) << center << ';' << spread << ' ';
             return stream.str();
         }
 

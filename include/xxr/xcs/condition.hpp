@@ -48,6 +48,13 @@ namespace xxr { namespace xcs_impl
             {
                 str += symbol.toString();
             }
+
+            // Erase last whitespace
+            if (!str.empty() && str.back() == ' ')
+            {
+                str.pop_back();
+            }
+
             return str;
         }
 

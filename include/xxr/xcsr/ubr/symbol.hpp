@@ -27,7 +27,7 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         virtual std::string toString() const override
         {
             std::ostringstream stream;
-            stream << std::setprecision(3) << p << ";" << q << " ";
+            stream << std::setprecision(3) << p << ';' << q << ' ';
             return stream.str();
         }
 
