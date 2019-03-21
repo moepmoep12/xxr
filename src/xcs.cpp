@@ -398,7 +398,6 @@ int main(int argc, char *argv[])
     // Use csv file
     if (result.count("csv"))
     {
-
         // Get available action choices
         if (!result.count("action"))
         {
@@ -429,15 +428,15 @@ int main(int argc, char *argv[])
             evaluationCsvFilename = result["csv-eval"].as<std::string>();
         }
 
-        std::vector<std::unique_ptr<CSVEnvironment<int, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            explorationEnvironments.push_back(std::make_unique<CSVEnvironment<int, int>>(filename, availableActions, result.count("csv-random")));
+            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::read<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
         }
-        std::vector<std::unique_ptr<CSVEnvironment<int, int>>> exploitationEnvironments;
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
         for (std::size_t i = 0; i < seedCount; ++i)
         {
-            exploitationEnvironments.push_back(std::make_unique<CSVEnvironment<int, int>>(evaluationCsvFilename, availableActions, result.count("csv-random")));
+            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::read<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
         }
 
         run<Experiment<int, int>>(
