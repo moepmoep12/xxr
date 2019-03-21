@@ -89,7 +89,7 @@ int main()
     }
 
     // Show acquired rules
-    std::cout << xcs.dumpPopulation();
+    xcs.dumpPopulation(std::cout);
 
     // Use "xcs.exploit(input)" to get the most desirable action
     // chosen by using acquired rules

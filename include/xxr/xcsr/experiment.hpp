@@ -74,9 +74,9 @@ namespace xxr { namespace xcsr_impl
             return m_experiment->exploit(situation, update);
         }
 
-        virtual std::string dumpPopulation() const override
+        virtual void dumpPopulation(std::ostream & os) const override
         {
-            return m_experiment->dumpPopulation();
+            m_experiment->dumpPopulation(os);
         }
 
         virtual std::size_t populationSize() const noexcept override

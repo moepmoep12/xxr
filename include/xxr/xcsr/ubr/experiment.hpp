@@ -71,18 +71,16 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::reward;
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::exploit;
 
-        virtual std::string dumpPopulation() const override
+        virtual void dumpPopulation(std::ostream & os) const override
         {
-            std::stringstream ss;
-
-            ss  << "Condition[" << constants.minValue << "-" << constants.maxValue << "],"
+            os  << "Condition[" << constants.minValue << "-" << constants.maxValue << "],"
                 << "Condition[p;q],Action,prediction,epsilon,F,exp,ts,as,n,acc" << std::endl;
 
             for (auto && cl : this->m_population)
             {
                 for (auto && symbol : cl->condition)
                 {
-                    ss << "|";
+                    os << "|";
 
                     auto normalizedLowerLimit = (symbol.lower() - constants.minValue) / (constants.maxValue - constants.minValue);
                     auto normalizedUpperLimit = (symbol.upper() - constants.minValue) / (constants.maxValue - constants.minValue);
@@ -91,22 +89,22 @@ namespace xxr { namespace xcsr_impl { namespace ubr
                     {
                         if (normalizedLowerLimit < i / 10.0 && (i + 1) / 10.0 < normalizedUpperLimit)
                         {
-                            ss << "O";
+                            os << "O";
                         }
                         else if ((i / 10.0 <= normalizedLowerLimit && normalizedLowerLimit <= (i + 1) / 10.0)
                             || (i / 10.0 <= normalizedUpperLimit && normalizedUpperLimit <= (i + 1) / 10.0))
                         {
-                            ss << "o";
+                            os << "o";
                         }
                         else
                         {
-                            ss << ".";
+                            os << ".";
                         }
                     }
                 }
-                ss << "|" << ",";
+                os << "|" << ",";
 
-                ss  << cl->condition << ","
+                os  << cl->condition << ","
                     << cl->action << ","
                     << cl->prediction << ","
                     << cl->epsilon << ","
@@ -117,8 +115,6 @@ namespace xxr { namespace xcsr_impl { namespace ubr
                     << cl->numerosity << ","
                     << cl->accuracy() << std::endl;
             }
-
-            return ss.str();
         }
 
         virtual void switchToCondensationMode() noexcept override

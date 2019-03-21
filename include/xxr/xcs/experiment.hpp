@@ -251,13 +251,12 @@ namespace xxr { namespace xcs_impl
             }
         }
 
-        virtual std::string dumpPopulation() const override
+        virtual void dumpPopulation(std::ostream & os) const override
         {
-            std::stringstream ss;
-            ss << "Condition,Action,prediction,epsilon,F,exp,ts,as,n,acc\n";
+            os << "Condition,Action,prediction,epsilon,F,exp,ts,as,n,acc\n";
             for (auto && cl : m_population)
             {
-                ss  << cl->condition << ","
+                os  << cl->condition << ","
                     << cl->action << ","
                     << cl->prediction << ","
                     << cl->epsilon << ","
@@ -268,7 +267,6 @@ namespace xxr { namespace xcs_impl
                     << cl->numerosity << ","
                     << cl->accuracy() << "\n";
             }
-            return ss.str();
         }
 
         virtual std::size_t populationSize() const noexcept override

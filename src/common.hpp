@@ -168,7 +168,8 @@ std::unique_ptr<Experiment> run(
         std::cout << std::endl;
     }
 
-    classifierLogStream << experiments[0]->dumpPopulation() << std::endl;
+    experiments[0]->dumpPopulation(classifierLogStream);
+    classifierLogStream << std::endl;
 
     return std::move(experiments[0]);
 }
