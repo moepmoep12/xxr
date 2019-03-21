@@ -11,7 +11,29 @@ namespace xxr
         std::vector<Action> actions;
     };
 
+    // Normalize data by min/max value
+    template <typename T>
+    void normalize(std::vector<std::vector<T>> & situations, T min, T max)
+    {
+        for (auto && situation : situations)
+        {
+            for (auto && value : situation)
+            {
+                value = (value - min) / (max - min);
+            }
+        }
+
+        return { min, max };
+    }
+
+    template <typename T>
+    void normalize(std::vector<std::vector<T>> & situations, const std::pair<T, T> & minmax)
+    {
+        normalize(situations, minmax.first, minmax.second);
+    }
+
     // Normalize data between 0.0 to 1.0 and return min/max value
+    template <typename T>
     std::pair<T, T> normalize(std::vector<std::vector<T>> & situations)
     {
         T min;
@@ -25,13 +47,7 @@ namespace xxr
             }
         }
 
-        for (auto && situation : situations)
-        {
-            for (auto && value : situation)
-            {
-                value = (value - min) / (max - min);
-            }
-        }
+        normalize(situations, min, max);
 
         return { min, max };
     }
@@ -51,6 +67,7 @@ namespace xxr
         }
     }
 
+    template <typename T>
     void denormalize(std::vector<std::vector<T>> & situations, const std::pair<T, T> & minmax)
     {
         denormalize(minmax.first, minmax.second);
