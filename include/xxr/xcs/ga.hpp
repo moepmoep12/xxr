@@ -63,8 +63,35 @@ namespace xxr { namespace xcs_impl
             return *targets[selectedIdx];
         }
 
-        // APPLY CROSSOVER
-        virtual void crossover(ClassifierType & cl1, ClassifierType & cl2) const
+        // APPLY CROSSOVER (uniform crossover)
+        virtual void uniformCrossover(ClassifierType & cl1, ClassifierType & cl2) const
+        {
+            assert(cl1.condition.size() == cl2.condition.size());
+
+            for (std::size_t i = 0; i < cl1.condition.size(); ++i)
+            {
+                if (Random::nextDouble() < 0.5)
+                {
+                    std::swap(cl1.condition[i], cl2.condition[i]);
+                }
+            }
+        }
+
+        // APPLY CROSSOVER (one point crossover)
+        virtual void onePointCrossover(ClassifierType & cl1, ClassifierType & cl2) const
+        {
+            assert(cl1.condition.size() == cl2.condition.size());
+
+            std::size_t x = Random::nextInt<std::size_t>(0, cl1.condition.size());
+
+            for (std::size_t i = x + 1; i < cl1.condition.size(); ++i)
+            {
+                std::swap(cl1.condition[i], cl2.condition[i]);
+            }
+        }
+
+        // APPLY CROSSOVER (two point crossover)
+        virtual void twoPointCrossover(ClassifierType & cl1, ClassifierType & cl2) const
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
@@ -79,6 +106,25 @@ namespace xxr { namespace xcs_impl
             for (std::size_t i = x + 1; i < y; ++i)
             {
                 std::swap(cl1.condition[i], cl2.condition[i]);
+            }
+        }
+
+        // APPLY CROSSOVER
+        virtual void crossover(ClassifierType & cl1, ClassifierType & cl2) const
+        {
+            switch (m_constants.crossoverMethod)
+            {
+            case Constants::CrossoverMethod::UNIFORM_CROSSOVER:
+                uniformCrossover(cl1, cl2);
+                break;
+
+            case Constants::CrossoverMethod::ONE_POINT_CROSSOVER:
+                onePointCrossover(cl1, cl2);
+                break;
+
+            case Constants::CrossoverMethod::TWO_POINT_CROSSOVER:
+                twoPointCrossover(cl1, cl2);
+                break;
             }
         }
 

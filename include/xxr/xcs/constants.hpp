@@ -49,6 +49,15 @@ namespace xxr { namespace xcs_impl
         //   Recommended: 0.5-1.0
         double chi = 0.8;
 
+        // crossoverMethod
+        enum class CrossoverMethod
+        {
+            UNIFORM_CROSSOVER,
+            ONE_POINT_CROSSOVER,
+            TWO_POINT_CROSSOVER,
+        };
+        CrossoverMethod crossoverMethod = CrossoverMethod::TWO_POINT_CROSSOVER;
+
         // mu
         //   The probability of mutating one allele and the action
         //   Recommended: 0.01-0.05

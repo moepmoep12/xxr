@@ -27,8 +27,46 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         using xcs_impl::GA<Population>::m_constants;
         using xcs_impl::GA<Population>::m_availableActions;
 
-        // APPLY CROSSOVER
-        virtual void crossover(ClassifierType & cl1, ClassifierType & cl2) const override
+        // APPLY CROSSOVER (uniform crossover)
+        virtual void uniformCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
+        {
+            assert(cl1.condition.size() == cl2.condition.size());
+
+            for (std::size_t i = 0; i < cl1.condition.size(); ++i)
+            {
+                if (Random::nextDouble() < 0.5)
+                {
+                    std::swap(cl1.condition[i].p, cl2.condition[i].p);
+                }
+                if (Random::nextDouble() < 0.5)
+                {
+                    std::swap(cl1.condition[i].q, cl2.condition[i].q);
+                }
+            }
+        }
+
+        // APPLY CROSSOVER (one point crossover)
+        virtual void onePointCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
+        {
+            assert(cl1.condition.size() == cl2.condition.size());
+
+            std::size_t x = Random::nextInt<std::size_t>(0, cl1.condition.size() * 2);
+
+            for (std::size_t i = x + 1; i < cl1.condition.size() * 2; ++i)
+            {
+                if (i % 2 == 0)
+                {
+                    std::swap(cl1.condition[i / 2].p, cl2.condition[i / 2].p);
+                }
+                else
+                {
+                    std::swap(cl1.condition[i / 2].q, cl2.condition[i / 2].q);
+                }
+            }
+        }
+
+        // APPLY CROSSOVER (two point crossover)
+        virtual void twoPointCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
