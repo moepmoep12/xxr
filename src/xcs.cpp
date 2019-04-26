@@ -195,6 +195,19 @@ int main(int argc, char *argv[])
         if (constants.thetaMna != 0) std::cout << "       theta_mna = " << constants.thetaMna << std::endl;
         std::cout << " doGASubsumption = " << (constants.doGASubsumption ? "true" : "false") << std::endl;
         std::cout << " doASSubsumption = " << (constants.doActionSetSubsumption ? "true" : "false") << std::endl;
+        std::cout << " crossoverMethod = ";
+        switch (constants.crossoverMethod)
+        {
+        case XCSConstants::CrossoverMethod::UNIFORM_CROSSOVER:
+            std::cout << "uniform" << std::endl;
+            break;
+        case XCSConstants::CrossoverMethod::ONE_POINT_CROSSOVER:
+            std::cout << "one-point" << std::endl;
+            break;
+        case XCSConstants::CrossoverMethod::TWO_POINT_CROSSOVER:
+            std::cout << "two-point" << std::endl;
+            break;
+        }
         std::cout << std::endl;
 
         // Output optional settings
