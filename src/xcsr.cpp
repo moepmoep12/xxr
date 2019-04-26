@@ -117,6 +117,7 @@ int main(int argc, char *argv[])
         ("gamma", "The discount rate in multi-step problems", cxxopts::value<double>()->default_value(std::to_string(constants.gamma)), "GAMMA")
         ("theta-ga", "The threshold for the GA application in an action set", cxxopts::value<uint64_t>()->default_value(std::to_string(constants.thetaGA)), "THETA_GA")
         ("chi", "The probability of applying crossover", cxxopts::value<double>()->default_value(std::to_string(constants.chi)), "CHI")
+        ("x-method", "The method of crossover operator", cxxopts::value<std::string>()->default_value("two-point"), "uniform/one-point/two-point")
         ("mu", "The probability of mutating one allele and the action", cxxopts::value<double>()->default_value(std::to_string(constants.mu)), "MU")
         ("theta-del", "The experience threshold over which the fitness of a classifier may be considered in its deletion probability", cxxopts::value<double>()->default_value(std::to_string(constants.thetaDel)), "THETA_DEL")
         ("delta", "The fraction of the mean fitness of the population below which the fitness of a classifier may be considered in its vote for deletion", cxxopts::value<double>()->default_value(std::to_string(constants.delta)), "DELTA")
@@ -201,6 +202,25 @@ int main(int argc, char *argv[])
         constants.useMAM = result["mam"].as<bool>();
 
     bool isEnvironmentSpecified = (result.count("mux") || result.count("csv") || result.count("chk"));
+
+    // Determine crossover method
+    if (result["x-method"].as<std::string>() == "uniform")
+    {
+        constants.crossoverMethod = XCSRConstants::CrossoverMethod::UNIFORM_CROSSOVER;
+    }
+    else if (result["x-method"].as<std::string>() == "one-point")
+    {
+        constants.crossoverMethod = XCSRConstants::CrossoverMethod::ONE_POINT_CROSSOVER;
+    }
+    else if (result["x-method"].as<std::string>() == "two-point")
+    {
+        constants.crossoverMethod = XCSRConstants::CrossoverMethod::TWO_POINT_CROSSOVER;
+    }
+    else
+    {
+        std::cerr << "Error: Unknown value for --x-method (" << result["x-method"].as<std::string>() << ")" << std::endl;
+        exit(0);
+    }
 
     // Determine whether to update classifier parameters in exploitation
     bool updateInExploitation;
