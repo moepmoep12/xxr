@@ -219,7 +219,7 @@ int main(int argc, char *argv[])
     else
     {
         std::cerr << "Error: Unknown value for --x-method (" << result["x-method"].as<std::string>() << ")" << std::endl;
-        exit(0);
+        exit(1);
     }
 
     // Determine whether to update classifier parameters in exploitation
@@ -239,7 +239,7 @@ int main(int argc, char *argv[])
     else
     {
         std::cerr << "Error: Unknown value for --exploit-upd (" << result["exploit-upd"].as<std::string>() << ")" << std::endl;
-        exit(0);
+        exit(1);
     }
 
     // Show help
