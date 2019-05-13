@@ -74,15 +74,15 @@ namespace xxr { namespace xcs_impl
         }
 
         template <class... Args>
-        auto insert(Args... args)
+        auto insert(Args && ... args)
         {
-            return m_set.insert(args...);
+            return m_set.insert(std::forward<Args>(args)...);
         }
 
         template <class... Args>
-        auto erase(Args... args)
+        auto erase(Args && ... args)
         {
-            return m_set.erase(args...);
+            return m_set.erase(std::forward<Args>(args)...);
         }
 
         void clear() noexcept
@@ -91,21 +91,21 @@ namespace xxr { namespace xcs_impl
         }
 
         template <class... Args>
-        void swap(Args... args)
+        void swap(Args && ... args)
         {
-            m_set.swap(args...);
+            m_set.swap(std::forward<Args>(args)...);
         }
 
         template <class... Args>
-        auto find(Args... args) const
+        auto find(Args && ... args) const
         {
-            return m_set.find(args...);
+            return m_set.find(std::forward<Args>(args)...);
         }
 
         template <class... Args>
-        auto count(Args... args) const
+        auto count(Args && ... args) const
         {
-            return m_set.count(args...);
+            return m_set.count(std::forward<Args>(args)...);
         }
     };
 
