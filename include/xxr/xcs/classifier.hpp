@@ -164,6 +164,18 @@ namespace xxr { namespace xcs_impl
 
         // Destructor
         virtual ~Classifier() = default;
+
+        virtual double accuracy(double epsilonZero, double alpha, double nu) const
+        {
+            if (epsilon < epsilonZero)
+            {
+                return 1.0;
+            }
+            else
+            {
+                return alpha * pow(epsilon / epsilonZero, -nu);
+            }
+        }
     };
 
     // Classifier in [P] (have a reference to Constants)
@@ -250,14 +262,7 @@ namespace xxr { namespace xcs_impl
 
         virtual double accuracy() const
         {
-            if (epsilon < m_constants.epsilonZero)
-            {
-                return 1.0;
-            }
-            else
-            {
-                return m_constants.alpha * pow(epsilon / m_constants.epsilonZero, -m_constants.nu);
-            }
+            return Classifier::accuracy(m_constants.epsilonZero, m_constants.alpha, m_constants.nu);
         }
     };
 
