@@ -253,12 +253,20 @@ namespace xxr { namespace xcs_impl
 
         virtual void setPopulation(const std::vector<ClassifierType> & classifiers, bool initTimeStamp = true)
         {
+            // Replace population
             m_population.clear();
             for (auto && cl : classifiers)
             {
                 m_population.emplace(std::make_shared<StoredClassifierType>(cl, constants));
             }
 
+            // Clear action set and reset status
+            m_actionSet.clear();
+            m_prevActionSet.clear();
+            m_expectsReward = false;
+            m_isPrevModeExplore = false;
+
+            // Set system timestamp to the same as latest classifier
             if (initTimeStamp)
             {
                 m_timeStamp = 0;
