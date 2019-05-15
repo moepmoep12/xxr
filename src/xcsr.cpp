@@ -29,6 +29,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     const std::string & populationSizeLogFilename,
     const std::string & stepCountLogFilename,
     const std::string & initialPopulationFilename,
+    bool useInitialPopulationForResume,
     std::size_t smaWidth,
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
     std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
@@ -69,6 +70,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
                 populationSizeLogFilename,
                 stepCountLogFilename,
                 initialPopulationFilename,
+                useInitialPopulationForResume,
                 smaWidth,
                 explorationEnvironments,
                 exploitationEnvironments,
@@ -95,6 +97,7 @@ int main(int argc, char *argv[])
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         //("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("cinput", "The classifier csv filename for initial population", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("resume", "Whether to use initial classifiers (--cinput) to resume previous experiment (\"false\": initialize p/epsilon/F/exp/ts/as, \"true\": do not initialize values and set system time stamp to the same as that of the latest classifier)", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("m,mux", "Use the real multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("chk", "Use the n-dimentional checkerboard problem", cxxopts::value<int>(), "N")
         ("chk-div", "The division in the checkerboard problem", cxxopts::value<int>(), "DIVISION")
@@ -345,6 +348,7 @@ int main(int argc, char *argv[])
             result["noutput"].as<std::string>(),
             "",//result["nsoutput"].as<std::string>(),
             result["cinput"].as<std::string>(),
+            result["resume"].as<bool>(),
             smaWidth,
             environments,
             environments);
@@ -380,6 +384,7 @@ int main(int argc, char *argv[])
             result["noutput"].as<std::string>(),
             "",//result["nsoutput"].as<std::string>(),
             result["cinput"].as<std::string>(),
+            result["resume"].as<bool>(),
             smaWidth,
             environments,
             environments);
@@ -445,6 +450,7 @@ int main(int argc, char *argv[])
             result["noutput"].as<std::string>(),
             "",//result["nsoutput"].as<std::string>(),
             result["cinput"].as<std::string>(),
+            result["resume"].as<bool>(),
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments);

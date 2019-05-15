@@ -30,6 +30,7 @@ std::unique_ptr<Experiment> run(
     const std::string & populationSizeLogFilename,
     const std::string & stepCountLogFilename,
     const std::string & initialPopulationFilename,
+    bool useInitialPopulationForResume,
     std::size_t smaWidth,
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
     std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
@@ -82,7 +83,7 @@ std::unique_ptr<Experiment> run(
     {
         for (auto && experiment : experiments)
         {
-            experiment->loadPopulationCSV(initialPopulationFilename, true);
+            experiment->loadPopulationCSV(initialPopulationFilename, !useInitialPopulationForResume);
         }
     }
 
