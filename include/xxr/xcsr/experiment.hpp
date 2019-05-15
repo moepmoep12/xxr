@@ -74,6 +74,17 @@ namespace xxr { namespace xcsr_impl
             return m_experiment->exploit(situation, update);
         }
 
+        virtual void loadPopulationCSV(const std::string & filename, bool useAsInitialPopulation = true) override
+        {
+            m_experiment->loadPopulationCSV(filename, useAsInitialPopulation);
+        }
+
+        template <class Classifier>
+        void setPopulation(const std::vector<Classifier> & classifiers, bool initTimeStamp = true)
+        {
+            m_experiment->setPopulation(classifiers, initTimeStamp);
+        }
+
         virtual void dumpPopulation(std::ostream & os) const override
         {
             m_experiment->dumpPopulation(os);

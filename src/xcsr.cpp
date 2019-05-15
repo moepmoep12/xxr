@@ -28,6 +28,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     const std::string & rewardLogFilename,
     const std::string & populationSizeLogFilename,
     const std::string & stepCountLogFilename,
+    const std::string & initialPopulationFilename,
     std::size_t smaWidth,
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
     std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
@@ -67,6 +68,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
                 rewardLogFilename,
                 populationSizeLogFilename,
                 stepCountLogFilename,
+                initialPopulationFilename,
                 smaWidth,
                 explorationEnvironments,
                 exploitationEnvironments,
@@ -92,6 +94,7 @@ int main(int argc, char *argv[])
         ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         //("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("cinput", "The classifier csv filename for initial population", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the real multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("chk", "Use the n-dimentional checkerboard problem", cxxopts::value<int>(), "N")
         ("chk-div", "The division in the checkerboard problem", cxxopts::value<int>(), "DIVISION")
@@ -341,6 +344,7 @@ int main(int argc, char *argv[])
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
             "",//result["nsoutput"].as<std::string>(),
+            result["cinput"].as<std::string>(),
             smaWidth,
             environments,
             environments);
@@ -375,6 +379,7 @@ int main(int argc, char *argv[])
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
             "",//result["nsoutput"].as<std::string>(),
+            result["cinput"].as<std::string>(),
             smaWidth,
             environments,
             environments);
@@ -439,6 +444,7 @@ int main(int argc, char *argv[])
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
             "",//result["nsoutput"].as<std::string>(),
+            result["cinput"].as<std::string>(),
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments);

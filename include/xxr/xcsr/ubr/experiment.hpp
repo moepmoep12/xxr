@@ -71,6 +71,27 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::reward;
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::exploit;
 
+        virtual void loadPopulationCSV(const std::string & filename, bool useAsInitialPopulation = true) override
+        {
+            auto population = xxr::CSV::readPopulation<ClassifierType>(filename, true, true /* skip first column only for XCSR population */);
+            if (useAsInitialPopulation)
+            {
+                for (auto && cl : population)
+                {
+                    cl.prediction = constants.initialPrediction;
+                    cl.epsilon = constants.initialEpsilon;
+                    cl.fitness = constants.initialFitness;
+                    cl.experience = 0;
+                    cl.timeStamp = 0;
+                    cl.actionSetSize = 1;
+                    //cl.numerosity = 1; // commented out to keep macroclassifier as is
+                }
+            }
+            setPopulation(population, useAsInitialPopulation);
+        }
+
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::setPopulation;
+
         virtual void dumpPopulation(std::ostream & os) const override
         {
             os  << "Condition[" << constants.minValue << "-" << constants.maxValue << "],"

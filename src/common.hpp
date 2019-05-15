@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <unordered_set>
+#include <type_traits>
 #include <cassert>
 #include <cstddef>
 
@@ -79,20 +80,9 @@ std::unique_ptr<Experiment> run(
     // Load initial population
     if (!initialPopulationFilename.empty())
     {
-        auto population = xxr::CSV::readPopulation<typename Experiment::ClassifierType>(initialPopulationFilename);
-        for (auto && cl : population)
-        {
-            cl.prediction = constants.initialPrediction;
-            cl.epsilon = constants.initialEpsilon;
-            cl.fitness = constants.initialFitness;
-            cl.experience = 0;
-            cl.timeStamp = 0;
-            cl.actionSetSize = 1;
-            //cl.numerosity = 1; // commented out to keep macroclassifier as is
-        }
         for (auto && experiment : experiments)
         {
-            experiment->setPopulation(population);
+            experiment->loadPopulationCSV(initialPopulationFilename, true);
         }
     }
 

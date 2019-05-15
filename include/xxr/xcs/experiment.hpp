@@ -22,6 +22,7 @@
 #include "ga.hpp"
 #include "prediction_array.hpp"
 #include "../random.hpp"
+#include "../helper/csv.hpp"
 
 namespace xxr { namespace xcs_impl
 {
@@ -249,6 +250,25 @@ namespace xxr { namespace xcs_impl
                     return Random::chooseFrom(m_availableActions);
                 }
             }
+        }
+
+        virtual void loadPopulationCSV(const std::string & filename, bool useAsInitialPopulation = true) override
+        {
+            auto population = xxr::CSV::readPopulation<ClassifierType>(filename);
+            if (useAsInitialPopulation)
+            {
+                for (auto && cl : population)
+                {
+                    cl.prediction = constants.initialPrediction;
+                    cl.epsilon = constants.initialEpsilon;
+                    cl.fitness = constants.initialFitness;
+                    cl.experience = 0;
+                    cl.timeStamp = 0;
+                    cl.actionSetSize = 1;
+                    //cl.numerosity = 1; // commented out to keep macroclassifier as is
+                }
+            }
+            setPopulation(population, useAsInitialPopulation);
         }
 
         virtual void setPopulation(const std::vector<ClassifierType> & classifiers, bool initTimeStamp = true)
