@@ -251,6 +251,22 @@ namespace xxr { namespace xcs_impl
             }
         }
 
+        virtual void setPopulation(const std::vector<ClassifierType> & classifiers, bool initTimeStamp = true) override
+        {
+            m_population = Population(classifiers, constants, m_availableActions);
+            if (initTimeStamp)
+            {
+                m_timeStamp = 0;
+                for (auto && cl : classifiers)
+                {
+                    if (m_timeStamp < cl.timeStamp)
+                    {
+                        m_timeStamp = cl.timeStamp;
+                    }
+                }
+            }
+        }
+
         virtual void dumpPopulation(std::ostream & os) const override
         {
             os << "Condition,Action,prediction,epsilon,F,exp,ts,as,n,acc\n";

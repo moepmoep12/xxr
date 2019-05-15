@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-#include <ostream>
+#include <iostream>
 #include <cstddef>
 
 namespace xxr {
@@ -23,6 +23,8 @@ namespace xxr {
         // Run without exploration
         // (Set update to true when testing multi-step problems. If update is true, make sure to call reward() after this.)
         virtual Action exploit(const std::vector<T> & situation, bool update = false) = 0;
+
+        virtual void setPopulation(const std::vector<Classifier> & classifiers, bool initTimeStamp = true) = 0;
 
         virtual void dumpPopulation(std::ostream & os) const = 0;
 
