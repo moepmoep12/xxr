@@ -1,6 +1,8 @@
 #pragma once
 
+#include <vector>
 #include <unordered_set>
+#include <memory>
 
 namespace xxr { namespace xcs_impl
 {
@@ -25,18 +27,36 @@ namespace xxr { namespace xcs_impl
 
         std::unordered_set<ClassifierPtr> m_set;
 
+    private:
+        static std::unordered_set<ClassifierPtr> makeSetFromClassifiers(const std::vector<ClassifierType> & classifiers, ConstantsType & constants)
+        {
+            std::unordered_set<ClassifierPtr> set;
+            for (auto && cl : classifiers)
+            {
+                set.emplace(std::make_shared<StoredClassifier>(cl, constants));
+            }
+            return set;
+        }
+
     public:
         // Constructor
-        ClassifierPtrSet(ConstantsType & constants, const std::unordered_set<ActionType> availableActions) :
-            m_constants(constants),
-            m_availableActions(availableActions)
+        ClassifierPtrSet(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : m_constants(constants)
+            , m_availableActions(availableActions)
         {
         }
 
-        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, ConstantsType & constants, const std::unordered_set<ActionType> availableActions) :
-            m_set(set),
-            m_constants(constants),
-            m_availableActions(availableActions)
+        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : m_set(set)
+            , m_constants(constants)
+            , m_availableActions(availableActions)
+        {
+        }
+
+        ClassifierPtrSet(const std::vector<ClassifierType> & initialClassifiers, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : m_set(makeSetFromClassifiers(initialClassifiers))
+            , m_constants(constants)
+            , m_availableActions(availableActions)
         {
         }
 

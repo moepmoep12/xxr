@@ -40,7 +40,7 @@ namespace xxr { namespace xcsr_impl { namespace csr
 
     public:
         // Constructor
-        MatchSet(ConstantsType & constants, const std::unordered_set<ActionType> availableActions)
+        MatchSet(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
             : xcs_impl::MatchSet<Population>(constants, availableActions)
         {
         }
