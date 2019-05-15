@@ -11,6 +11,7 @@
 #include <cstddef>
 
 #include <xxr/xcsr.hpp>
+#include <xxr/helper/csv.hpp>
 
 #include "util/simple_moving_average.hpp"
 
@@ -27,6 +28,7 @@ std::unique_ptr<Experiment> run(
     const std::string & rewardLogFilename,
     const std::string & populationSizeLogFilename,
     const std::string & stepCountLogFilename,
+    const std::string & initialPopulationFilename,
     std::size_t smaWidth,
     std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
     std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
@@ -72,6 +74,26 @@ std::unique_ptr<Experiment> run(
     if (outputsStepCountLogFile)
     {
         stepCountLogStream.open(stepCountLogFilename);
+    }
+
+    // Load initial population
+    if (!initialPopulationFilename.empty())
+    {
+        auto population = xxr::CSV::readPopulation<typename Experiment::ClassifierType>(initialPopulationFilename);
+        for (auto && cl : population)
+        {
+            cl.prediction = constants.initialPrediction;
+            cl.epsilon = constants.initialEpsilon;
+            cl.fitness = constants.initialFitness;
+            cl.experience = 0;
+            cl.timeStamp = 0;
+            cl.actionSetSize = 1;
+            //cl.numerosity = 1; // commented out to keep macroclassifier as is
+        }
+        for (auto && experiment : experiments)
+        {
+            experiment->setPopulation(population);
+        }
     }
 
     for (std::size_t i = 0; i < iterationCount + condensationIterationCount; ++i)

@@ -80,7 +80,6 @@ namespace xxr
                 // Split comma-separated string
                 std::istringstream iss(line);
                 std::string field;
-                double fieldValue;
                 std::vector<T> situation;
                 bool empty = true;
 
@@ -149,9 +148,8 @@ namespace xxr
                 }
 
                 // Add classifier to list
-                Classifier cl(condition, action, prediction, epsilon, fitness);
+                Classifier cl(condition, action, prediction, epsilon, fitness, timeStamp);
                 cl.experience = experience;
-                cl.timeStamp = timeStamp;
                 cl.actionSetSize = actionSetSize;
                 cl.numerosity = numerosity;
                 classifiers.push_back(std::move(cl));

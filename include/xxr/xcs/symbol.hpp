@@ -3,6 +3,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cstdlib>
 #include <cstdint>
 #include <cassert>
 
@@ -45,7 +46,7 @@ namespace xxr { namespace xcs_impl
 
         constexpr explicit Symbol(T value) : m_value(value), m_isDontCare(false) {}
 
-        constexpr explicit Symbol(char c);
+        constexpr explicit Symbol(char c) : m_value(c - '0'), m_isDontCare(c == '#') {}
 
         constexpr Symbol(const Symbol<T> & obj) = default;
 

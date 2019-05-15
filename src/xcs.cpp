@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
         ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("cinput", "The classifier csv filename for initial population", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("m,mux", "Use the multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
         ("blc-3bit", "Use 3-bit representation for each block in a situation", cxxopts::value<bool>()->default_value("false"), "true/false")
@@ -254,6 +255,7 @@ int main(int argc, char *argv[])
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
             result["nsoutput"].as<std::string>(),
+            result["cinput"].as<std::string>(),
             smaWidth,
             environments,
             environments);
@@ -323,6 +325,7 @@ int main(int argc, char *argv[])
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
             result["nsoutput"].as<std::string>(),
+            result["cinput"].as<std::string>(),
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments,
@@ -484,6 +487,7 @@ int main(int argc, char *argv[])
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
             result["nsoutput"].as<std::string>(),
+            result["cinput"].as<std::string>(),
             smaWidth,
             explorationEnvironments,
             exploitationEnvironments);
