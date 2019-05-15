@@ -251,9 +251,14 @@ namespace xxr { namespace xcs_impl
             }
         }
 
-        virtual void setPopulation(const std::vector<ClassifierType> & classifiers, bool initTimeStamp = true) override
+        virtual void setPopulation(const std::vector<ClassifierType> & classifiers, bool initTimeStamp = true)
         {
-            m_population = Population(classifiers, constants, m_availableActions);
+            m_population.clear();
+            for (auto && cl : classifiers)
+            {
+                m_population.emplace(std::make_shared<StoredClassifierType>(cl, constants));
+            }
+
             if (initTimeStamp)
             {
                 m_timeStamp = 0;

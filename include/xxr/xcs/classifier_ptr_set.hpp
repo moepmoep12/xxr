@@ -54,7 +54,7 @@ namespace xxr { namespace xcs_impl
         }
 
         ClassifierPtrSet(const std::vector<ClassifierType> & initialClassifiers, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
-            : m_set(makeSetFromClassifiers(initialClassifiers))
+            : m_set(makeSetFromClassifiers(initialClassifiers, constants))
             , m_constants(constants)
             , m_availableActions(availableActions)
         {
@@ -97,6 +97,12 @@ namespace xxr { namespace xcs_impl
         auto insert(Args && ... args)
         {
             return m_set.insert(std::forward<Args>(args)...);
+        }
+
+        template <class... Args>
+        auto emplace(Args && ... args)
+        {
+            return m_set.emplace(std::forward<Args>(args)...);
         }
 
         template <class... Args>
