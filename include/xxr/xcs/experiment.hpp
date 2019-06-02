@@ -252,6 +252,19 @@ namespace xxr { namespace xcs_impl
             }
         }
 
+        virtual std::vector<ClassifierType> getMatchingClassifiers(const std::vector<T> & situation) const
+        {
+            std::vector<ClassifierType> classifiers;
+            for (auto && cl : m_population)
+            {
+                if (cl->condition.matches(situation))
+                {
+                    classifiers.emplace_back(*cl);
+                }
+            }
+            return classifiers;
+        }
+
         virtual void loadPopulationCSV(const std::string & filename, bool useAsInitialPopulation = true) override
         {
             auto population = xxr::CSV::readPopulation<ClassifierType>(filename);
