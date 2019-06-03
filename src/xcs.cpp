@@ -7,8 +7,7 @@
 #include <cstddef>
 
 #include <xxr/xcs.hpp>
-#include <cxxopts.hpp>
-
+#include"third_party/cxxopts/include/cxxopts.hpp"
 #include "common.hpp"
 
 using namespace xxr;

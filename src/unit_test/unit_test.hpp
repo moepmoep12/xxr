@@ -18,7 +18,7 @@ namespace xxr
     #else
         std::cout << (cond ? "[ PASS ]" : "[  NG  ]");
     #endif
-        std::cout << " " << testName << std::endl;
+        std::cout << " " << testName.c_str() << std::endl;
     }
 
     void hr()
