@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <cstdint>
 #include <cstddef>
+#include <cmath>
 
 namespace xxr { namespace xcs_impl
 {
@@ -170,12 +171,12 @@ namespace xxr { namespace xcs_impl
                 if (m_constants.useMAM && cl->experience < 1.0 / m_constants.beta)
                 {
                     cl->prediction += (p - cl->prediction) / cl->experience;
-                    cl->epsilon += (fabs(p - cl->prediction) - cl->epsilon) / cl->experience;
+                    cl->epsilon += (std::abs(p - cl->prediction) - cl->epsilon) / cl->experience;
                 }
                 else
                 {
                     cl->prediction += m_constants.beta * (p - cl->prediction);
-                    cl->epsilon += m_constants.beta * (fabs(p - cl->prediction) - cl->epsilon);
+                    cl->epsilon += m_constants.beta * (std::abs(p - cl->prediction) - cl->epsilon);
                 }
 
                 // Update action set size estimate
