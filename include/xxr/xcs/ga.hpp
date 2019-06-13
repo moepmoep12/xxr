@@ -47,7 +47,7 @@ namespace xxr { namespace xcs_impl
                 {
                     fitnesses.emplace_back(cl->fitness, cl->numerosity);
                 }
-                selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tau);
+                selectedIdx = Random::tournamentSelectionMicroClassifier(fitnesses, m_constants.tau);
             }
             else
             {
