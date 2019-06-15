@@ -24,6 +24,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
     std::size_t explorationCount,
     std::size_t exploitationCount,
     bool updateInExploitation,
+    std::size_t summaryInterval,
     const std::string & classifierLogFilename,
     const std::string & rewardLogFilename,
     const std::string & populationSizeLogFilename,
@@ -65,6 +66,7 @@ std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
                 explorationCount,
                 exploitationCount,
                 updateInExploitation,
+                summaryInterval,
                 classifierLogFilename,
                 rewardLogFilename,
                 populationSizeLogFilename,
@@ -92,6 +94,7 @@ int main(int argc, char *argv[])
     options
         .allow_unrecognised_options()
         .add_options()
+        ("summary-interval", "The interval of average log output", cxxopts::value<uint64_t>()->default_value("5000"), "COUNT")
         ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value(""), "FILENAME")
@@ -321,6 +324,7 @@ int main(int argc, char *argv[])
     uint64_t iterationCount = result["iter"].as<uint64_t>();
     uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
     uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
+    uint64_t summaryInterval = result["summary-interval"].as<uint64_t>();
     uint64_t explorationCount = result["explore"].as<uint64_t>();
     uint64_t exploitationCount = result["exploit"].as<uint64_t>();
     uint64_t smaWidth = result["sma"].as<uint64_t>();
@@ -343,6 +347,7 @@ int main(int argc, char *argv[])
             explorationCount,
             exploitationCount,
             updateInExploitation,
+            summaryInterval,
             result["coutput"].as<std::string>(),
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
@@ -379,6 +384,7 @@ int main(int argc, char *argv[])
             explorationCount,
             exploitationCount,
             updateInExploitation,
+            summaryInterval,
             result["coutput"].as<std::string>(),
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
@@ -445,6 +451,7 @@ int main(int argc, char *argv[])
             explorationCount,
             exploitationCount,
             updateInExploitation,
+            summaryInterval,
             result["coutput"].as<std::string>(),
             result["routput"].as<std::string>(),
             result["noutput"].as<std::string>(),
