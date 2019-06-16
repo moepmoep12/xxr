@@ -178,8 +178,8 @@ namespace xxr { namespace xcs_impl
             ClassifierType child1(*parent1);
             ClassifierType child2(*parent2);
 
-            child1.fitness /= parent1->numerosity;
-            child2.fitness /= parent2->numerosity;
+            child1.fitness *= 0.1; // fitnessReduction
+            child2.fitness *= 0.1; // fitnessReduction
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;
 
@@ -194,7 +194,7 @@ namespace xxr { namespace xcs_impl
                     child2.epsilon = (parent1->epsilon + parent2->epsilon) / 2;
 
                 child1.fitness =
-                    child2.fitness = (parent1->fitness + parent2->fitness) / 2 * 0.1;
+                    child2.fitness = (parent1->fitness + parent2->fitness) / 2 * 0.1; // fitnessReduction
             }
 
             for (auto && child : { &child1, &child2 })
