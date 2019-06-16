@@ -170,13 +170,13 @@ namespace xxr { namespace xcs_impl
                 // Update prediction, prediction error
                 if (m_constants.useMAM && cl->experience < 1.0 / m_constants.beta)
                 {
-                    cl->prediction += (p - cl->prediction) / cl->experience;
                     cl->epsilon += (std::abs(p - cl->prediction) - cl->epsilon) / cl->experience;
+                    cl->prediction += (p - cl->prediction) / cl->experience;
                 }
                 else
                 {
-                    cl->prediction += m_constants.beta * (p - cl->prediction);
                     cl->epsilon += m_constants.beta * (std::abs(p - cl->prediction) - cl->epsilon);
+                    cl->prediction += m_constants.beta * (p - cl->prediction);
                 }
 
                 // Update action set size estimate
