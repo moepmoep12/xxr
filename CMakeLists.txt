@@ -61,4 +61,8 @@ add_subdirectory("${PROJECT_SOURCE_DIR}/src/third_party/cxxopts/")
 add_library(${PROJECT_NAME} STATIC ${HEADER}
 								   ${SRC})
 include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/)			
-target_include_directories(${PROJECT_NAME} 	PUBLIC ${PROJECT_SOURCE_DIR}/include/)		   
+target_include_directories(${PROJECT_NAME} 	PUBLIC 
+						$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include/>
+						"$<INSTALL_INTERFACE:${CMAKE_INSTALL_INCLUDEDIR}/glad>")
+install(TARGETS ${PROJECT_NAME} EXPORT Engine DESTINATION "${CMAKE_INSTALL_LIBDIR}")
+install(FILES ${HEADER} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/xcsrlib)			
