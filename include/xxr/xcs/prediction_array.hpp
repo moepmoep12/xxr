@@ -61,13 +61,13 @@ namespace xxr { namespace xcs_impl
 
             for (auto && pair : m_pa)
             {
-                if (fabs(fsa[pair.first]) > 0.0)
+                if (std::abs(fsa[pair.first]) > 0.0)
                 {
                     pair.second /= fsa[pair.first];
                 }
 
                 // Update the best actions
-                if (fabs(m_maxPA - pair.second) < DBL_EPSILON) // m_maxPA == pair.second
+                if (std::abs(m_maxPA - pair.second) < DBL_EPSILON) // m_maxPA == pair.second
                 {
                     m_maxPAActions.push_back(pair.first);
                 }
