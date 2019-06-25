@@ -31,7 +31,7 @@ namespace xxr { namespace xcs_impl
             double vote = cl.actionSetSize * cl.numerosity;
 
             // Consider fitness for deletion vote
-            if ((cl.experience > m_constants.thetaDel) && (cl.fitness / cl.numerosity < m_constants.delta * averageFitness))
+            if ((cl.experience >= m_constants.thetaDel) && (cl.fitness / cl.numerosity < m_constants.delta * averageFitness))
             {
                 vote *= averageFitness / (cl.fitness / cl.numerosity);
             }
@@ -61,7 +61,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DELETE FROM POPULATION
-        virtual void deleteExtraClassifiers()
+        virtual bool deleteExtraClassifiers()
         {
             uint64_t numerositySum = 0;
             double fitnessSum = 0.0;
@@ -71,10 +71,10 @@ namespace xxr { namespace xcs_impl
                 fitnessSum += c->fitness;
             }
 
-            // Return if the sum of numerosity has not met its maximum limit
-            if (numerositySum < m_constants.n)
+            // Return false if the sum of numerosity has not met its maximum limit
+            if (numerositySum <= m_constants.n)
             {
-                return;
+                return false;
             }
 
             // The average fitness in the population
@@ -86,30 +86,14 @@ namespace xxr { namespace xcs_impl
                 targets.push_back(&cl);
             }
 
-            std::size_t selectedIdx;
-            // Note: not using tournament selection in deletion
-            /*if (m_constants.tau > 0.0 && m_constants.tau <= 1.0)
+            // Roulette-wheel selection
+            std::vector<double> votes;
+            votes.reserve(targets.size());
+            for (auto && target : targets)
             {
-                // Tournament selection
-                std::vector<std::pair<double, std::size_t>> votes;
-                votes.reserve(m_set.size());
-                for (auto && c : m_set)
-                {
-                    votes.emplace_back(deletionVote(*c, averageFitness), c->numerosity);
-                }
-                selectedIdx = Random::tournamentSelection(votes, m_constants.tau);
+                votes.push_back(deletionVote(**target, averageFitness));
             }
-            else
-            {*/
-                // Roulette-wheel selection
-                std::vector<double> votes;
-                votes.reserve(m_set.size());
-                for (auto && c : m_set)
-                {
-                    votes.push_back(deletionVote(*c, averageFitness));
-                }
-                selectedIdx = Random::rouletteWheelSelection(votes);
-            //}
+            std::size_t selectedIdx = Random::rouletteWheelSelection(votes);
 
             // Distrust the selected classifier
             if ((*targets[selectedIdx])->numerosity > 1)
@@ -120,6 +104,8 @@ namespace xxr { namespace xcs_impl
             {
                 m_set.erase(*targets[selectedIdx]);
             }
+
+            return (numerositySum - 1) > m_constants.n;
         }
     };
 

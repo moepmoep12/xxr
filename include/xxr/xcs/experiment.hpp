@@ -281,7 +281,7 @@ namespace xxr { namespace xcs_impl
                     //cl.numerosity = 1; // commented out to keep macroclassifier as is
                 }
             }
-            setPopulation(population, useAsInitialPopulation);
+            setPopulation(population, !useAsInitialPopulation);
         }
 
         virtual void setPopulation(const std::vector<ClassifierType> & classifiers, bool initTimeStamp = true)

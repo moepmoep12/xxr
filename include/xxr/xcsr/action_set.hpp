@@ -45,20 +45,20 @@ namespace xxr { namespace xcsr_impl
 
             if (cl.get() != nullptr)
             {
-                std::vector<const ClassifierPtr *> removedClassifiers;
+                std::vector<ClassifierPtr> removedClassifiers;
                 for (auto && c : m_set)
                 {
                     if (cl->isMoreGeneral(*c, m_constants.subsumptionTolerance))
                     {
                         cl->numerosity += c->numerosity;
-                        removedClassifiers.push_back(&c);
+                        removedClassifiers.push_back(c);
                     }
                 }
 
                 for (auto && removedClassifier : removedClassifiers)
                 {
-                    population.erase(*removedClassifier);
-                    m_set.erase(*removedClassifier);
+                    population.erase(removedClassifier);
+                    m_set.erase(removedClassifier);
                 }
             }
         }

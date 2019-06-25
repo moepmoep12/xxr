@@ -44,20 +44,24 @@ namespace xxr { namespace xcs_impl
         {
             assert(condition.size() == cl.condition.size());
 
-            if (condition.dontCareCount() <= cl.condition.dontCareCount())
-            {
-                return false;
-            }
+            bool ret = false;
 
             for (std::size_t i = 0; i < condition.size(); ++i)
             {
-                if (!condition.at(i).isDontCare() && condition.at(i) != cl.condition.at(i))
+                if (condition.at(i) != cl.condition.at(i))
                 {
-                    return false;
+                    if (!condition.at(i).isDontCare())
+                    {
+                        return false;
+                    }
+                    else 
+                    {
+                        ret = true;
+                    }
                 }
             }
 
-            return true;
+            return ret;
         }
 
         friend std::ostream & operator<< (std::ostream & os, const ConditionActionPair<Condition, Action> & obj)

@@ -5,6 +5,7 @@
 #include <unordered_map>
 #include <cstdint>
 #include <cstddef>
+#include <cmath>
 
 namespace xxr { namespace xcs_impl
 {
@@ -57,11 +58,7 @@ namespace xxr { namespace xcs_impl
             {
                 if (c->isSubsumer())
                 {
-                    std::size_t cDontCareCount;
-                    std::size_t clDontCareCount;
-                    if ((cl.get() == nullptr) ||
-                        ((cDontCareCount = c->condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
-                        ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))
+                    if ((cl.get() == nullptr) || c->isMoreGeneral(*cl))
                     {
                         cl = c;
                     }
@@ -70,20 +67,20 @@ namespace xxr { namespace xcs_impl
 
             if (cl.get() != nullptr)
             {
-                std::vector<const ClassifierPtr *> removedClassifiers;
+                std::vector<ClassifierPtr> removedClassifiers;
                 for (auto && c : m_set)
                 {
                     if (cl->isMoreGeneral(*c))
                     {
                         cl->numerosity += c->numerosity;
-                        removedClassifiers.push_back(&c);
+                        removedClassifiers.push_back(c);
                     }
                 }
 
                 for (auto && removedClassifier : removedClassifiers)
                 {
-                    population.erase(*removedClassifier);
-                    m_set.erase(*removedClassifier);
+                    population.erase(removedClassifier);
+                    m_set.erase(removedClassifier);
                 }
             }
         }
@@ -130,18 +127,21 @@ namespace xxr { namespace xcs_impl
         // RUN GA (refer to GA::run() for the latter part)
         virtual void runGA(const std::vector<type> & situation, PopulationType & population, uint64_t timeStamp)
         {
-            uint64_t timeStampNumerositySum = 0;
-            uint64_t numerositySum = 0;
-
+            double numerositySum = 0.0;
             for (auto && cl : m_set)
             {
-                timeStampNumerositySum += cl->timeStamp * cl->numerosity;
                 numerositySum += cl->numerosity;
             }
-
             assert(numerositySum > 0);
 
-            if (timeStamp - timeStampNumerositySum / numerositySum > m_constants.thetaGA)
+            double averageTimeStamp = 0.0;
+            for (auto && cl : m_set)
+            {
+                averageTimeStamp += cl->timeStamp / numerositySum * cl->numerosity;
+            }
+            assert(averageTimeStamp < timeStamp + 1);
+
+            if (timeStamp - averageTimeStamp >= m_constants.thetaGA)
             {
                 for (auto && cl : m_set)
                 {
@@ -169,13 +169,13 @@ namespace xxr { namespace xcs_impl
                 // Update prediction, prediction error
                 if (m_constants.useMAM && cl->experience < 1.0 / m_constants.beta)
                 {
+                    cl->epsilon += (std::abs(p - cl->prediction) - cl->epsilon) / cl->experience;
                     cl->prediction += (p - cl->prediction) / cl->experience;
-                    cl->epsilon += (fabs(p - cl->prediction) - cl->epsilon) / cl->experience;
                 }
                 else
                 {
+                    cl->epsilon += m_constants.beta * (std::abs(p - cl->prediction) - cl->epsilon);
                     cl->prediction += m_constants.beta * (p - cl->prediction);
-                    cl->epsilon += m_constants.beta * (fabs(p - cl->prediction) - cl->epsilon);
                 }
 
                 // Update action set size estimate

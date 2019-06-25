@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <unordered_set>
+#include <set>
 #include <memory>
 
 namespace xxr { namespace xcs_impl
@@ -25,12 +25,12 @@ namespace xxr { namespace xcs_impl
         ConstantsType & m_constants;
         const std::unordered_set<ActionType> m_availableActions;
 
-        std::unordered_set<ClassifierPtr> m_set;
+        std::set<ClassifierPtr> m_set;
 
     private:
-        static std::unordered_set<ClassifierPtr> makeSetFromClassifiers(const std::vector<ClassifierType> & classifiers, ConstantsType & constants)
+        static std::set<ClassifierPtr> makeSetFromClassifiers(const std::vector<ClassifierType> & classifiers, ConstantsType & constants)
         {
-            std::unordered_set<ClassifierPtr> set;
+            std::set<ClassifierPtr> set;
             for (auto && cl : classifiers)
             {
                 set.emplace(std::make_shared<StoredClassifier>(cl, constants));
@@ -46,7 +46,7 @@ namespace xxr { namespace xcs_impl
         {
         }
 
-        ClassifierPtrSet(const std::unordered_set<ClassifierPtr> & set, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+        ClassifierPtrSet(const std::set<ClassifierPtr> & set, ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
             : m_set(set)
             , m_constants(constants)
             , m_availableActions(availableActions)
