@@ -2,6 +2,7 @@
 
 #include <random>
 #include <vector>
+#include <set>
 #include <unordered_set>
 #include <limits>
 #include <cassert>
@@ -53,6 +54,15 @@ namespace xxr
 
             std::uniform_int_distribution<decltype(size)> dist(0, size - 1);
             return *(std::begin(container) + dist(engine()));
+        }
+
+        template <typename T>
+        static auto chooseFrom(const std::set<T> & container)
+        {
+            std::vector<T> vec;
+            vec.reserve(container.size());
+            vec.insert(vec.end(), container.begin(), container.end());
+            return chooseFrom(vec);
         }
 
         template <typename T>

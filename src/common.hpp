@@ -10,6 +10,7 @@
 #include <type_traits>
 #include <cassert>
 #include <cstddef>
+#include <cstdio>
 
 #include <xxr/xcsr.hpp>
 #include <xxr/helper/csv.hpp>
@@ -25,6 +26,7 @@ std::unique_ptr<Experiment> run(
     std::size_t explorationCount,
     std::size_t exploitationCount,
     bool updateInExploitation,
+    std::size_t summaryInterval,
     const std::string & classifierLogFilename,
     const std::string & rewardLogFilename,
     const std::string & populationSizeLogFilename,
@@ -52,6 +54,10 @@ std::unique_ptr<Experiment> run(
             )
         );
     }
+
+    double summaryRewardSum = 0.0;
+    double summaryPopulationSizeSum = 0.0;
+    double summaryStepCountSum = 0.0;
 
     SimpleMovingAverage<double> sma(smaWidth);
     SimpleMovingAverage<double> stepCountSMA(smaWidth);
@@ -114,11 +120,14 @@ std::unique_ptr<Experiment> run(
 
                         // Get reward
                         double reward = exploitationEnvironments[j]->executeAction(action);
+                        summaryRewardSum += reward / exploitationCount / seedCount;
                         if (updateInExploitation)
                         {
                             experiments[j]->reward(reward, exploitationEnvironments[j]->isEndOfProblem());
                         }
                         rewardSum += reward;
+
+                        summaryPopulationSizeSum += static_cast<double>(experiments[j]->populationSize()) / exploitationCount / seedCount;
 
                         ++totalStepCount;
 
@@ -126,6 +135,19 @@ std::unique_ptr<Experiment> run(
                         exploitationCallback(*exploitationEnvironments[j]);
                     } while (!exploitationEnvironments[j]->isEndOfProblem());
                 }
+            }
+            summaryStepCountSum += static_cast<double>(totalStepCount) / exploitationCount / seedCount;
+            if (summaryInterval > 0 && (i + 1) % summaryInterval == 0)
+            {
+                std::printf("%8u %9.3f %10.3f %8.3f\n",
+                    static_cast<unsigned int>(i + 1),
+                    summaryRewardSum / summaryInterval,
+                    summaryPopulationSizeSum / summaryInterval,
+                    summaryStepCountSum / summaryInterval);
+                std::fflush(stdout);
+                summaryRewardSum = 0.0;
+                summaryPopulationSizeSum = 0.0;
+                summaryStepCountSum = 0.0;
             }
 
             double rewardAverage = sma(rewardSum / exploitationCount / seedCount);

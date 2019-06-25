@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <vector>
 #include <unordered_set>
 #include <cassert>
 #include <cstddef>
@@ -43,20 +44,20 @@ namespace xxr { namespace xcs_impl
                 // Tournament selection
                 std::vector<std::pair<double, std::size_t>> fitnesses;
                 fitnesses.reserve(actionSet.size());
-                for (auto && cl : actionSet)
+                for (auto && target : targets)
                 {
-                    fitnesses.emplace_back(cl->fitness, cl->numerosity);
+                    fitnesses.emplace_back((*target)->fitness, (*target)->numerosity);
                 }
-                selectedIdx = Random::tournamentSelection(fitnesses, m_constants.tau);
+                selectedIdx = Random::tournamentSelectionMicroClassifier(fitnesses, m_constants.tau);
             }
             else
             {
                 // Roulette-wheel selection
                 std::vector<double> fitnesses;
                 fitnesses.reserve(actionSet.size());
-                for (auto && cl : actionSet)
+                for (auto && target : targets)
                 {
-                    fitnesses.push_back(cl->fitness);
+                    fitnesses.push_back((*target)->fitness);
                 }
                 selectedIdx = Random::rouletteWheelSelection(fitnesses);
             }
@@ -64,34 +65,40 @@ namespace xxr { namespace xcs_impl
         }
 
         // APPLY CROSSOVER (uniform crossover)
-        virtual void uniformCrossover(ClassifierType & cl1, ClassifierType & cl2) const
+        virtual bool uniformCrossover(ClassifierType & cl1, ClassifierType & cl2) const
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
+            bool isChanged = false;
             for (std::size_t i = 0; i < cl1.condition.size(); ++i)
             {
                 if (Random::nextDouble() < 0.5)
                 {
                     std::swap(cl1.condition[i], cl2.condition[i]);
+                    isChanged = true;
                 }
             }
+            return isChanged;
         }
 
         // APPLY CROSSOVER (one point crossover)
-        virtual void onePointCrossover(ClassifierType & cl1, ClassifierType & cl2) const
+        virtual bool onePointCrossover(ClassifierType & cl1, ClassifierType & cl2) const
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
             std::size_t x = Random::nextInt<std::size_t>(0, cl1.condition.size());
 
+            bool isChanged = false;
             for (std::size_t i = x + 1; i < cl1.condition.size(); ++i)
             {
                 std::swap(cl1.condition[i], cl2.condition[i]);
+                isChanged = true;
             }
+            return isChanged;
         }
 
         // APPLY CROSSOVER (two point crossover)
-        virtual void twoPointCrossover(ClassifierType & cl1, ClassifierType & cl2) const
+        virtual bool twoPointCrossover(ClassifierType & cl1, ClassifierType & cl2) const
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
@@ -103,29 +110,31 @@ namespace xxr { namespace xcs_impl
                 std::swap(x, y);
             }
 
+            bool isChanged = false;
             for (std::size_t i = x + 1; i < y; ++i)
             {
                 std::swap(cl1.condition[i], cl2.condition[i]);
+                isChanged = true;
             }
+            return isChanged;
         }
 
         // APPLY CROSSOVER
-        virtual void crossover(ClassifierType & cl1, ClassifierType & cl2) const
+        virtual bool crossover(ClassifierType & cl1, ClassifierType & cl2) const
         {
             switch (m_constants.crossoverMethod)
             {
             case Constants::CrossoverMethod::UNIFORM_CROSSOVER:
-                uniformCrossover(cl1, cl2);
-                break;
+                return uniformCrossover(cl1, cl2);
 
             case Constants::CrossoverMethod::ONE_POINT_CROSSOVER:
-                onePointCrossover(cl1, cl2);
-                break;
+                return onePointCrossover(cl1, cl2);
 
             case Constants::CrossoverMethod::TWO_POINT_CROSSOVER:
-                twoPointCrossover(cl1, cl2);
-                break;
+                return twoPointCrossover(cl1, cl2);
             }
+
+            return false;
         }
 
         // APPLY MUTATION
@@ -156,11 +165,65 @@ namespace xxr { namespace xcs_impl
             }
         }
 
+        void insertDiscoveredClassifiers(const ClassifierType & child1, const ClassifierType & child2, const ClassifierPtr & parent1, const ClassifierPtr & parent2, PopulationType & population) const
+        {
+            if (m_constants.doGASubsumption)
+            {
+                subsumeClassifier(child1, parent1, parent2, population);
+                subsumeClassifier(child2, parent1, parent2, population);
+            }
+            else
+            {
+                population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(child1, m_constants));
+                population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(child2, m_constants));
+            }
+
+            while (population.deleteExtraClassifiers()) {}
+        }
+
+        void subsumeClassifier(const ClassifierType & child, const ClassifierPtr & parent1, const ClassifierPtr & parent2, PopulationType & population) const
+        {
+            if (parent1->subsumes(child))
+            {
+                ++parent1->numerosity;
+            }
+            else if (parent2->subsumes(child))
+            {
+                ++parent2->numerosity;
+            }
+            else
+            {
+                subsumeClassifier(child, population); // calls second subsumeClassifier function!
+            }
+        }
+
+        void subsumeClassifier(const ClassifierType & child, PopulationType & population) const
+        {
+            std::vector<ClassifierPtr> choices;
+
+            for (auto && cl : population)
+            {
+                if (cl->subsumes(child))
+                {
+                    choices.push_back(cl);
+                }
+            }
+
+            if (!choices.empty())
+            {
+                std::size_t choice = Random::nextInt<std::size_t>(0, choices.size() - 1);
+                ++choices[choice]->numerosity;
+                return;
+            }
+
+            population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(child, m_constants));
+        }
+
     public:
         // Constructor
-        GA(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions) :
-            m_constants(constants),
-            m_availableActions(availableActions)
+        GA(ConstantsType & constants, const std::unordered_set<ActionType> & availableActions)
+            : m_constants(constants)
+            , m_availableActions(availableActions)
         {
         }
 
@@ -177,52 +240,42 @@ namespace xxr { namespace xcs_impl
 
             ClassifierType child1(*parent1);
             ClassifierType child2(*parent2);
-
-            child1.fitness /= parent1->numerosity;
-            child2.fitness /= parent2->numerosity;
+            child1.fitness = parent1->fitness / parent1->numerosity;
+            child2.fitness = parent2->fitness / parent2->numerosity;
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;
 
+            bool isChangedByCrossover;
             if (Random::nextDouble() < m_constants.chi)
             {
-                crossover(child1, child2);
+                isChangedByCrossover = crossover(child1, child2);
+            }
+            else
+            {
+                isChangedByCrossover = false;
+            }
 
+            mutate(child1, situation);
+            mutate(child2, situation);
+
+            if (isChangedByCrossover)
+            {
                 child1.prediction =
-                    child2.prediction = (parent1->prediction + parent2->prediction) / 2;
+                    child2.prediction = (child1.prediction + child2.prediction) / 2;
 
                 child1.epsilon =
-                    child2.epsilon = (parent1->epsilon + parent2->epsilon) / 2;
+                    child2.epsilon = (child1.epsilon + child2.epsilon) / 2;
 
                 child1.fitness =
-                    child2.fitness = (parent1->fitness + parent2->fitness) / 2 * 0.1;
+                    child2.fitness = (child1.fitness + child2.fitness) / 2 * 0.1; // fitnessReduction
             }
-
-            for (auto && child : { &child1, &child2 })
+            else
             {
-                mutate(*child, situation);
-
-                if (m_constants.doGASubsumption)
-                {
-                    if (parent1->subsumes(*child))
-                    {
-                        ++parent1->numerosity;
-                    }
-                    else if (parent2->subsumes(*child))
-                    {
-                        ++parent2->numerosity;
-                    }
-                    else
-                    {
-                        population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(*child, m_constants));
-                    }
-                }
-                else
-                {
-                    population.insertOrIncrementNumerosity(std::make_shared<StoredClassifierType>(*child, m_constants));
-                }
-
-                population.deleteExtraClassifiers();
+                child1.fitness *= 0.1; // fitnessReduction
+                child2.fitness *= 0.1; // fitnessReduction
             }
+
+            insertDiscoveredClassifiers(child1, child2, parent1, parent2, population);
         }
     };
 
