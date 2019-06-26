@@ -58,11 +58,7 @@ namespace xxr { namespace xcs_impl
             {
                 if (c->isSubsumer())
                 {
-                    std::size_t cDontCareCount;
-                    std::size_t clDontCareCount;
-                    if ((cl.get() == nullptr) ||
-                        ((cDontCareCount = c->condition.dontCareCount()) > (clDontCareCount = cl->condition.dontCareCount())) ||
-                        ((cDontCareCount == clDontCareCount) && (Random::nextDouble() < 0.5)))
+                    if ((cl.get() == nullptr) || c->isMoreGeneral(*cl))
                     {
                         cl = c;
                     }
