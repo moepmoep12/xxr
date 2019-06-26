@@ -72,7 +72,7 @@ namespace xxr { namespace xcs_impl
             }
 
             // Return if the sum of numerosity has not met its maximum limit
-            if (numerositySum < m_constants.n)
+            if (numerositySum <= m_constants.n)
             {
                 return;
             }
