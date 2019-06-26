@@ -61,7 +61,7 @@ namespace xxr { namespace xcs_impl
         }
 
         // DELETE FROM POPULATION
-        virtual void deleteExtraClassifiers()
+        virtual bool deleteExtraClassifiers()
         {
             uint64_t numerositySum = 0;
             double fitnessSum = 0.0;
@@ -71,10 +71,10 @@ namespace xxr { namespace xcs_impl
                 fitnessSum += c->fitness;
             }
 
-            // Return if the sum of numerosity has not met its maximum limit
+            // Return false if the sum of numerosity has not met its maximum limit
             if (numerositySum <= m_constants.n)
             {
-                return;
+                return false;
             }
 
             // The average fitness in the population
@@ -104,6 +104,8 @@ namespace xxr { namespace xcs_impl
             {
                 m_set.erase(*targets[selectedIdx]);
             }
+
+            return true;
         }
     };
 

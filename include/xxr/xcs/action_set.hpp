@@ -138,7 +138,7 @@ namespace xxr { namespace xcs_impl
 
             assert(numerositySum > 0);
 
-            if (timeStamp - timeStampNumerositySum / numerositySum > m_constants.thetaGA)
+            if (timeStamp - timeStampNumerositySum / numerositySum >= m_constants.thetaGA)
             {
                 for (auto && cl : m_set)
                 {
