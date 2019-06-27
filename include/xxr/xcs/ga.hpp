@@ -261,13 +261,13 @@ namespace xxr { namespace xcs_impl
             if (isChangedByCrossover)
             {
                 child1.prediction =
-                    child2.prediction = (parent1->prediction + parent2->prediction) / 2;
+                    child2.prediction = (child1.prediction + child2.prediction) / 2;
 
                 child1.epsilon =
-                    child2.epsilon = (parent1->epsilon + parent2->epsilon) / 2;
-                
+                    child2.epsilon = (child1.epsilon + child2.epsilon) / 2;
+
                 child1.fitness =
-                    child2.fitness = (parent1->fitness + parent2->fitness) / 2 * 0.1; // fitnessReduction
+                    child2.fitness = (child1.fitness + child2.fitness) / 2 * 0.1; // fitnessReduction
             }
             else
             {
