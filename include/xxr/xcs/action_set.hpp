@@ -127,18 +127,21 @@ namespace xxr { namespace xcs_impl
         // RUN GA (refer to GA::run() for the latter part)
         virtual void runGA(const std::vector<type> & situation, PopulationType & population, uint64_t timeStamp)
         {
-            uint64_t timeStampNumerositySum = 0;
-            uint64_t numerositySum = 0;
-
+            double numerositySum = 0.0;
             for (auto && cl : m_set)
             {
-                timeStampNumerositySum += cl->timeStamp * cl->numerosity;
                 numerositySum += cl->numerosity;
             }
-
             assert(numerositySum > 0);
 
-            if (timeStamp - timeStampNumerositySum / numerositySum >= m_constants.thetaGA)
+            double averageTimeStamp = 0.0;
+            for (auto && cl : m_set)
+            {
+                averageTimeStamp += cl->timeStamp / numerositySum * cl->numerosity;
+            }
+            assert(averageTimeStamp <= timeStamp);
+
+            if (timeStamp - averageTimeStamp >= m_constants.thetaGA)
             {
                 for (auto && cl : m_set)
                 {
