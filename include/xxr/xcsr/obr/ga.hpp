@@ -28,19 +28,22 @@ namespace xxr { namespace xcsr_impl { namespace obr
         using xcs_impl::GA<Population>::m_availableActions;
 
         // APPLY CROSSOVER (uniform crossover)
-        virtual void uniformCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
+        virtual bool uniformCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
+            bool isChanged = false;
             for (std::size_t i = 0; i < cl1.condition.size(); ++i)
             {
                 if (Random::nextDouble() < 0.5)
                 {
                     std::swap(cl1.condition[i].l, cl2.condition[i].l);
+                    isChanged = true;
                 }
                 if (Random::nextDouble() < 0.5)
                 {
                     std::swap(cl1.condition[i].u, cl2.condition[i].u);
+                    isChanged = true;
                 }
             }
 
@@ -57,15 +60,18 @@ namespace xxr { namespace xcsr_impl { namespace obr
                     std::swap(cl2.condition[i].l, cl2.condition[i].u);
                 }
             }
+
+            return isChanged;
         }
 
         // APPLY CROSSOVER (one point crossover)
-        virtual void onePointCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
+        virtual bool onePointCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
             std::size_t x = Random::nextInt<std::size_t>(0, cl1.condition.size() * 2);
 
+            bool isChanged = false;
             for (std::size_t i = x + 1; i < cl1.condition.size() * 2; ++i)
             {
                 if (i % 2 == 0)
@@ -76,6 +82,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
                 {
                     std::swap(cl1.condition[i / 2].u, cl2.condition[i / 2].u);
                 }
+                isChanged = true;
             }
 
             // Fix lower and upper order
@@ -91,10 +98,12 @@ namespace xxr { namespace xcsr_impl { namespace obr
                     std::swap(cl2.condition[i].l, cl2.condition[i].u);
                 }
             }
+
+            return isChanged;
         }
 
         // APPLY CROSSOVER (two point crossover)
-        virtual void twoPointCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
+        virtual bool twoPointCrossover(ClassifierType & cl1, ClassifierType & cl2) const override
         {
             assert(cl1.condition.size() == cl2.condition.size());
 
@@ -106,6 +115,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
                 std::swap(x, y);
             }
 
+            bool isChanged = false;
             for (std::size_t i = x + 1; i < y; ++i)
             {
                 if (i % 2 == 0)
@@ -116,6 +126,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
                 {
                     std::swap(cl1.condition[i / 2].u, cl2.condition[i / 2].u);
                 }
+                isChanged = true;
             }
 
             // Fix lower and upper order
@@ -131,6 +142,8 @@ namespace xxr { namespace xcsr_impl { namespace obr
                     std::swap(cl2.condition[i].l, cl2.condition[i].u);
                 }
             }
+
+            return isChanged;
         }
 
         // APPLY MUTATION
