@@ -105,7 +105,7 @@ namespace xxr { namespace xcs_impl
                 m_set.erase(*targets[selectedIdx]);
             }
 
-            return true;
+            return (numerositySum - 1) > m_constants.n;
         }
     };
 
