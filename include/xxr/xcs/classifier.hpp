@@ -48,13 +48,16 @@ namespace xxr { namespace xcs_impl
 
             for (std::size_t i = 0; i < condition.size(); ++i)
             {
-                if (!condition.at(i).isDontCare() && condition.at(i) != cl.condition.at(i))
+                if (condition.at(i) != cl.condition.at(i))
                 {
-                    return false;
-                }
-                else if (condition.at(i) != cl.condition.at(i))
-                {
-                    ret = true;
+                    if (!condition.at(i).isDontCare())
+                    {
+                        return false;
+                    }
+                    else 
+                    {
+                        ret = true;
+                    }
                 }
             }
 
