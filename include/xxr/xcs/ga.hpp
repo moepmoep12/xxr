@@ -240,6 +240,8 @@ namespace xxr { namespace xcs_impl
 
             ClassifierType child1(*parent1);
             ClassifierType child2(*parent2);
+            child1.fitness = parent1->fitness / parent1->numerosity;
+            child2.fitness = parent2->fitness / parent2->numerosity;
             child1.numerosity = child2.numerosity = 1;
             child1.experience = child2.experience = 0;
 
