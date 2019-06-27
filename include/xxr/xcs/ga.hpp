@@ -199,20 +199,20 @@ namespace xxr { namespace xcs_impl
 
         void subsumeClassifier(const ClassifierType & child, PopulationType & population) const
         {
-            std::vector<const ClassifierPtr *> choices;
+            std::vector<ClassifierPtr> choices;
 
             for (auto && cl : population)
             {
                 if (cl->subsumes(child))
                 {
-                    choices.push_back(&cl);
+                    choices.push_back(cl);
                 }
             }
 
             if (!choices.empty())
             {
                 std::size_t choice = Random::nextInt<std::size_t>(0, choices.size() - 1);
-                ++(*(choices[choice]))->numerosity;
+                ++choices[choice]->numerosity;
                 return;
             }
 
