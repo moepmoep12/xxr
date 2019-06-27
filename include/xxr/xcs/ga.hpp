@@ -44,9 +44,9 @@ namespace xxr { namespace xcs_impl
                 // Tournament selection
                 std::vector<std::pair<double, std::size_t>> fitnesses;
                 fitnesses.reserve(actionSet.size());
-                for (auto && cl : actionSet)
+                for (auto && target : targets)
                 {
-                    fitnesses.emplace_back(cl->fitness, cl->numerosity);
+                    fitnesses.emplace_back((*target)->fitness, (*target)->numerosity);
                 }
                 selectedIdx = Random::tournamentSelectionMicroClassifier(fitnesses, m_constants.tau);
             }
@@ -55,9 +55,9 @@ namespace xxr { namespace xcs_impl
                 // Roulette-wheel selection
                 std::vector<double> fitnesses;
                 fitnesses.reserve(actionSet.size());
-                for (auto && cl : actionSet)
+                for (auto && target : targets)
                 {
-                    fitnesses.push_back(cl->fitness);
+                    fitnesses.push_back((*target)->fitness);
                 }
                 selectedIdx = Random::rouletteWheelSelection(fitnesses);
             }
