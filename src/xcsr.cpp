@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     options
         .allow_unrecognised_options()
         .add_options()
-        ("summary-interval", "The iteration interval of average log output", cxxopts::value<uint64_t>()->default_value("5000"), "COUNT")
+        ("summary-interval", "The iteration interval of summary log output", cxxopts::value<uint64_t>()->default_value("5000"), "COUNT")
         ("o,coutput", "The filename of classifier csv output", cxxopts::value<std::string>()->default_value("classifier.csv"), "FILENAME")
         ("r,routput", "The filename of reward log csv output", cxxopts::value<std::string>()->default_value("reward.csv"), "FILENAME")
         ("n,noutput", "The filename of macro-classifier count log csv output", cxxopts::value<std::string>()->default_value("num.csv"), "FILENAME")

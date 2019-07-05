@@ -15,7 +15,7 @@ struct ExperimentSettings
     // Whether to update classifier parameters in test mode (usually "false" for single-step problems and "true" for multi-step problems)
     bool updateInExploitation = false;
 
-    // The iteration interval of average log output
+    // The iteration interval of summary log output
     std::size_t summaryInterval = 5000;
 
     // The folder name of results

@@ -93,6 +93,10 @@ std::unique_ptr<Experiment> run(
         }
     }
 
+    // Output summary header
+    std::cout << "iteration      reward    popsize     step" << std::endl;
+
+    // Main iteration
     for (std::size_t i = 0; i < iterationCount + condensationIterationCount; ++i)
     {
         // Switch to rule condensation mode after normal iterations
@@ -139,7 +143,7 @@ std::unique_ptr<Experiment> run(
             summaryStepCountSum += static_cast<double>(totalStepCount) / exploitationCount / seedCount;
             if (summaryInterval > 0 && (i + 1) % summaryInterval == 0)
             {
-                std::printf("%8u %9.3f %10.3f %8.3f\n",
+                std::printf("%9u %11.3f %10.3f %8.3f\n",
                     static_cast<unsigned int>(i + 1),
                     summaryRewardSum / summaryInterval,
                     summaryPopulationSizeSum / summaryInterval,
