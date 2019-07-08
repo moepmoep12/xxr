@@ -18,8 +18,8 @@ struct ExperimentSettings
     // The iteration interval of average log output
     std::size_t summaryInterval = 5000;
 
-    // The folder name of results
-    std::string outputDirectory;
+    // The prefix of filename
+    std::string outputFilenamePrefix;
 
     // The filename of classifier csv output
     std::string outputClassifierFilename = "classifier.csv";
