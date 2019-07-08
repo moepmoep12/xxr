@@ -2,6 +2,7 @@
 #include <fstream>
 #include <memory>
 #include <unordered_set>
+#include <cstdio>
 #include <cstddef>
 
 class ExperimentLogStream
@@ -92,12 +93,16 @@ public:
     }
 };
 
-template <class Experiment>
+template <class Experiment, class Environment>
 class ExperimentHelper
 {
 private:
     const ExperimentSettings m_settings;
     std::vector<std::unique_ptr<Experiment>> m_experiments;
+    std::vector<std::unique_ptr<Environment>> m_explorationEnvironments;
+    std::vector<std::unique_ptr<Environment>> m_exploitationEnvironments;
+    std::function<void(Environment &)> m_explorationCallback;
+    std::function<void(Environment &)> m_exploitationCallback;
     ExperimentLogStream m_classifierStream;
     SMAExperimentLogStream m_rewardLogStream;
     SMAExperimentLogStream m_stepCountLogStream;
@@ -133,12 +138,18 @@ public:
         Args && ... args,
         const std::unordered_set<typename Experiment::ActionType> & availableActions,
         typename Experiment::ConstantsType constants,
+        std::vector<std::unique_ptr<Environment>> && explorationEnvironments,
+        std::vector<std::unique_ptr<Environment>> && exploitationEnvironments,
         std::function<void(Environment &)> explorationCallback = [](Environment &){},
         std::function<void(Environment &)> exploitationCallback = [](Environment &){}
     )
         : m_settings(settings)
         , m_experiments(
             makeExperiments(std::forward<Args>(args)..., availableActions, constants))
+        , m_explorationEnvironments(std::move(explorationEnvironments))
+        , m_exploitationEnvironments(std::move(exploitationEnvironments))
+        , m_explorationCallback(std::move(explorationCallback))
+        , m_exploitationCallback(std::move(exploitationCallback))
         , m_classifierLogStream(settings.outputClassifierFilename)
         , m_rewardLogStream(settings.outputRewardFilename, settings.smaWidth)
         , m_stepCountLogStream(settings.outputStepCountFilename, settings.smaWidth)
@@ -186,10 +197,11 @@ public:
                             ++totalStepCount;
 
                             // Run callback if needed
-                            exploitationCallback(*exploitationEnvironments[j]);
+                            m_exploitationCallback(*exploitationEnvironments[j]);
                         } while (!exploitationEnvironments[j]->isEndOfProblem());
                     }
                 }
+
                 if (m_settings.summaryInterval > 0 && (i + 1) % m_settings.summaryInterval == 0)
                 {
                     std::printf("%9u %11.3f %10.3f %8.3f\n",
@@ -203,47 +215,47 @@ public:
                     m_summaryStepCountSum = 0.0;
                 }
 
-                double rewardAverage = sma(rewardSum / exploitationCount / seedCount);
-                double stepCountAverage = stepCountSMA(static_cast<double>(totalStepCount) / exploitationCount / seedCount);
+                double rewardAverage = sma(rewardSum / m_settings.exploitationCount / m_settings.seedCount);
+                double stepCountAverage = stepCountSMA(static_cast<double>(totalStepCount) / m_settings.exploitationCount / m_settings.seedCount);
 
-                if (i >= smaWidth - 1)
+                if (i >= m_settings.smaWidth - 1)
                 {
-                    rewardLogStream << rewardAverage << std::endl;
+                    rewardLogStream.writeLine(rewardAverage);
 
                     if (outputsStepCountLogFile)
                     {
-                        stepCountLogStream << stepCountAverage << std::endl;
+                        m_stepCountLogStream.writeLine(stepCountAverage);
                     }
                 }
 
                 double populationSizeSum = 0.0;
-                for (std::size_t j = 0; j < seedCount; ++j)
+                for (std::size_t j = 0; j < m_settings.seedCount; ++j)
                 {
-                    populationSizeSum += experiments[j]->populationSize();
+                    populationSizeSum += m_experiments[j]->populationSize();
                 }
-                m_populationSizeLogStream.writeLine(populationSizeSum / seedCount);
+                m_populationSizeLogStream.writeLine(populationSizeSum / m_settings.seedCount);
             }
 
             // Exploration
-            for (std::size_t j = 0; j < seedCount; ++j)
+            for (std::size_t j = 0; j < m_settings.seedCount; ++j)
             {
-                for (std::size_t k = 0; k < explorationCount; ++k)
+                for (std::size_t k = 0; k < m_settings.explorationCount; ++k)
                 {
                     do
                     {
                         // Get situation from environment
-                        auto situation = explorationEnvironments[j]->situation();
+                        auto situation = m_explorationEnvironments[j]->situation();
 
                         // Choose action
-                        int action = experiments[j]->explore(situation);
+                        int action = m_experiments[j]->explore(situation);
 
                         // Get reward
-                        double reward = explorationEnvironments[j]->executeAction(action);
-                        experiments[j]->reward(reward, explorationEnvironments[j]->isEndOfProblem());
+                        double reward = m_explorationEnvironments[j]->executeAction(action);
+                        m_experiments[j]->reward(reward, m_explorationEnvironments[j]->isEndOfProblem());
 
                         // Run callback if needed
-                        explorationCallback(*explorationEnvironments[j]);
-                    } while (!explorationEnvironments[j]->isEndOfProblem());
+                        m_explorationCallback(*m_explorationEnvironments[j]);
+                    } while (!m_explorationEnvironments[j]->isEndOfProblem());
                 }
             }
         }
