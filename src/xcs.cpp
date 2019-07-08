@@ -230,56 +230,49 @@ int main(int argc, char *argv[])
         }
     }
 
-    uint64_t iterationCount = result["iter"].as<uint64_t>();
-    uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
-    uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
-    uint64_t summaryInterval = result["summary-interval"].as<uint64_t>();
-    uint64_t explorationCount = result["explore"].as<uint64_t>();
-    uint64_t exploitationCount = result["exploit"].as<uint64_t>();
-    uint64_t smaWidth = result["sma"].as<uint64_t>();
+    ExperimentSettings settings;
+    settings.seedCount = result["avg-seeds"].as<uint64_t>();
+    settings.explorationCount = result["explore"].as<uint64_t>();
+    settings.exploitationCount = result["exploit"].as<uint64_t>();
+    settings.updateInExploitation = updateInExploitation;
+    settings.summaryInterval = result["summary-interval"].as<uint64_t>();
+    settings.outputClassifierFilename = result["coutput"].as<std::string>();
+    settings.outputRewardFilename = result["routput"].as<std::string>();
+    settings.outputPopulationSizeFilename = result["noutput"].as<std::string>();
+    settings.outputStepCountFilename = result["nsoutput"].as<std::string>();
+    settings.inputClassifierFilename = result["cinput"].as<std::string>();
+    settings.useInputClassifierToResume = result["resume"].as<bool>();
+    settings.smaWidth = result["sma"].as<uint64_t>();
+
+    std::unique_ptr<AbstractExperimentHelper> experimentHelper;
 
     // Use multiplexer problem
     if (result.count("mux"))
     {
-        std::vector<std::unique_ptr<MultiplexerEnvironment>> environments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<MultiplexerEnvironment>> explorationEnvironments;
+        std::vector<std::unique_ptr<MultiplexerEnvironment>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
-            environments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
+            explorationEnvironments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
+            exploitationEnvironments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
         }
 
-        run<XCS<bool, bool>>(
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<bool, bool>, MultiplexerEnvironment>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            environments,
-            environments);
-
-        exit(0);
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments)
+        );
     }
 
     // Use block world problem
     if (result.count("blc"))
     {
         std::vector<std::unique_ptr<BlockWorldEnvironment>> explorationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<BlockWorldEnvironment>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
-        }
-        std::vector<std::unique_ptr<BlockWorldEnvironment>> exploitationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
-        {
             exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
 
@@ -319,27 +312,15 @@ int main(int argc, char *argv[])
             }
         };
 
-        auto experiment = run<Experiment<bool, int>>(
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<bool, int>, BlockWorldEnvironment>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            explorationEnvironments,
-            exploitationEnvironments,
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments),
             explorationCallback,
-            exploitationCallback);
-
+            exploitationCallback
+        );
+/*
         std::unique_ptr<BlockWorldEnvironment> environment(dynamic_cast<BlockWorldEnvironment *>(explorationEnvironments[0].release()));
 
         if (!result["blc-output-best"].as<std::string>().empty())
@@ -435,8 +416,7 @@ int main(int argc, char *argv[])
                 ofs << std::endl;
             }
         }
-
-        exit(0);
+*/
     }
 
     // Use csv file
@@ -473,39 +453,36 @@ int main(int argc, char *argv[])
         }
 
         std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
-        }
-        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
-        {
             exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
         }
 
-        run<Experiment<int, int>>(
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<int, int>, DatasetEnvironment<int, int>>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            explorationEnvironments,
-            exploitationEnvironments);
-
-        exit(0);
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments)
+        );
     }
 
-    // No target environment (show help)
-    std::cout << options.help({"", "Group"}) << std::endl;
-    return 1;
+    if (experimentHelper)
+    {
+        uint64_t iterationCount = result["iter"].as<uint64_t>();
+        uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
+
+        experimentHelper->runIteration(iterationCount);
+        experimentHelper->switchToCondensationMode();
+        experimentHelper->runIteration(condensationIterationCount);
+
+        return 0;
+    }
+    else
+    {
+        // No target environment (show help)
+        std::cout << options.help({"", "Group"}) << std::endl;
+        return 1;
+    }
 }

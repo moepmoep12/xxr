@@ -13,7 +13,7 @@ namespace xxr
     {
     protected:
         // Constructor with available action choices
-        AbstractEnvironment(const std::unordered_set<Action> & availableActions) : availableActions(availableActions)
+        explicit AbstractEnvironment(const std::unordered_set<Action> & availableActions) : availableActions(availableActions)
         {
         }
 
