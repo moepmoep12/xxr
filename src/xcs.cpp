@@ -320,8 +320,10 @@ int main(int argc, char *argv[])
             explorationCallback,
             exploitationCallback
         );
-/*
-        std::unique_ptr<BlockWorldEnvironment> environment(dynamic_cast<BlockWorldEnvironment *>(explorationEnvironments[0].release()));
+
+        auto & experimentHelperRef = dynamic_cast<ExperimentHelper<XCS<bool, int>, BlockWorldEnvironment> &>(*experimentHelper);
+        auto & experiment = experimentHelperRef.experimentAt(0);
+        auto & environment = experimentHelperRef.exploitationEnvironmentAt(0);
 
         if (!result["blc-output-best"].as<std::string>().empty())
         {
@@ -329,15 +331,15 @@ int main(int argc, char *argv[])
 
             bool useUnicode = result["blc-output-best-uni"].as<bool>();
 
-            for (std::size_t y = 0; y < environment->worldHeight(); ++y)
+            for (std::size_t y = 0; y < environment.worldHeight(); ++y)
             {
-                for (std::size_t x = 0; x < environment->worldWidth(); ++x)
+                for (std::size_t x = 0; x < environment.worldWidth(); ++x)
                 {
-                    if (environment->isEmpty(x, y))
+                    if (environment.isEmpty(x, y))
                     {
                         // Output the selected action
-                        auto situation = environment->situation(x, y);
-                        int action = experiment->exploit(situation);
+                        auto situation = environment.situation(x, y);
+                        int action = experiment.exploit(situation);
                         if (useUnicode)
                         {
                             switch (action)
@@ -386,7 +388,7 @@ int main(int argc, char *argv[])
                     else
                     {
                         // Obstacle or Food
-                        unsigned char c = environment->getBlock(x, y);
+                        unsigned char c = environment.getBlock(x, y);
                         if (useUnicode)
                         {
                             switch (c)
@@ -416,7 +418,6 @@ int main(int argc, char *argv[])
                 ofs << std::endl;
             }
         }
-*/
     }
 
     // Use csv file
