@@ -7,6 +7,7 @@
 #include <cstddef>
 
 #include <xxr/xcs.hpp>
+#include <xxr/helper/experiment_helper.hpp>
 #include <cxxopts.hpp>
 
 #include "common.hpp"

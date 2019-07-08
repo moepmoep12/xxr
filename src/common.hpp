@@ -14,8 +14,7 @@
 
 #include <xxr/xcsr.hpp>
 #include <xxr/helper/csv.hpp>
-
-#include "util/simple_moving_average.hpp"
+#include <xxr/helper/simple_moving_average.hpp>
 
 template <class Experiment, class Constants, class Environment, class... Args>
 std::unique_ptr<Experiment> run(
