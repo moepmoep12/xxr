@@ -233,7 +233,7 @@ namespace xxr
 
                             populationSizeSum += m_experiments[j]->populationSize();
                         }
-                        m_summaryPopulationSizeSum += m_experiments[j]->populationSize() / m_settings.seedCount;
+                        m_summaryPopulationSizeSum += static_cast<double>(m_experiments[j]->populationSize()) / m_settings.seedCount;
                     }
 
                     m_summaryStepCountSum += static_cast<double>(totalStepCount) / m_settings.exploitationCount / m_settings.seedCount;
