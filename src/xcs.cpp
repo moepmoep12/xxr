@@ -10,8 +10,6 @@
 #include <xxr/helper/experiment_helper.hpp>
 #include <cxxopts.hpp>
 
-#include "common.hpp"
-
 using namespace xxr;
 using namespace xxr::xcs_impl;
 
