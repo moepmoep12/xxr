@@ -113,6 +113,8 @@ namespace xxr
         virtual void runIteration(std::size_t repeat = 1) = 0;
 
         virtual void switchToCondensationMode() = 0;
+
+        virtual void dumpPopulation(std::size_t seedIdx, std::ostream & os) const = 0;
     };
 
     template <class Experiment, class Environment>
@@ -125,7 +127,6 @@ namespace xxr
         std::vector<std::unique_ptr<Environment>> m_exploitationEnvironments;
         std::function<void(Environment &)> m_explorationCallback;
         std::function<void(Environment &)> m_exploitationCallback;
-        ExperimentLogStream m_classifierStream;
         SMAExperimentLogStream m_rewardLogStream;
         SMAExperimentLogStream m_stepCountLogStream;
         ExperimentLogStream m_populationSizeLogStream;
@@ -177,7 +178,6 @@ namespace xxr
             , m_exploitationEnvironments(std::move(exploitationEnvironments))
             , m_explorationCallback(std::move(explorationCallback))
             , m_exploitationCallback(std::move(exploitationCallback))
-            , m_classifierStream(settings.outputFilenamePrefix + settings.outputClassifierFilename)
             , m_rewardLogStream(settings.outputFilenamePrefix + settings.outputRewardFilename, settings.smaWidth)
             , m_stepCountLogStream(settings.outputFilenamePrefix + settings.outputStepCountFilename, settings.smaWidth, false)
             , m_populationSizeLogStream(settings.outputFilenamePrefix + settings.outputPopulationSizeFilename, false)
@@ -309,6 +309,11 @@ namespace xxr
         Environment & exploitationEnvironmentAt(std::size_t seedIdx)
         {
             return *m_exploitationEnvironments[seedIdx];
+        }
+        
+        virtual void dumpPopulation(std::size_t seedIdx, std::ostream & os) const override
+        {
+            m_experiments[seedIdx]->dumpPopulation(os);
         }
     };
 

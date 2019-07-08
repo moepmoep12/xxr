@@ -236,7 +236,6 @@ int main(int argc, char *argv[])
     settings.exploitationCount = result["exploit"].as<uint64_t>();
     settings.updateInExploitation = updateInExploitation;
     settings.summaryInterval = result["summary-interval"].as<uint64_t>();
-    settings.outputClassifierFilename = result["coutput"].as<std::string>();
     settings.outputRewardFilename = result["routput"].as<std::string>();
     settings.outputPopulationSizeFilename = result["noutput"].as<std::string>();
     settings.outputStepCountFilename = result["nsoutput"].as<std::string>();
@@ -320,7 +319,90 @@ int main(int argc, char *argv[])
             explorationCallback,
             exploitationCallback
         );
+    }
 
+    // Use csv file
+    if (result.count("csv"))
+    {
+        // Get available action choices
+        if (!result.count("action"))
+        {
+            std::cout << "Error: Available action list (--action) is not specified." << std::endl;
+            exit(1);
+        }
+        std::string availableActionsStr = result["action"].as<std::string>();
+        std::string availableActionStr;
+        std::stringstream ss(availableActionsStr);
+        std::unordered_set<int> availableActions;
+        while (std::getline(ss, availableActionStr, ','))
+        {
+            try
+            {
+                availableActions.insert(std::stoi(availableActionStr));
+            }
+            catch (std::exception & e)
+            {
+                std::cout << "Error: Action must be an integer." << std::endl;
+                exit(1);
+            }
+        }
+
+        std::string filename = result["csv"].as<std::string>();
+        std::string evaluationCsvFilename = filename;
+        if (result.count("csv-eval"))
+        {
+            evaluationCsvFilename = result["csv-eval"].as<std::string>();
+        }
+
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
+        {
+            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
+            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
+        }
+
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<int, int>, DatasetEnvironment<int, int>>>(
+            settings,
+            constants,
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments)
+        );
+    }
+
+    // Run experiment
+    if (experimentHelper)
+    {
+        uint64_t iterationCount = result["iter"].as<uint64_t>();
+        uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
+
+        experimentHelper->runIteration(iterationCount);
+        experimentHelper->switchToCondensationMode();
+        experimentHelper->runIteration(condensationIterationCount);
+    }
+    else
+    {
+        // No target environment (show help)
+        std::cout << options.help({"", "Group"}) << std::endl;
+        return 1;
+    }
+
+    // Save population
+    {
+        std::string filename = result["coutput"].as<std::string>();
+
+        std::ofstream ofs;
+        std::ostream & os = filename.empty() ? std::cout : ofs;
+        if (!filename.empty())
+        {
+            ofs.open(filename);
+        }
+        experimentHelper->dumpPopulation(0, os);
+    }
+
+    // Save block world problem log
+    if (result.count("blc"))
+    {
         auto & experimentHelperRef = dynamic_cast<ExperimentHelper<XCS<bool, int>, BlockWorldEnvironment> &>(*experimentHelper);
         auto & experiment = experimentHelperRef.experimentAt(0);
         auto & environment = experimentHelperRef.exploitationEnvironmentAt(0);
@@ -420,70 +502,5 @@ int main(int argc, char *argv[])
         }
     }
 
-    // Use csv file
-    if (result.count("csv"))
-    {
-        // Get available action choices
-        if (!result.count("action"))
-        {
-            std::cout << "Error: Available action list (--action) is not specified." << std::endl;
-            exit(1);
-        }
-        std::string availableActionsStr = result["action"].as<std::string>();
-        std::string availableActionStr;
-        std::stringstream ss(availableActionsStr);
-        std::unordered_set<int> availableActions;
-        while (std::getline(ss, availableActionStr, ','))
-        {
-            try
-            {
-                availableActions.insert(std::stoi(availableActionStr));
-            }
-            catch (std::exception & e)
-            {
-                std::cout << "Error: Action must be an integer." << std::endl;
-                exit(1);
-            }
-        }
-
-        std::string filename = result["csv"].as<std::string>();
-        std::string evaluationCsvFilename = filename;
-        if (result.count("csv-eval"))
-        {
-            evaluationCsvFilename = result["csv-eval"].as<std::string>();
-        }
-
-        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
-        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
-        for (std::size_t i = 0; i < settings.seedCount; ++i)
-        {
-            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
-            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
-        }
-
-        experimentHelper = std::make_unique<ExperimentHelper<XCS<int, int>, DatasetEnvironment<int, int>>>(
-            settings,
-            constants,
-            std::move(explorationEnvironments),
-            std::move(exploitationEnvironments)
-        );
-    }
-
-    if (experimentHelper)
-    {
-        uint64_t iterationCount = result["iter"].as<uint64_t>();
-        uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
-
-        experimentHelper->runIteration(iterationCount);
-        experimentHelper->switchToCondensationMode();
-        experimentHelper->runIteration(condensationIterationCount);
-
-        return 0;
-    }
-    else
-    {
-        // No target environment (show help)
-        std::cout << options.help({"", "Group"}) << std::endl;
-        return 1;
-    }
+    return 0;
 }

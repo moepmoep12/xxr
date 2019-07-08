@@ -21,9 +21,6 @@ struct ExperimentSettings
     // The prefix of filename
     std::string outputFilenamePrefix;
 
-    // The filename of classifier csv output
-    std::string outputClassifierFilename = "classifier.csv";
-
     // The filename of reward log csv output
     std::string outputRewardFilename = "reward.csv";
 
