@@ -132,6 +132,7 @@ namespace xxr
         double m_summaryRewardSum;
         double m_summaryPopulationSizeSum;
         double m_summaryStepCountSum;
+        std::size_t m_iterationCount;
 
         template <class... Args>
         std::vector<std::unique_ptr<Experiment>> makeExperiments(
@@ -183,6 +184,7 @@ namespace xxr
             , m_summaryRewardSum(0.0)
             , m_summaryPopulationSizeSum(0.0)
             , m_summaryStepCountSum(0.0)
+            , m_iterationCount(0)
         {
             if (!settings.inputClassifierFilename.empty())
             {
@@ -222,20 +224,24 @@ namespace xxr
                                     m_experiments[j]->reward(reward, m_exploitationEnvironments[j]->isEndOfProblem());
                                 }
                                 rewardSum += reward;
-                                populationSizeSum += m_experiments[j]->populationSize();
 
                                 ++totalStepCount;
 
                                 // Run callback if needed
                                 m_exploitationCallback(*m_exploitationEnvironments[j]);
                             } while (!m_exploitationEnvironments[j]->isEndOfProblem());
+
+                            populationSizeSum += m_experiments[j]->populationSize();
                         }
+                        m_summaryPopulationSizeSum += m_experiments[j]->populationSize();
                     }
 
-                    if (m_settings.summaryInterval > 0 && (i + 1) % m_settings.summaryInterval == 0)
+                    m_summaryStepCountSum += static_cast<double>(totalStepCount) / m_settings.exploitationCount / m_settings.seedCount;
+
+                    if (m_settings.summaryInterval > 0 && (m_iterationCount + 1) % m_settings.summaryInterval == 0)
                     {
                         std::printf("%9u %11.3f %10.3f %8.3f\n",
-                            static_cast<unsigned int>(i + 1),
+                            static_cast<unsigned int>(m_iterationCount + 1),
                             m_summaryRewardSum / m_settings.summaryInterval,
                             m_summaryPopulationSizeSum / m_settings.summaryInterval,
                             m_summaryStepCountSum / m_settings.summaryInterval);
@@ -246,8 +252,8 @@ namespace xxr
                     }
 
                     m_rewardLogStream.writeLine(rewardSum / m_settings.exploitationCount / m_settings.seedCount);
+                    m_populationSizeLogStream.writeLine(populationSizeSum / m_settings.exploitationCount / m_settings.seedCount);
                     m_stepCountLogStream.writeLine(static_cast<double>(totalStepCount) / m_settings.exploitationCount / m_settings.seedCount);
-                    m_populationSizeLogStream.writeLine(populationSizeSum / m_settings.seedCount);
                 }
 
                 // Exploration
@@ -272,6 +278,8 @@ namespace xxr
                         } while (!m_explorationEnvironments[j]->isEndOfProblem());
                     }
                 }
+
+                ++m_iterationCount;
             }
         }
         
