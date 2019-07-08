@@ -265,6 +265,7 @@ int main(int argc, char *argv[])
     }
 
     // Use block world problem
+    std::ofstream blockWorldTraceLogStream;
     if (result.count("blc"))
     {
         std::vector<std::unique_ptr<BlockWorldEnvironment>> explorationEnvironments;
@@ -277,36 +278,35 @@ int main(int argc, char *argv[])
 
         // Prepare trace output
         bool outputTraceLog = !result["blc-output-trace"].as<std::string>().empty();
-        std::ofstream traceLogStream;
         if (outputTraceLog)
         {
-            traceLogStream.open(result["blc-output-trace"].as<std::string>());
+            blockWorldTraceLogStream.open(result["blc-output-trace"].as<std::string>());
         }
-        std::function<void(BlockWorldEnvironment &)> explorationCallback = [&](BlockWorldEnvironment & env) {
+        std::function<void(BlockWorldEnvironment &)> explorationCallback = [outputTraceLog, &blockWorldTraceLogStream](BlockWorldEnvironment & env) {
             if (outputTraceLog)
             {
                 if (env.lastStep() <= 1)
                 {
-                    traceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
+                    blockWorldTraceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
                 }
-                traceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
+                blockWorldTraceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
                 if (env.isEndOfProblem())
                 {
-                    traceLogStream << " Explore" << std::endl;
+                    blockWorldTraceLogStream << " Explore" << std::endl;
                 }
             }
         };
-        std::function<void(BlockWorldEnvironment &)> exploitationCallback = [&](BlockWorldEnvironment & env) {
+        std::function<void(BlockWorldEnvironment &)> exploitationCallback = [outputTraceLog, &blockWorldTraceLogStream](BlockWorldEnvironment & env) {
             if (outputTraceLog)
             {
                 if (env.lastStep() <= 1)
                 {
-                    traceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
+                    blockWorldTraceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
                 }
-                traceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
+                blockWorldTraceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
                 if (env.isEndOfProblem())
                 {
-                    traceLogStream << " Exploit" << std::endl;
+                    blockWorldTraceLogStream << " Exploit" << std::endl;
                 }
             }
         };
