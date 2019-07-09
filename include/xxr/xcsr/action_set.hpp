@@ -48,7 +48,7 @@ namespace xxr { namespace xcsr_impl
                 std::vector<ClassifierPtr> removedClassifiers;
                 for (auto && c : m_set)
                 {
-                    if (cl->isMoreGeneral(*c))
+                    if (cl->isMoreGeneral(*c, m_constants.subsumptionTolerance))
                     {
                         cl->numerosity += c->numerosity;
                         removedClassifiers.push_back(c);
