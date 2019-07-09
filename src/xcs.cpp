@@ -395,7 +395,10 @@ int main(int argc, char *argv[])
         {
             ofs.open(filename);
         }
-        experimentHelper->dumpPopulation(0, os);
+        if (os)
+        {
+            experimentHelper->dumpPopulation(0, os);
+        }
     }
 
     // Save block world problem log

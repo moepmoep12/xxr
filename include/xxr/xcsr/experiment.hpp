@@ -5,6 +5,7 @@
 #include <cstddef>
 
 #include "repr.hpp"
+#include "constants.hpp"
 
 namespace xxr { namespace xcsr_impl
 {
@@ -22,30 +23,26 @@ namespace xxr { namespace xcsr_impl
         const Repr m_repr;
 
     public:
-        // Constructor
-        template <Repr R, class... Args>
-        Experiment(Args && ... args)
-            : m_experiment(std::make_unique<typename repr_to_experiment<R, T, Action>::type>(std::forward<Args>(args)...))
-            , m_repr(R)
-        {
-        }
+        using type = T;
+        using ActionType = Action;
+        using ConstantsType = xxr::xcsr_impl::Constants;
 
-        template <class... Args>
-        explicit Experiment(Repr repr, Args && ... args)
+        // Constructor
+        explicit Experiment(const std::unordered_set<Action> & availableActions, const ConstantsType & constants, Repr repr)
             : m_repr(repr)
         {
-            switch(repr)
+            switch (repr)
             {
             case Repr::CSR:
-                m_experiment = std::make_unique<csr::Experiment<T, Action>>(std::forward<Args>(args)...);
+                m_experiment = std::make_unique<csr::Experiment<T, Action>>(availableActions, constants);
                 break;
 
             case Repr::OBR:
-                m_experiment = std::make_unique<obr::Experiment<T, Action>>(std::forward<Args>(args)...);
+                m_experiment = std::make_unique<obr::Experiment<T, Action>>(availableActions, constants);
                 break;
 
             case Repr::UBR:
-                m_experiment = std::make_unique<ubr::Experiment<T, Action>>(std::forward<Args>(args)...);
+                m_experiment = std::make_unique<ubr::Experiment<T, Action>>(availableActions, constants);
                 break;
 
             default:

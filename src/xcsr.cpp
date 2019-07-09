@@ -7,82 +7,11 @@
 #include <cstddef>
 
 #include <xxr/xcsr.hpp>
+#include <xxr/helper/experiment_helper.hpp>
 #include <cxxopts.hpp>
-
-#include "common.hpp"
 
 using namespace xxr;
 using namespace xxr::xcsr_impl;
-
-template <typename T, typename Action, class Constants, class Environment>
-std::unique_ptr<xcs_impl::Experiment<T, Action>> runXCSR(
-    const std::string & reprStr,
-    std::size_t seedCount,
-    const Constants & constants,
-    std::size_t iterationCount,
-    std::size_t condensationIterationCount,
-    std::size_t explorationCount,
-    std::size_t exploitationCount,
-    bool updateInExploitation,
-    std::size_t summaryInterval,
-    const std::string & classifierLogFilename,
-    const std::string & rewardLogFilename,
-    const std::string & populationSizeLogFilename,
-    const std::string & stepCountLogFilename,
-    const std::string & initialPopulationFilename,
-    bool useInitialPopulationForResume,
-    std::size_t smaWidth,
-    std::vector<std::unique_ptr<Environment>> & explorationEnvironments,
-    std::vector<std::unique_ptr<Environment>> & exploitationEnvironments,
-    std::function<void(Environment &)> explorationCallback = [](Environment &){},
-    std::function<void(Environment &)> exploitationCallback = [](Environment &){})
-{
-    xxr::XCSRRepr repr;
-    if (reprStr == "csr" || reprStr == "cs")
-    {
-        repr = xxr::CSR;
-    }
-    else if (reprStr == "obr" || reprStr == "lu")
-    {
-        repr = xxr::OBR;
-    }
-    else if (reprStr == "ubr" || reprStr == "ub")
-    {
-        repr = xxr::UBR;
-    }
-    else
-    {
-        std::cerr << "Error: Unknown representation (" << reprStr << ")" << std::endl;
-        exit(1);
-    }
-
-    return std::unique_ptr<xcs_impl::Experiment<T, Action>>(
-        dynamic_cast<xcs_impl::Experiment<T, Action> *>(
-            run<XCSR<T, Action>>(
-                seedCount,
-                constants,
-                iterationCount,
-                condensationIterationCount,
-                explorationCount,
-                exploitationCount,
-                updateInExploitation,
-                summaryInterval,
-                classifierLogFilename,
-                rewardLogFilename,
-                populationSizeLogFilename,
-                stepCountLogFilename,
-                initialPopulationFilename,
-                useInitialPopulationForResume,
-                smaWidth,
-                explorationEnvironments,
-                exploitationEnvironments,
-                explorationCallback,
-                exploitationCallback,
-                repr
-            ).release()
-        )
-    );
-}
 
 int main(int argc, char *argv[])
 {
@@ -321,44 +250,63 @@ int main(int argc, char *argv[])
         }
     }
 
-    uint64_t iterationCount = result["iter"].as<uint64_t>();
-    uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
-    uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
-    uint64_t summaryInterval = result["summary-interval"].as<uint64_t>();
-    uint64_t explorationCount = result["explore"].as<uint64_t>();
-    uint64_t exploitationCount = result["exploit"].as<uint64_t>();
-    uint64_t smaWidth = result["sma"].as<uint64_t>();
+    ExperimentSettings settings;
+    settings.seedCount = result["avg-seeds"].as<uint64_t>();
+    settings.explorationCount = result["explore"].as<uint64_t>();
+    settings.exploitationCount = result["exploit"].as<uint64_t>();
+    settings.updateInExploitation = updateInExploitation;
+    settings.summaryInterval = result["summary-interval"].as<uint64_t>();
+    settings.outputRewardFilename = result["routput"].as<std::string>();
+    settings.outputPopulationSizeFilename = result["noutput"].as<std::string>();
+    //settings.outputStepCountFilename = result["nsoutput"].as<std::string>();
+    settings.inputClassifierFilename = result["cinput"].as<std::string>();
+    settings.useInputClassifierToResume = result["resume"].as<bool>();
+    settings.smaWidth = result["sma"].as<uint64_t>();
 
-    // Use multiplexer problem
+    xxr::XCSRRepr repr;
+    {
+        std::string reprStr = result["repr"].as<std::string>();
+        if (reprStr == "csr" || reprStr == "cs")
+        {
+            repr = xxr::CSR;
+        }
+        else if (reprStr == "obr" || reprStr == "lu")
+        {
+            repr = xxr::OBR;
+        }
+        else if (reprStr == "ubr" || reprStr == "ub")
+        {
+            repr = xxr::UBR;
+        }
+        else
+        {
+            std::cerr << "Error: Unknown representation (" << reprStr << ")" << std::endl;
+            exit(1);
+        }
+    }
+
+    std::unique_ptr<AbstractExperimentHelper> experimentHelper;
+
+    // Use real multiplexer problem
     if (result.count("mux"))
     {
-        std::vector<std::unique_ptr<RealMultiplexerEnvironment>> environments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<RealMultiplexerEnvironment>> explorationEnvironments;
+        std::vector<std::unique_ptr<RealMultiplexerEnvironment>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
-            environments.push_back(std::make_unique<RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
+            explorationEnvironments.push_back(std::make_unique<RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
+            exploitationEnvironments.push_back(std::make_unique<RealMultiplexerEnvironment>(result["mux"].as<int>(), true));
         }
 
-        runXCSR<double, bool>(
-            result["repr"].as<std::string>(),
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCSR<double, bool>, RealMultiplexerEnvironment>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            "",//result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            environments,
-            environments);
-
-        exit(0);
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments),
+            [](RealMultiplexerEnvironment &){},
+            [](RealMultiplexerEnvironment &){},
+            repr
+        );
     }
 
     // Use checkerboard problem
@@ -369,33 +317,24 @@ int main(int argc, char *argv[])
             std::cerr << "Error: The division in the checkerboard problem (--chk-div) is not specified." << std::endl;
             exit(1);
         }
-        std::vector<std::unique_ptr<CheckerboardEnvironment>> environments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+
+        std::vector<std::unique_ptr<CheckerboardEnvironment>> explorationEnvironments;
+        std::vector<std::unique_ptr<CheckerboardEnvironment>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
-            environments.push_back(std::make_unique<CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
+            explorationEnvironments.push_back(std::make_unique<CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
+            exploitationEnvironments.push_back(std::make_unique<CheckerboardEnvironment>(result["chk"].as<int>(), result["chk-div"].as<int>()));
         }
 
-        runXCSR<double, bool>(
-            result["repr"].as<std::string>(),
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCSR<double, bool>, CheckerboardEnvironment>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            "",//result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            environments,
-            environments);
-
-        exit(0);
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments),
+            [](CheckerboardEnvironment &){},
+            [](CheckerboardEnvironment &){},
+            repr
+        );
     }
 
     // Use csv file
@@ -432,40 +371,56 @@ int main(int argc, char *argv[])
         }
 
         std::vector<std::unique_ptr<DatasetEnvironment<double, int>>> explorationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<DatasetEnvironment<double, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<double, int>>(CSV::readDataset<double, int>(filename), availableActions, result["csv-random"].as<bool>()));
-        }
-        std::vector<std::unique_ptr<DatasetEnvironment<double, int>>> exploitationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
-        {
             exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<double, int>>(CSV::readDataset<double, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
         }
 
-        runXCSR<double, int>(
-            result["repr"].as<std::string>(),
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCSR<double, int>, DatasetEnvironment<double, int>>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            "",//result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            explorationEnvironments,
-            exploitationEnvironments);
-
-        exit(0);
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments),
+            [](DatasetEnvironment<double, int> &){},
+            [](DatasetEnvironment<double, int> &){},
+            repr
+        );
     }
 
-    // No target environment (show help)
-    std::cout << options.help({"", "Group"}) << std::endl;
-    return 1;
+    // Run experiment
+    if (experimentHelper)
+    {
+        uint64_t iterationCount = result["iter"].as<uint64_t>();
+        uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
+
+        experimentHelper->runIteration(iterationCount);
+        experimentHelper->switchToCondensationMode();
+        experimentHelper->runIteration(condensationIterationCount);
+    }
+    else
+    {
+        // No target environment (show help)
+        std::cout << options.help({"", "Group"}) << std::endl;
+        return 1;
+    }
+
+    // Save population
+    {
+        std::string filename = result["coutput"].as<std::string>();
+
+        std::ofstream ofs;
+        std::ostream & os = filename.empty() ? std::cout : ofs;
+        if (!filename.empty())
+        {
+            ofs.open(filename);
+        }
+        if (os)
+        {
+            experimentHelper->dumpPopulation(0, os);
+        }
+    }
+
+    return 0;
 }
