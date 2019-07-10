@@ -90,6 +90,8 @@ namespace xxr { namespace xcsr_impl { namespace csr
             setPopulation(population, useAsInitialPopulation);
         }
 
+		virtual const xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType& GetPopulation() const { return this->m_population; }
+
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::setPopulation;
 
         virtual void dumpPopulation(std::ostream & os) const override

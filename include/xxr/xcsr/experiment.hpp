@@ -53,6 +53,8 @@ namespace xxr { namespace xcsr_impl
             }
         }
 
+		 const AbstractExperiment<T, Action>& GetExperiment() const { return *m_experiment; }
+
         // Destructor
         virtual ~Experiment() = default;
 

@@ -138,6 +138,8 @@ namespace xxr { namespace xcsr_impl { namespace ubr
             }
         }
 
+		virtual const xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType& GetPopulation() const { return this->m_population; }
+
         virtual void switchToCondensationMode() noexcept override
         {
             constants.chi = 0.0;
