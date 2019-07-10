@@ -138,8 +138,6 @@ namespace xxr { namespace xcsr_impl { namespace obr
             }
         }
 
-		virtual const xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType& GetPopulation() const { return this->m_population; }
-
         virtual void switchToCondensationMode() noexcept override
         {
             constants.chi = 0.0;
@@ -148,6 +146,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
         }
 
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::populationSize;
+        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::numerositySum;
 
 
 		/* Added */
