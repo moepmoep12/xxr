@@ -7,8 +7,8 @@
 #include <cstddef>
 
 #include <xxr/xcs.hpp>
-#include"third_party/cxxopts/include/cxxopts.hpp"
-#include "common.hpp"
+#include <xxr/helper/experiment_helper.hpp>
+#include <cxxopts.hpp>
 
 using namespace xxr;
 using namespace xxr::xcs_impl;
@@ -23,13 +23,13 @@ int main(int argc, char *argv[])
     options
         .allow_unrecognised_options()
         .add_options()
-        ("summary-interval", "The interval of average log output", cxxopts::value<uint64_t>()->default_value("5000"), "COUNT")
-        ("o,coutput", "Output the classifier csv filename", cxxopts::value<std::string>()->default_value("classifier.csv"), "FILENAME")
-        ("r,routput", "Output the reward log csv filename", cxxopts::value<std::string>()->default_value("reward.csv"), "FILENAME")
-        ("n,noutput", "Output the macro-classifier count log csv filename", cxxopts::value<std::string>()->default_value("num.csv"), "FILENAME")
-        ("nsoutput", "Output the number of steps log csv filename in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
+        ("summary-interval", "The iteration interval of summary log output", cxxopts::value<uint64_t>()->default_value("5000"), "COUNT")
+        ("o,coutput", "The filename of classifier csv output", cxxopts::value<std::string>()->default_value("classifier.csv"), "FILENAME")
+        ("r,routput", "The filename of reward log csv output", cxxopts::value<std::string>()->default_value("reward.csv"), "FILENAME")
+        ("n,noutput", "The filename of macro-classifier count log csv output", cxxopts::value<std::string>()->default_value("num.csv"), "FILENAME")
+        ("nsoutput", "The filename of number-of-step log csv output in the multi-step problem", cxxopts::value<std::string>()->default_value(""), "FILENAME")
         ("cinput", "The classifier csv filename for initial population", cxxopts::value<std::string>()->default_value(""), "FILENAME")
-        ("resume", "Whether to use initial classifiers (--cinput) to resume previous experiment (\"false\": initialize p/epsilon/F/exp/ts/as, \"true\": do not initialize values and set system time stamp to the same as that of the latest classifier)", cxxopts::value<bool>()->default_value("false"), "true/false")
+        ("resume", "Whether to use initial classifiers (--cinput) to resume previous experiment (\"false\": initialize p/epsilon/F/exp/ts/as to defaults, \"true\": do not initialize values and set system time stamp to the same as that of the latest classifier)", cxxopts::value<bool>()->default_value("false"), "true/false")
         ("m,mux", "Use the multiplexer problem", cxxopts::value<int>(), "LENGTH")
         ("blc", "Use the block world problem", cxxopts::value<std::string>(), "FILENAME")
         ("blc-3bit", "Use 3-bit representation for each block in a situation", cxxopts::value<bool>()->default_value("false"), "true/false")
@@ -44,8 +44,8 @@ int main(int argc, char *argv[])
         ("i,iter", "The number of iterations", cxxopts::value<uint64_t>()->default_value("20000"), "COUNT")
         ("condense-iter", "The number of iterations for the Wilson's rule condensation method (chi=0, mu=0) after normal iterations", cxxopts::value<uint64_t>()->default_value("0"), "COUNT")
         ("avg-seeds", "The number of different random seeds for averaging the reward and the macro-classifier count", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
-        ("explore", "The exploration count for each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
-        ("exploit", "The exploitation (= test mode) count for each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("explore", "The number of exploration performed in each iteration", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
+        ("exploit", "The number of exploitation (= test mode) performed in each iteration (set \"0\" if you don't need evaluation)", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("exploit-upd", "Whether to update classifier parameters in test mode (\"auto\": false for single-step & true for multi-step)", cxxopts::value<std::string>()->default_value("auto"), "auto/true/false")
         ("sma", "The width of the simple moving average for the reward log", cxxopts::value<uint64_t>()->default_value("1"), "COUNT")
         ("a,action", "The available action choices for csv (comma-separated, integer only)", cxxopts::value<std::string>(), "ACTIONS")
@@ -228,117 +228,185 @@ int main(int argc, char *argv[])
         }
     }
 
-    uint64_t iterationCount = result["iter"].as<uint64_t>();
-    uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
-    uint64_t seedCount = result["avg-seeds"].as<uint64_t>();
-    uint64_t summaryInterval = result["summary-interval"].as<uint64_t>();
-    uint64_t explorationCount = result["explore"].as<uint64_t>();
-    uint64_t exploitationCount = result["exploit"].as<uint64_t>();
-    uint64_t smaWidth = result["sma"].as<uint64_t>();
+    ExperimentSettings settings;
+    settings.seedCount = result["avg-seeds"].as<uint64_t>();
+    settings.explorationCount = result["explore"].as<uint64_t>();
+    settings.exploitationCount = result["exploit"].as<uint64_t>();
+    settings.updateInExploitation = updateInExploitation;
+    settings.summaryInterval = result["summary-interval"].as<uint64_t>();
+    settings.outputRewardFilename = result["routput"].as<std::string>();
+    settings.outputPopulationSizeFilename = result["noutput"].as<std::string>();
+    settings.outputStepCountFilename = result["nsoutput"].as<std::string>();
+    settings.inputClassifierFilename = result["cinput"].as<std::string>();
+    settings.useInputClassifierToResume = result["resume"].as<bool>();
+    settings.smaWidth = result["sma"].as<uint64_t>();
+
+    std::unique_ptr<AbstractExperimentHelper> experimentHelper;
 
     // Use multiplexer problem
     if (result.count("mux"))
     {
-        std::vector<std::unique_ptr<MultiplexerEnvironment>> environments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<MultiplexerEnvironment>> explorationEnvironments;
+        std::vector<std::unique_ptr<MultiplexerEnvironment>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
-            environments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
+            explorationEnvironments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
+            exploitationEnvironments.push_back(std::make_unique<MultiplexerEnvironment>(result["mux"].as<int>()));
         }
 
-        run<XCS<bool, bool>>(
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<bool, bool>, MultiplexerEnvironment>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            environments,
-            environments);
-
-        exit(0);
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments)
+        );
     }
 
     // Use block world problem
+    std::ofstream blockWorldTraceLogStream;
     if (result.count("blc"))
     {
         std::vector<std::unique_ptr<BlockWorldEnvironment>> explorationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
+        std::vector<std::unique_ptr<BlockWorldEnvironment>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
         {
             explorationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
-        }
-        std::vector<std::unique_ptr<BlockWorldEnvironment>> exploitationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
-        {
             exploitationEnvironments.push_back(std::make_unique<BlockWorldEnvironment>(result["blc"].as<std::string>(), result["max-step"].as<uint64_t>(), result["blc-3bit"].as<bool>(), result["blc-diag"].as<bool>()));
         }
 
         // Prepare trace output
         bool outputTraceLog = !result["blc-output-trace"].as<std::string>().empty();
-        std::ofstream traceLogStream;
         if (outputTraceLog)
         {
-            traceLogStream.open(result["blc-output-trace"].as<std::string>());
+            blockWorldTraceLogStream.open(result["blc-output-trace"].as<std::string>());
         }
-        std::function<void(BlockWorldEnvironment &)> explorationCallback = [&](BlockWorldEnvironment & env) {
+        std::function<void(BlockWorldEnvironment &)> explorationCallback = [outputTraceLog, &blockWorldTraceLogStream](BlockWorldEnvironment & env) {
             if (outputTraceLog)
             {
                 if (env.lastStep() <= 1)
                 {
-                    traceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
+                    blockWorldTraceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
                 }
-                traceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
+                blockWorldTraceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
                 if (env.isEndOfProblem())
                 {
-                    traceLogStream << " Explore" << std::endl;
+                    blockWorldTraceLogStream << " Explore" << std::endl;
                 }
             }
         };
-        std::function<void(BlockWorldEnvironment &)> exploitationCallback = [&](BlockWorldEnvironment & env) {
+        std::function<void(BlockWorldEnvironment &)> exploitationCallback = [outputTraceLog, &blockWorldTraceLogStream](BlockWorldEnvironment & env) {
             if (outputTraceLog)
             {
                 if (env.lastStep() <= 1)
                 {
-                    traceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
+                    blockWorldTraceLogStream << "(" << env.lastInitialX() << "," << env.lastInitialY() << ")";
                 }
-                traceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
+                blockWorldTraceLogStream << "(" << env.lastX() << "," << env.lastY() << ")";
                 if (env.isEndOfProblem())
                 {
-                    traceLogStream << " Exploit" << std::endl;
+                    blockWorldTraceLogStream << " Exploit" << std::endl;
                 }
             }
         };
 
-        auto experiment = run<Experiment<bool, int>>(
-            seedCount,
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<bool, int>, BlockWorldEnvironment>>(
+            settings,
             constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            explorationEnvironments,
-            exploitationEnvironments,
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments),
             explorationCallback,
-            exploitationCallback);
+            exploitationCallback
+        );
+    }
 
-        std::unique_ptr<BlockWorldEnvironment> environment(dynamic_cast<BlockWorldEnvironment *>(explorationEnvironments[0].release()));
+    // Use csv file
+    if (result.count("csv"))
+    {
+        // Get available action choices
+        if (!result.count("action"))
+        {
+            std::cout << "Error: Available action list (--action) is not specified." << std::endl;
+            exit(1);
+        }
+        std::string availableActionsStr = result["action"].as<std::string>();
+        std::string availableActionStr;
+        std::stringstream ss(availableActionsStr);
+        std::unordered_set<int> availableActions;
+        while (std::getline(ss, availableActionStr, ','))
+        {
+            try
+            {
+                availableActions.insert(std::stoi(availableActionStr));
+            }
+            catch (std::exception & e)
+            {
+                std::cout << "Error: Action must be an integer." << std::endl;
+                exit(1);
+            }
+        }
+
+        std::string filename = result["csv"].as<std::string>();
+        std::string evaluationCsvFilename = filename;
+        if (result.count("csv-eval"))
+        {
+            evaluationCsvFilename = result["csv-eval"].as<std::string>();
+        }
+
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
+        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
+        for (std::size_t i = 0; i < settings.seedCount; ++i)
+        {
+            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
+            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
+        }
+
+        experimentHelper = std::make_unique<ExperimentHelper<XCS<int, int>, DatasetEnvironment<int, int>>>(
+            settings,
+            constants,
+            std::move(explorationEnvironments),
+            std::move(exploitationEnvironments)
+        );
+    }
+
+    // Run experiment
+    if (experimentHelper)
+    {
+        uint64_t iterationCount = result["iter"].as<uint64_t>();
+        uint64_t condensationIterationCount = result["condense-iter"].as<uint64_t>();
+
+        experimentHelper->runIteration(iterationCount);
+        experimentHelper->switchToCondensationMode();
+        experimentHelper->runIteration(condensationIterationCount);
+    }
+    else
+    {
+        // No target environment (show help)
+        std::cout << options.help({"", "Group"}) << std::endl;
+        return 1;
+    }
+
+    // Save population
+    {
+        std::string filename = result["coutput"].as<std::string>();
+
+        std::ofstream ofs;
+        std::ostream & os = filename.empty() ? std::cout : ofs;
+        if (!filename.empty())
+        {
+            ofs.open(filename);
+        }
+        if (os)
+        {
+            experimentHelper->dumpPopulation(0, os);
+        }
+    }
+
+    // Save block world problem log
+    if (result.count("blc"))
+    {
+        auto & experimentHelperRef = dynamic_cast<ExperimentHelper<XCS<bool, int>, BlockWorldEnvironment> &>(*experimentHelper);
+        auto & experiment = experimentHelperRef.experimentAt(0);
+        auto & environment = experimentHelperRef.exploitationEnvironmentAt(0);
 
         if (!result["blc-output-best"].as<std::string>().empty())
         {
@@ -346,15 +414,15 @@ int main(int argc, char *argv[])
 
             bool useUnicode = result["blc-output-best-uni"].as<bool>();
 
-            for (std::size_t y = 0; y < environment->worldHeight(); ++y)
+            for (std::size_t y = 0; y < environment.worldHeight(); ++y)
             {
-                for (std::size_t x = 0; x < environment->worldWidth(); ++x)
+                for (std::size_t x = 0; x < environment.worldWidth(); ++x)
                 {
-                    if (environment->isEmpty(x, y))
+                    if (environment.isEmpty(x, y))
                     {
                         // Output the selected action
-                        auto situation = environment->situation(x, y);
-                        int action = experiment->exploit(situation);
+                        auto situation = environment.situation(x, y);
+                        int action = experiment.exploit(situation);
                         if (useUnicode)
                         {
                             switch (action)
@@ -403,7 +471,7 @@ int main(int argc, char *argv[])
                     else
                     {
                         // Obstacle or Food
-                        unsigned char c = environment->getBlock(x, y);
+                        unsigned char c = environment.getBlock(x, y);
                         if (useUnicode)
                         {
                             switch (c)
@@ -433,77 +501,7 @@ int main(int argc, char *argv[])
                 ofs << std::endl;
             }
         }
-
-        exit(0);
     }
 
-    // Use csv file
-    if (result.count("csv"))
-    {
-        // Get available action choices
-        if (!result.count("action"))
-        {
-            std::cout << "Error: Available action list (--action) is not specified." << std::endl;
-            exit(1);
-        }
-        std::string availableActionsStr = result["action"].as<std::string>();
-        std::string availableActionStr;
-        std::stringstream ss(availableActionsStr);
-        std::unordered_set<int> availableActions;
-        while (std::getline(ss, availableActionStr, ','))
-        {
-            try
-            {
-                availableActions.insert(std::stoi(availableActionStr));
-            }
-            catch (std::exception & e)
-            {
-                std::cout << "Error: Action must be an integer." << std::endl;
-                exit(1);
-            }
-        }
-
-        std::string filename = result["csv"].as<std::string>();
-        std::string evaluationCsvFilename = filename;
-        if (result.count("csv-eval"))
-        {
-            evaluationCsvFilename = result["csv-eval"].as<std::string>();
-        }
-
-        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> explorationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
-        {
-            explorationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(filename), availableActions, result["csv-random"].as<bool>()));
-        }
-        std::vector<std::unique_ptr<DatasetEnvironment<int, int>>> exploitationEnvironments;
-        for (std::size_t i = 0; i < seedCount; ++i)
-        {
-            exploitationEnvironments.push_back(std::make_unique<DatasetEnvironment<int, int>>(CSV::readDataset<int, int>(evaluationCsvFilename), availableActions, result["csv-random"].as<bool>()));
-        }
-
-        run<Experiment<int, int>>(
-            seedCount,
-            constants,
-            iterationCount,
-            condensationIterationCount,
-            explorationCount,
-            exploitationCount,
-            updateInExploitation,
-            summaryInterval,
-            result["coutput"].as<std::string>(),
-            result["routput"].as<std::string>(),
-            result["noutput"].as<std::string>(),
-            result["nsoutput"].as<std::string>(),
-            result["cinput"].as<std::string>(),
-            result["resume"].as<bool>(),
-            smaWidth,
-            explorationEnvironments,
-            exploitationEnvironments);
-
-        exit(0);
-    }
-
-    // No target environment (show help)
-    std::cout << options.help({"", "Group"}) << std::endl;
-    return 1;
+    return 0;
 }

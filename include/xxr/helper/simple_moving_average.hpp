@@ -54,6 +54,11 @@ public:
     UnrecursiveFilter & operator=(const UnrecursiveFilter &) = delete;
 
     virtual T operator()(T value) = 0;
+
+    std::size_t order() const noexcept
+    {
+        return m_order;
+    }
 };
 
 // Simple Moving Average
@@ -81,4 +86,6 @@ public:
         // Return the average
         return sum / m_valueCount;
     }
+
+    using UnrecursiveFilter<T>::order;
 };
