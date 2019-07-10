@@ -138,6 +138,8 @@ namespace xxr { namespace xcsr_impl { namespace ubr
             }
         }
 
+		virtual const xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::PopulationType& GetPopulation() const { return this->m_population; }
+
         virtual void switchToCondensationMode() noexcept override
         {
             constants.chi = 0.0;
@@ -146,6 +148,19 @@ namespace xxr { namespace xcsr_impl { namespace ubr
         }
 
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::populationSize;
+
+		/* Added */
+
+		virtual const PopulationType& GetPopulation() const { return m_population; }
+
+		virtual const ActionSet& GetCurrentActionSet() const { return m_actionSet; }
+
+		virtual const ActionSet& GetPreviousActionSet() const { return m_prevActionSet; }
+
+		virtual double GetPreviousReward() const { return m_prevReward; }
+
+		/* In order to enable interaction with the constants during training */
+		virtual ConstantsType& GetConstants() { return constants; }
     };
 
 }}}

@@ -191,7 +191,7 @@ namespace xxr { namespace xcs_impl
         using typename Classifier::SymbolType;
         using typename Classifier::ConditionType;
         using typename Classifier::ActionType;
-        using typename Classifier::ConditionActionPairType;
+        using ConditionActionPairType = typename Classifier::ConditionActionPairType;
         using ClassifierType = Classifier;
         using ConstantsType = Constants;
 

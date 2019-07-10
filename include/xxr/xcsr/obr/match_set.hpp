@@ -9,17 +9,17 @@ namespace xxr { namespace xcsr_impl { namespace obr
     class MatchSet : public xcs_impl::MatchSet<Population>
     {
     public:
-        using typename xcs_impl::MatchSet<Population>::type;
-        using typename xcs_impl::MatchSet<Population>::SymbolType;
-        using typename xcs_impl::MatchSet<Population>::ConditionType;
-        using typename xcs_impl::MatchSet<Population>::ActionType;
-        using typename xcs_impl::MatchSet<Population>::ConditionActionPairType;
-        using typename xcs_impl::MatchSet<Population>::ConstantsType;
-        using typename xcs_impl::MatchSet<Population>::ClassifierType;
-        using typename xcs_impl::MatchSet<Population>::StoredClassifierType;
-        using typename xcs_impl::MatchSet<Population>::ClassifierPtr;
-        using typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;
-        using typename xcs_impl::MatchSet<Population>::PopulationType;
+        using type=typename xcs_impl::MatchSet<Population>::type;
+        using SymbolType=typename xcs_impl::MatchSet<Population>::SymbolType;
+        using ConditionType=typename xcs_impl::MatchSet<Population>::ConditionType;
+        using ActionType=typename xcs_impl::MatchSet<Population>::ActionType;
+        using ConditionActionPairType=typename xcs_impl::MatchSet<Population>::ConditionActionPairType;
+        using ConstantsType=typename xcs_impl::MatchSet<Population>::ConstantsType;
+        using ClassifierType=typename xcs_impl::MatchSet<Population>::ClassifierType;
+        using StoredClassifierType=typename xcs_impl::MatchSet<Population>::StoredClassifierType;
+        using ClassifierPtr=typename xcs_impl::MatchSet<Population>::ClassifierPtr;
+        using ClassifierPtrSetType=typename xcs_impl::MatchSet<Population>::ClassifierPtrSetType;
+        using PopulationType=typename xcs_impl::MatchSet<Population>::PopulationType;
 
     protected:
         using xcs_impl::MatchSet<Population>::m_set;

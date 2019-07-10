@@ -9,18 +9,18 @@ namespace xxr { namespace xcsr_impl
     class ActionSet : public xcs_impl::ActionSet<GA>
     {
     public:
-        using typename xcs_impl::ActionSet<GA>::type;
-        using typename xcs_impl::ActionSet<GA>::SymbolType;
-        using typename xcs_impl::ActionSet<GA>::ConditionType;
-        using typename xcs_impl::ActionSet<GA>::ActionType;
-        using typename xcs_impl::ActionSet<GA>::ConditionActionPairType;
-        using typename xcs_impl::ActionSet<GA>::ConstantsType;
-        using typename xcs_impl::ActionSet<GA>::ClassifierType;
-        using typename xcs_impl::ActionSet<GA>::StoredClassifierType;
-        using typename xcs_impl::ActionSet<GA>::ClassifierPtr;
-        using typename xcs_impl::ActionSet<GA>::ClassifierPtrSetType;
-        using typename xcs_impl::ActionSet<GA>::PopulationType;
-        using typename xcs_impl::ActionSet<GA>::GAType;
+        using type= typename xcs_impl::ActionSet<GA>::type;
+        using SymbolType=typename xcs_impl::ActionSet<GA>::SymbolType;
+        using ConditionType=typename xcs_impl::ActionSet<GA>::ConditionType;
+        using ActionType=typename xcs_impl::ActionSet<GA>::ActionType;
+        using ConditionActionPairType=typename xcs_impl::ActionSet<GA>::ConditionActionPairType;
+        using ConstantsType=typename xcs_impl::ActionSet<GA>::ConstantsType;
+        using ClassifierType=typename xcs_impl::ActionSet<GA>::ClassifierType;
+        using StoredClassifierType=typename xcs_impl::ActionSet<GA>::StoredClassifierType;
+        using ClassifierPtr=typename xcs_impl::ActionSet<GA>::ClassifierPtr;
+        using ClassifierPtrSetType=typename xcs_impl::ActionSet<GA>::ClassifierPtrSetType;
+        using PopulationType=typename xcs_impl::ActionSet<GA>::PopulationType;
+        using GAType=typename xcs_impl::ActionSet<GA>::GAType;
 
     protected:
         using xcs_impl::ActionSet<GA>::m_set;

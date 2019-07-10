@@ -9,13 +9,13 @@ namespace xxr { namespace xcsr_impl
     struct ConditionActionPair : public xcs_impl::ConditionActionPair<Condition, Action>
     {
     public:
-        using typename xcs_impl::ConditionActionPair<Condition, Action>::type;
-        using typename xcs_impl::ConditionActionPair<Condition, Action>::SymbolType;
-        using typename xcs_impl::ConditionActionPair<Condition, Action>::ConditionType;
-        using typename xcs_impl::ConditionActionPair<Condition, Action>::ActionType;
+        using type= typename xcs_impl::ConditionActionPair<Condition, Action>::type;
+        using SymbolType= typename xcs_impl::ConditionActionPair<Condition, Action>::SymbolType;
+        using ConditionType= typename xcs_impl::ConditionActionPair<Condition, Action>::ConditionType;
+        using ActionType= typename xcs_impl::ConditionActionPair<Condition, Action>::ActionType;
 
-        using xcs_impl::ConditionActionPair<Condition, Action>::condition;
-        using xcs_impl::ConditionActionPair<Condition, Action>::action;
+        using  xcs_impl::ConditionActionPair<Condition, Action>::condition;
+        using   xcs_impl::ConditionActionPair<Condition, Action>::action;
 
         // Constructor
         using xcs_impl::ConditionActionPair<Condition, Action>::ConditionActionPair;
@@ -68,11 +68,11 @@ namespace xxr { namespace xcsr_impl
     struct StoredClassifier : xcs_impl::StoredClassifier<Classifier, Constants>
     {
     public:
-        using typename xcs_impl::StoredClassifier<Classifier, Constants>::type;
-        using typename xcs_impl::StoredClassifier<Classifier, Constants>::SymbolType;
-        using typename xcs_impl::StoredClassifier<Classifier, Constants>::ConditionType;
-        using typename xcs_impl::StoredClassifier<Classifier, Constants>::ActionType;
-        using typename xcs_impl::StoredClassifier<Classifier, Constants>::ClassifierType;
+        using type=typename xcs_impl::StoredClassifier<Classifier, Constants>::type;
+        using SymbolType=typename xcs_impl::StoredClassifier<Classifier, Constants>::SymbolType;
+        using ConditionType= typename xcs_impl::StoredClassifier<Classifier, Constants>::ConditionType;
+        using ActionType= typename xcs_impl::StoredClassifier<Classifier, Constants>::ActionType;
+        using ClassifierType = typename xcs_impl::StoredClassifier<Classifier, Constants>::ClassifierType;
 
         using xcs_impl::StoredClassifier<Classifier, Constants>::action;
         using xcs_impl::StoredClassifier<Classifier, Constants>::isSubsumer;
