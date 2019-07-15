@@ -146,8 +146,7 @@ namespace xxr { namespace xcsr_impl { namespace obr
         }
 
         using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::populationSize;
-        using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::numerositySum;
-
+		using xcs_impl::Experiment<T, Action, PredictionArray, ActionSet>::numerositySum;
 
 		/* Added */
 
