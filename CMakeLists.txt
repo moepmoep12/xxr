@@ -15,6 +15,10 @@ set(HEADER
     ${PROJECT_SOURCE_DIR}/include/xxr/environment/real_multiplexer_environment.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/helper/csv.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/helper/dataset.hpp
+	${PROJECT_SOURCE_DIR}/include/xxr/helper/simple_moving_average.hpp
+	${PROJECT_SOURCE_DIR}/include/xxr/helper/experiment_helper.hpp
+	${PROJECT_SOURCE_DIR}/include/xxr/helper/experiment_log_stream.hpp
+	${PROJECT_SOURCE_DIR}/include/xxr/helper/experiment_settings.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/xcs/action_set.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/xcs/classifier.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/xcs/classifier_ptr_set.hpp
@@ -45,19 +49,20 @@ set(HEADER
     ${PROJECT_SOURCE_DIR}/include/xxr/xcsr/ubr/ga.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/xcsr/ubr/match_set.hpp
     ${PROJECT_SOURCE_DIR}/include/xxr/xcsr/ubr/symbol.hpp
+
     )
     
 set(SRC 
-    ${PROJECT_SOURCE_DIR}/src/xcs.cpp
-    ${PROJECT_SOURCE_DIR}/src/xcsr.cpp
+    #${PROJECT_SOURCE_DIR}/src/xcs.cpp
+    #${PROJECT_SOURCE_DIR}/src/xcsr.cpp
     ${PROJECT_SOURCE_DIR}/src/common.hpp
     ${PROJECT_SOURCE_DIR}/src/unit_test/checkerboard_environment_test.cpp
     ${PROJECT_SOURCE_DIR}/src/unit_test/unit_test.hpp
-    ${PROJECT_SOURCE_DIR}/src/util/simple_moving_average.hpp
+
     )
 
 	
-add_subdirectory("${PROJECT_SOURCE_DIR}/src/third_party/cxxopts/")
+#add_subdirectory("${PROJECT_SOURCE_DIR}/src/third_party/cxxopts/")
 add_library(${PROJECT_NAME} STATIC ${HEADER}
 								   ${SRC})
 include_directories(${PROJECT_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/)			
