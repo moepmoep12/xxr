@@ -92,6 +92,7 @@ namespace xxr { namespace xcs_impl
 
         ConstantsType constants;
 
+
     protected:
         // [P]
         //   The population [P] consists of all classifier that exist in XCS at any time.
@@ -341,6 +342,19 @@ namespace xxr { namespace xcs_impl
             constants.chi = 0.0;
             constants.mu = 0.0;
         }
+
+		/* Added */
+
+		virtual const PopulationType& GetPopulation() const { return m_population; }
+
+		virtual const ActionSet& GetCurrentActionSet() const { return m_actionSet; }
+
+		virtual const ActionSet& GetPreviousActionSet() const { return m_prevActionSet; }
+
+		virtual double GetPreviousReward() const { return m_prevReward; }
+
+		/* In order to enable interaction with the constants during training */
+		virtual ConstantsType& GetConstants() { return constants; }
     };
 
 }}
